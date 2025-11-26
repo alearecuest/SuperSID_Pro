@@ -1,0 +1,1159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+===========================================================
+KML file of VLF stations
+===========================================================
+
+===========================================================
+     $HeadURL$
+
+     $LastChangedDate$
+     $Revision$
+     $LastChangedBy$
+===========================================================
+-->
+
+<kml xmlns="http://earth.google.com/kml/2.2">
+<Document>
+	<name>VLF</name>
+	<open>1</open>
+	<Style id="vlf_transmitters">
+		<IconStyle>
+			<color>ff0000aa</color>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal3/icon60.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>ff0000aa</color>
+		</LabelStyle>
+	</Style>
+	<Style id="vlf_transmitters_disabled">
+		<IconStyle>
+			<color>ff7f7f7f</color>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal3/icon60.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>ff7f7f7f</color>
+		</LabelStyle>
+	</Style>
+	<Style id="towers">
+		<IconStyle>
+			<color>ff0000aa</color>
+			<scale>0.6</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/shapes/triangle.png</href>
+			</Icon>
+		</IconStyle>
+		<LabelStyle>
+			<color>ff0000aa</color>
+			<scale>0.7</scale>
+		</LabelStyle>
+		<ListStyle>
+		</ListStyle>
+	</Style>
+	<Folder>
+		<name>VLF [10kHz - 24kHz]</name>
+		<Placemark>
+			<name>JXN</name>
+			<description><![CDATA[16.4kHz<br/>
+Approximate Location<br/>
+Aldra Island, Norway]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+				<coordinates>13.873616666666700,66.974352777777800,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>VTX1</name>
+			<description><![CDATA[VTX1 on 16.3 kHz<br/>
+South Vijayanarayanam, India]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+				<coordinates>77.75276189111827,8.387014597720581,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>VTX2</name>
+			<description><![CDATA[VTX2 on 17 kHz<br/>
+South Vijayanarayanam, India]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+				<coordinates>77.75276189111827,8.387014597720581,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>VTX3</name>
+			<description><![CDATA[VTX3 on 18.2 kHz<br/>
+South Vijayanarayanam, India]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+				<coordinates>77.75276189111827,8.387014597720581,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>VTX4</name>
+			<description><![CDATA[VTX4 on 19.2 kHz<br/>
+South Vijayanarayanam, India]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+				<coordinates>77.75276189111827,8.387014597720581,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>GBZ</name>
+			<description><![CDATA[19.58kHz<br/>
+Anthorn, UK]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+        <coordinates>-3.278456214686187,54.91164287073504,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>NWC</name>
+			<description><![CDATA[19.8kHz<br/>
+Harold E. Holt<br/>
+North West Cape, Exmouth, Australia<br>
+http://www.globalsecurity.org/military/facility/exmouth.htm]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+				<coordinates>114.1655857665692,-21.81632807889011,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>ICV</name>
+			<description><![CDATA[20.27kHz<br/>
+Isola di Tavolara, Italy]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+				<coordinates>9.731010743088206,40.9231273583308,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>NPM</name>
+			<description><![CDATA[21.4kHz<br/>
+Lualualei, Maili, Oaho, HI<br/>
+https://www.navy-radio.com/commsta/lualualei.htm<br/>
+http://www.globalsecurity.org/military/facility/lualualei.htm]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+				<coordinates>-158.1511398799516,21.42016563293462,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>HWU</name>
+			<description><![CDATA[15.1kHz<br/>
+18.3kHz<br/>
+19.1kHz<br/>
+21.75kHz<br/>
+22.6kHz<br/>
+Rosnay, France]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+				<coordinates>1.24524780078383,46.71312915521093,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>FTA</name>
+			<description><![CDATA[16.8kHz<br/>20.9kHz<br/>
+Sainte-Assise, France]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+				<coordinates>2.579428931424545,48.54463210835792,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>GQD</name>
+			<description><![CDATA[22.1kHz<br/>
+Skelton, UK]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+        <coordinates>-2.8830332689367,54.73179883948652,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>NDT</name>
+			<description><![CDATA[22.2kHz<br/>
+Ebino, Japan<br/>
+JMSDF]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+				<coordinates>130.827960,32.082084,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>DHO38</name>
+			<description><![CDATA[23.4kHz<br/>
+Burlage, Germany]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+				<coordinates>7.615000000000001,53.0789,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Negev A1F1</name>
+			<description><![CDATA[22.4kHz/22.35kHz<br/>
+Negev desert, Israel]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+				<coordinates>35.09789990251036,30.9721110076258,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>NAA</name>
+			<description><![CDATA[24.0kHz<br/>
+Cutler, ME<br/>
+http://www.globalsecurity.org/military/facility/cutler.htm<br/>
+http://eyeball-series.org/cutler-eyeball.htm]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+				<coordinates>-67.28163875098869,44.64493571122401,0</coordinates>
+			</Point>
+		</Placemark>
+	</Folder>
+	<Folder>
+		<name>VLF - LF [24kHz - 48kHz]</name>
+		<Placemark>
+			<name>NLK</name>
+			<description><![CDATA[24.8kHz<br/>
+Oso Wash, Jim Creek, WA<br/>
+http://www.globalsecurity.org/military/facility/jim-creek.htm]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+				<coordinates>-121.9168274610194,48.20348706612761,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>unid25</name>
+			<description><![CDATA[25kHz<br/>
+Mokpo, South Korea<br/>
+ROK Navy]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+				<coordinates>126.445383,34.67906830138976,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>NML</name>
+			<description><![CDATA[25.2kHz<br/>
+La Moure, ND<br/>
+Former Omega Station D on 13.1kHz<br/>
+http://www.globalsecurity.org/military/facility/lamoure.htm]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+				<coordinates>-98.33563775155611,46.36598996503529,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Negev A1F2</name>
+			<description><![CDATA[26kHz<br/>
+Negev desert, Israel]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+				<coordinates>35.09789990251036,30.9721110076258,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>TBB</name>
+			<description><![CDATA[26.7kHz<br/>
+Bafa, Turkey]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+				<coordinates>27.32334184295987,37.41272498176046,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Negev A1F3</name>
+			<description><![CDATA[29.7kHz<br/>
+Negev desert, Israel]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+				<coordinates>35.09789990251036,30.9721110076258,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>NRK/TFK</name>
+			<description><![CDATA[37.5kHz<br/>
+57.4kHz<br/>
+Grindavik, Iceland<br/>
+http://www.globalsecurity.org/military/facility/grindavik.htm]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+				<coordinates>-22.46677282751082,63.85036467345007,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>SHR</name>
+			<description><![CDATA[38kHz<br/>
+Ruda, Sweden]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+				<coordinates>16.15305833333333,57.12033333333334,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>SRC</name>
+			<description><![CDATA[40.4kHz<br/>
+Grimeton, Sweden<br/>
+http://www.alexander.n.se/]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+				<coordinates>12.39727742497462,57.11317137009773,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>NAU</name>
+			<description><![CDATA[40.8kHz<br/>
+Aguada, Puerto Rico<br/>
+http://www.globalsecurity.org/military/facility/aguada.htm]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+				<coordinates>-67.17759906472232,18.39876191628481,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Negev B1</name>
+			<description><![CDATA[44.7kHz<br/>
+Negev desert, Israel]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+				<coordinates>35.09789990251036,30.9721110076258,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>NSY</name>
+			<description><![CDATA[45.9kHz<br/>
+Niscemi, Italy<br/>
+http://www.globalsecurity.org/military/facility/niscemi.htm]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+				<coordinates>14.43641561238121,37.12565969821202,0</coordinates>
+			</Point>
+		</Placemark>
+	</Folder>
+	<Folder>
+		<name>LF [48kHz - 96kHz]</name>
+		<Placemark>
+			<name>SXA</name>
+			<description><![CDATA[49kHz<br/>
+Marathon, Greece]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+				<coordinates>24.01970893408899,38.14517010713892,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>GYW1</name>
+			<description><![CDATA[51.95kHz<br/>
+Crimond, UK]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+				<coordinates>-1.887594570786767,57.61746434066497,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>TBG</name>
+			<description><![CDATA[53.4kHz<br/>
+Canakkale, Turkey]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+				<coordinates>26.40953386444986,40.17156202851628,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>FUG</name>
+			<description><![CDATA[62.6kHz<br/>
+La Régine, France]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+				<coordinates>2.097388391465017,43.38679840386897,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>FUE</name>
+			<description><![CDATA[65.8kHz<br/>
+Kerlouan, France]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+				<coordinates>-4.350724954158679,48.6376719434224,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>CFH</name>
+			<description><![CDATA[73.6kHz<br/>
+Newport Corner near Halifax, Canada]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+				<coordinates>-63.98216023393029,44.96727561801527,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>CKN</name>
+			<description><![CDATA[76.2kHz<br/>
+Matsqui Transmitting Site, Abbotsford, British Columbia, Canada]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+				<coordinates>-122.2453933965728,49.1101742794494,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>GYN2</name>
+			<description><![CDATA[81kHz<br/>
+Inskip, UK]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+				<coordinates>-2.834266098836646,53.83007140479495,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>MKL</name>
+			<description><![CDATA[82.75kHz<br/>
+Crimond, Scotland]]></description>
+			<styleUrl>#vlf_transmitters</styleUrl>
+			<Point>
+				<coordinates>-1.887603,57.617464,0</coordinates>
+			</Point>
+		</Placemark>
+	</Folder>
+	<Folder>
+		<name>Towers</name>
+		<visibility>0</visibility>
+		<Folder>
+			<name>VTX towers</name>
+			<visibility>0</visibility>
+			<open>1</open>
+			<Style>
+				<ListStyle>
+					<listItemType>checkHideChildren</listItemType>
+					<bgColor>00ffffff</bgColor>
+				</ListStyle>
+			</Style>
+			<Placemark>
+				<name>0</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>77.7527619562992,8.387014519458171,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>1</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>77.75754952581619,8.391634433274762,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>2</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>77.75918387953303,8.385183349423119,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>3</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>77.75438946733317,8.380551012642568,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>4</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>77.74796744981632,8.382362528415372,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>5</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>77.74633222188035,8.388816522180377,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>6</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>77.75112302052921,8.393452020679042,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>7</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>77.75583077199596,8.3977609441287,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>8</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>77.76365889937932,8.389742705199989,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>9</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>77.76058457645294,8.37897164683087,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>10</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>77.74969376892378,8.376239183113571,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>11</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>77.74185737632945,8.384259675630423,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>12</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>77.74492827563259,8.395023096199481,0</coordinates>
+				</Point>
+			</Placemark>
+		</Folder>
+		<Folder>
+			<name>NAA towers</name>
+			<visibility>0</visibility>
+			<Style>
+				<ListStyle>
+					<listItemType>check</listItemType>
+					<bgColor>00ffffff</bgColor>
+				</ListStyle>
+			</Style>
+			<Folder>
+				<name>North Array</name>
+				<visibility>0</visibility>
+				<open>1</open>
+				<Style>
+					<ListStyle>
+						<listItemType>checkHideChildren</listItemType>
+						<bgColor>00ffffff</bgColor>
+					</ListStyle>
+				</Style>
+				<Placemark>
+					<name>N0</name>
+					<styleUrl>#towers</styleUrl>
+					<Point>
+						<coordinates>-67.28498507924749,44.65247712472939,0</coordinates>
+					</Point>
+				</Placemark>
+				<Placemark>
+					<name>N1</name>
+					<styleUrl>#towers</styleUrl>
+					<Point>
+						<coordinates>-67.28542617967503,44.65709482982815,0</coordinates>
+					</Point>
+				</Placemark>
+				<Placemark>
+					<name>N2</name>
+					<styleUrl>#towers</styleUrl>
+					<Point>
+						<coordinates>-67.27896839208617,44.65513084516044,0</coordinates>
+					</Point>
+				</Placemark>
+				<Placemark>
+					<name>N3</name>
+					<styleUrl>#towers</styleUrl>
+					<Point>
+						<coordinates>-67.27864020308638,44.65006221727278,0</coordinates>
+					</Point>
+				</Placemark>
+				<Placemark>
+					<name>N4</name>
+					<styleUrl>#towers</styleUrl>
+					<Point>
+						<coordinates>-67.28445082013978,44.64738419944725,0</coordinates>
+					</Point>
+				</Placemark>
+				<Placemark>
+					<name>N5</name>
+					<styleUrl>#towers</styleUrl>
+					<Point>
+						<coordinates>-67.29047111827465,44.649475956855,0</coordinates>
+					</Point>
+				</Placemark>
+				<Placemark>
+					<name>N6</name>
+					<styleUrl>#towers</styleUrl>
+					<Point>
+						<coordinates>-67.29105144321385,44.65452628313601,0</coordinates>
+					</Point>
+				</Placemark>
+				<Placemark>
+					<name>N7</name>
+					<styleUrl>#towers</styleUrl>
+					<Point>
+						<coordinates>-67.27951187007629,44.65993988400714,0</coordinates>
+					</Point>
+				</Placemark>
+				<Placemark>
+					<name>N8</name>
+					<styleUrl>#towers</styleUrl>
+					<Point>
+						<coordinates>-67.27225143340154,44.65266245998527,0</coordinates>
+					</Point>
+				</Placemark>
+				<Placemark>
+					<name>N9</name>
+					<styleUrl>#towers</styleUrl>
+					<Point>
+						<coordinates>-67.27832538215407,44.64548344132778,0</coordinates>
+					</Point>
+				</Placemark>
+				<Placemark>
+					<name>N10</name>
+					<styleUrl>#towers</styleUrl>
+					<Point>
+						<coordinates>-67.29019728267728,44.64489830989565,0</coordinates>
+					</Point>
+				</Placemark>
+				<Placemark>
+					<name>N11</name>
+					<styleUrl>#towers</styleUrl>
+					<Point>
+						<coordinates>-67.29636433187294,44.65198023555826,0</coordinates>
+					</Point>
+				</Placemark>
+				<Placemark>
+					<name>N12</name>
+					<styleUrl>#towers</styleUrl>
+					<Point>
+						<coordinates>-67.29134261961198,44.65925799368497,0</coordinates>
+					</Point>
+				</Placemark>
+			</Folder>
+			<Folder>
+				<name>South Array</name>
+				<visibility>0</visibility>
+				<open>1</open>
+				<Style>
+					<ListStyle>
+						<listItemType>checkHideChildren</listItemType>
+						<bgColor>00ffffff</bgColor>
+					</ListStyle>
+				</Style>
+				<Placemark>
+					<name>S0</name>
+					<styleUrl>#towers</styleUrl>
+					<Point>
+						<coordinates>-67.27833010000924,44.63745518410727,0</coordinates>
+					</Point>
+				</Placemark>
+				<Placemark>
+					<name>S1</name>
+					<styleUrl>#towers</styleUrl>
+					<Point>
+						<coordinates>-67.27854145497557,44.64226435767017,0</coordinates>
+					</Point>
+				</Placemark>
+				<Placemark>
+					<name>S2</name>
+					<styleUrl>#towers</styleUrl>
+					<Point>
+						<coordinates>-67.27224671264364,44.63981893664803,0</coordinates>
+					</Point>
+				</Placemark>
+				<Placemark>
+					<name>S3</name>
+					<styleUrl>#towers</styleUrl>
+					<Point>
+						<coordinates>-67.27227791544051,44.6348854815085,0</coordinates>
+					</Point>
+				</Placemark>
+				<Placemark>
+					<name>S4</name>
+					<styleUrl>#towers</styleUrl>
+					<Point>
+						<coordinates>-67.27823796115148,44.63241906324707,0</coordinates>
+					</Point>
+				</Placemark>
+				<Placemark>
+					<name>S5</name>
+					<styleUrl>#towers</styleUrl>
+					<Point>
+						<coordinates>-67.28430530696376,44.63478924625535,0</coordinates>
+					</Point>
+				</Placemark>
+				<Placemark>
+					<name>S6</name>
+					<styleUrl>#towers</styleUrl>
+					<Point>
+						<coordinates>-67.28418390123559,44.63965781202587,0</coordinates>
+					</Point>
+				</Placemark>
+				<Placemark>
+					<name>S7</name>
+					<styleUrl>#towers</styleUrl>
+					<Point>
+						<coordinates>-67.27171012283877,44.64480158198702,0</coordinates>
+					</Point>
+				</Placemark>
+				<Placemark>
+					<name>S8</name>
+					<styleUrl>#towers</styleUrl>
+					<Point>
+						<coordinates>-67.26646626646026,44.63741161676694,0</coordinates>
+					</Point>
+				</Placemark>
+				<Placemark>
+					<name>S9</name>
+					<styleUrl>#towers</styleUrl>
+					<Point>
+						<coordinates>-67.27220589479944,44.63000050299127,0</coordinates>
+					</Point>
+				</Placemark>
+				<Placemark>
+					<name>S10</name>
+					<styleUrl>#towers</styleUrl>
+					<Point>
+						<coordinates>-67.28426042001446,44.6297949399027,0</coordinates>
+					</Point>
+				</Placemark>
+				<Placemark>
+					<name>S11</name>
+					<styleUrl>#towers</styleUrl>
+					<Point>
+						<coordinates>-67.29019251774624,44.63734383163151,0</coordinates>
+					</Point>
+				</Placemark>
+				<Placemark>
+					<name>S12</name>
+					<styleUrl>#towers</styleUrl>
+					<Point>
+						<coordinates>-67.28430976891919,44.64458465794689,0</coordinates>
+					</Point>
+				</Placemark>
+			</Folder>
+		</Folder>
+		<Folder>
+			<name>DHO38 towers</name>
+			<visibility>0</visibility>
+			<open>1</open>
+			<Style>
+				<ListStyle>
+					<listItemType>checkHideChildren</listItemType>
+					<bgColor>00ffffff</bgColor>
+				</ListStyle>
+			</Style>
+			<Placemark>
+				<name>1</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>7.618401774473924,53.08948265127425,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>2</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>7.61938979489699,53.0832676895248,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>3</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>7.616345537145293,53.07671065925489,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>4</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>7.621587292462778,53.07132585459453,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>5</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>7.611632365419908,53.06963346804621,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>6</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>7.606360229042068,53.07500915412054,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>7</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>7.609641775296112,53.08112406718799,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>8</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>7.608665335030182,53.08733890418284,0</coordinates>
+				</Point>
+			</Placemark>
+		</Folder>
+		<Folder>
+			<name>HWU towers</name>
+			<visibility>0</visibility>
+			<open>1</open>
+			<Style>
+				<ListStyle>
+					<listItemType>checkHideChildren</listItemType>
+					<bgColor>00ffffff</bgColor>
+				</ListStyle>
+			</Style>
+			<Placemark>
+				<name>0</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>1.245247889977733,46.71312911086812,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>1</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>1.246633903820239,46.72243675452062,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>2</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>1.250000798136043,46.7176712439714,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>3</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>1.257685468863228,46.71703253531226,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>4</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>1.253477928360138,46.71252980285401,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>5</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>1.256449193154957,46.70763147556637,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>6</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>1.248570498175148,46.70803044322015,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>7</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>1.2439309492542,46.70374587747858,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>8</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>1.240508803624291,46.70856941391917,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>9</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>1.232838061580622,46.70921532348896,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>10</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>1.237163198576359,46.71366089701368,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>11</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>1.234098307450249,46.71860780764058,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>12</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>1.241791091219934,46.71823012795885,0</coordinates>
+				</Point>
+			</Placemark>
+		</Folder>
+		<Folder>
+			<name>FUO towers</name>
+			<visibility>0</visibility>
+			<open>1</open>
+			<Style>
+				<ListStyle>
+					<listItemType>checkHideChildren</listItemType>
+					<bgColor>00ffffff</bgColor>
+				</ListStyle>
+			</Style>
+			<Placemark>
+				<name>1</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>2.568820548871273,48.54693338815024,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>2</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>2.574225831198845,48.5466883170746,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>3</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>2.579641152560456,48.5464429843773,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>4</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>2.585052927138918,48.54617494498517,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>5</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>2.568443110697331,48.54336014565297,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>6</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>2.573870444994725,48.54310415864838,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>7</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>2.579250621206839,48.54284170887279,0</coordinates>
+				</Point>
+			</Placemark>
+			<Placemark>
+				<name>8</name>
+				<styleUrl>#towers</styleUrl>
+				<Point>
+					<coordinates>2.584674056806804,48.54259441201288,0</coordinates>
+				</Point>
+			</Placemark>
+		</Folder>
+	</Folder>
+	<Folder>
+		<name>Historic</name>
+		<Placemark>
+			<name>SAQ</name>
+			<description><![CDATA[17.2kHz<br/>
+Grimeton, Sweden<br/>
+http://www.alexander.n.se/]]></description>
+			<styleUrl>#vlf_transmitters_disabled</styleUrl>
+			<Point>
+				<coordinates>12.39727742497462,57.11317137009773,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Rugby, UK</name>
+			<description><![CDATA[Former location of GBR (16kHz) and MSF (60kHz)<br/>
+Rugby, UK<br/>
+http://tx.mb21.co.uk/features/rugby/index.shtml]]></description>
+			<styleUrl>#vlf_transmitters_disabled</styleUrl>
+			<Point>
+				<coordinates>-1.188945112687605,52.36646125080841,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Criggion, UK</name>
+			<description><![CDATA[Formerly GBZ on 19.6kHz<br/>
+Shutdown on April 1, 2003<br/>
+Criggion, UK<br/>
+http://tx.mb21.co.uk/features/criggion/]]></description>
+			<styleUrl>#vlf_transmitters_disabled</styleUrl>
+			<Point>
+				<coordinates>-3.062799690182061,52.72263178120771,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name> San Diego, CA</name>
+			<description><![CDATA[Dismantled in 1992<br/>
+Formerly NPL<br/>
+Chollas Heights, San Diego, California, USA<br/>
+http://www.globalsecurity.org/military/facility/chollas-heights.htm]]></description>
+			<styleUrl>#vlf_transmitters_disabled</styleUrl>
+			<Point>
+				<coordinates>-117.0648580491231,32.73262445455988,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Annapolis, MD</name>
+			<description><![CDATA[16 out of 19 towers dismantled in 1999.
+Formerly on NSS 21.400kHz<br/>
+Annapolis, MD<br/>
+http://www.globalsecurity.org/military/facility/greenbury-point.htm]]></description>
+			<styleUrl>#vlf_transmitters_disabled</styleUrl>
+			<Point>
+				<coordinates>-76.45430059297853,38.97770172468776,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Croix d&apos;Hins</name>
+			<description><![CDATA[Historic Site Bordeaux-Lafayette<br/>
+Croix d'Hins VLF radiotelegraphic station<br/>
+1920-1923: LY (spark transmitter on 23450 meters), 1000kW<br/>
+Destroyed in 1944<br/>
+Croix D'Hins, France]]></description>
+			<styleUrl>#vlf_transmitters_disabled</styleUrl>
+			<Point>
+				<coordinates>-0.8143078670010767,44.70874074937598,0</coordinates>
+			</Point>
+		</Placemark>
+	</Folder>
+	<Folder>
+		<name>Unknown</name>
+		<Placemark>
+			<name>Japan - ???</name>
+			<description><![CDATA[JJH?<br/>
+Approximate Location<br/>
+Kure, Japan]]></description>
+			<styleUrl>#vlf_transmitters_disabled</styleUrl>
+			<Point>
+				<coordinates>132.5742254377251,34.23310914452539,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>USA - ???</name>
+			<description>San Fransisco, California, USA</description>
+			<styleUrl>#vlf_transmitters_disabled</styleUrl>
+			<Point>
+				<coordinates>-122.2881317955484,38.10730787270936,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Japan - Yosami</name>
+			<description><![CDATA[JJH?<br/>
+Historic Site. Last transmission 1993.<br/>
+Antennas dismantled in 1995.<br/>
+Kariya, Japan<br/>
+http://yosami-radio-ts.sakura.ne.jp/english/contents/]]></description>
+			<styleUrl>#vlf_transmitters_disabled</styleUrl>
+			<Point>
+				<coordinates>137.018889,34.969722,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>USA - ???</name>
+			<description>San Fransisco, California, USA</description>
+			<styleUrl>#vlf_transmitters_disabled</styleUrl>
+			<Point>
+				<coordinates>-122.2881317955484,38.10730787270936,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Panama - ???</name>
+			<description><![CDATA[NBA?<br/>
+Balboa, Panama]]></description>
+			<styleUrl>#vlf_transmitters_disabled</styleUrl>
+			<Point>
+				<coordinates>-79.65000000000001,9.066666666666666,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>France - ???</name>
+			<description><![CDATA[Souge Military Camp<br/>
+Martignas-sur-Jalle, France]]></description>
+			<styleUrl>#vlf_transmitters_disabled</styleUrl>
+			<Point>
+				<coordinates>-0.796524804921674,44.86300712008027,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Germany - Kalbe - Goliath Transmitter</name>
+			<description><![CDATA[Former 1MW VLF transmitter<br/>
+			Facilities dismantled by Russia in 1946<br/>
+Kalbe, Germany]]></description>
+			<styleUrl>#vlf_transmitters_disabled</styleUrl>
+			<Point>
+				<coordinates>11.4254165724269,52.6641599372916,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Sweden, Karlsborg</name>
+			<description><![CDATA[Karlsborg, Sweden]]></description>
+			<styleUrl>#vlf_transmitters_disabled</styleUrl>
+			<Point>
+				<coordinates>14.47272777777778,58.48688888888889,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Sweden, Sala</name>
+			<description><![CDATA[Former Swedish Air Force weather-FAX service till 1985<br/>
+Sala, Sweden]]></description>
+			<styleUrl>#vlf_transmitters_disabled</styleUrl>
+			<Point>
+				<coordinates>16.64985833333333,59.91187222222222,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Sweden, Kristinehamn</name>
+			<description><![CDATA[Kristinehamn, Sweden]]></description>
+			<styleUrl>#vlf_transmitters_disabled</styleUrl>
+			<Point>
+				<coordinates>14.00218888888889,59.35854722222222,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Sweden, Tierp</name>
+			<description><![CDATA[Tierp, Sweden]]></description>
+			<styleUrl>#vlf_transmitters_disabled</styleUrl>
+			<Point>
+				<coordinates>18.01214444444444,60.52431666666666,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>NTS</name>
+			<description><![CDATA[Former Omega Station G on 13kHz<br/>
+Former VL3DEF station on 13kHz till 2004<br/>
+Former station on 18.6 kHz till End 2008<br/>
+Woodside, Victoria, Australia]]></description>
+			<styleUrl>#vlf_transmitters_disabled</styleUrl>
+			<Point>
+				<coordinates>146.9353205184588,-38.48129034981089,0</coordinates>
+			</Point>
+		</Placemark>
+		</Folder>
+</Document>
+</kml>

@@ -10,3 +10,4 @@ class Station(Base):
     type = Column(String)
     latitude = Column(Float, nullable=True)
     longitude = Column(Float, nullable=True)
+    status = Column(String, default="active")

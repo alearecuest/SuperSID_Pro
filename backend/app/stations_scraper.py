@@ -21,26 +21,34 @@ def fetch_stations():
         if len(cols) < 6:
             continue
         name = cols[0].get_text(strip=True)
-        frequency = None
+        # Get Frequency
+        frequency_str = cols[1].get_text(strip=True)
         try:
-            frequency = float(cols[1].get_text(strip=True))
+            frequency = float(frequency_str)
         except ValueError:
-            pass
+            frequency = None
+        # Get Country
         country = cols[2].get_text(strip=True)
-        typ = cols[3].get_text(strip=True)
-        latitude, longitude = None, None
+        # Get Type (VLF/LF/ELF)
+        type_ = cols[3].get_text(strip=True)
+        # Get Latitude
+        lat_str = cols[4].get_text(strip=True)
         try:
-            lat_str = cols[4].get_text(strip=True)
-            lon_str = cols[5].get_text(strip=True)
-            latitude = float(lat_str) if lat_str else None
-            longitude = float(lon_str) if lon_str else None
-        except Exception:
-            pass
+            latitude = float(lat_str)
+        except ValueError:
+            latitude = None
+        # Get Longitude
+        lon_str = cols[5].get_text(strip=True)
+        try:
+            longitude = float(lon_str)
+        except ValueError:
+            longitude = None
+
         stations_list.append({
             "name": name,
             "frequency": frequency,
             "country": country,
-            "type": typ,
+            "type": type_,
             "latitude": latitude,
             "longitude": longitude
         })

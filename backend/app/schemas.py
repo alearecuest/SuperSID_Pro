@@ -12,7 +12,6 @@ class ObservatoryCreate(ObservatoryBase):
 
 class ObservatoryShow(ObservatoryBase):
     id: int
-
     class Config:
         from_attributes = True
 
@@ -29,7 +28,6 @@ class UserShow(BaseModel):
     id: int
     email: EmailStr
     observatory: ObservatoryShow
-
     class Config:
         from_attributes = True
 
@@ -41,6 +39,7 @@ class StationShow(BaseModel):
     type: str
     latitude: Optional[float]
     longitude: Optional[float]
+    status: str
 
     class Config:
         from_attributes = True

@@ -1,5 +1,5 @@
 """
-Main application window for SuperSID Pro
+Main application window for SuperSID Pro - UPDATED with Charts
 Modern PyQt6 interface with dark theme and professional styling
 """
 
@@ -9,16 +9,16 @@ from typing import Optional
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QTabWidget, QStatusBar, QMenuBar, QToolBar, QPushButton,
-    QLabel, QFrame, QSplitter, QSystemTrayIcon, QMenu
+    QLabel, QFrame, QSplitter, QSystemTrayIcon, QMenu, QMessageBox
 )
 from PyQt6.QtCore import Qt, QTimer, QThread, pyqtSignal, QSize
 from PyQt6.QtGui import QIcon, QPixmap, QAction, QFont, QPalette, QColor
 
 from gui.widgets.observatory_widget import ObservatoryWidget
-from gui.widgets.monitoring_widget import MonitoringWidget
+from gui.widgets.monitoring_widget import MonitoringWidget  # UPDATED
 from gui.widgets.stations_widget import StationsWidget
 from gui.widgets.space_weather_widget import SpaceWeatherWidget
-from gui.widgets. chart_widget import ChartWidget
+from gui.widgets. chart_widget import ChartWidget  # NEW
 from gui.dialogs.setup_dialog import SetupDialog
 from gui.styles.dark_theme import DarkTheme
 from core.config_manager import ConfigManager
@@ -28,7 +28,7 @@ class SuperSIDProApp(QApplication):
     """Main application class"""
     
     def __init__(self, config_manager: ConfigManager, debug: bool = False):
-        super().__init__(sys. argv)
+        super().__init__(sys.argv)
         
         self.config_manager = config_manager
         self.debug = debug
@@ -53,18 +53,18 @@ class SuperSIDProApp(QApplication):
     def apply_theme(self):
         """Apply dark theme to application"""
         self.setStyle('Fusion')
-        self.setPalette(DarkTheme.create_palette())
+        self. setPalette(DarkTheme.create_palette())
         self.setStyleSheet(DarkTheme.get_stylesheet())
     
     def setup_system_tray(self):
         """Setup system tray icon"""
         if QSystemTrayIcon.isSystemTrayAvailable():
-            self.tray_icon = QSystemTrayIcon(self)
+            self. tray_icon = QSystemTrayIcon(self)
             
             # Create tray icon
             icon_path = Path("assets/icons/supersid_icon.png")
             if icon_path.exists():
-                self. tray_icon.setIcon(QIcon(str(icon_path)))
+                self.tray_icon.setIcon(QIcon(str(icon_path)))
             
             # Create tray menu
             tray_menu = QMenu()
@@ -80,7 +80,7 @@ class SuperSIDProApp(QApplication):
             self.tray_icon.setContextMenu(tray_menu)
             self.tray_icon.show()
             
-            self.tray_icon.activated. connect(self.on_tray_activated)
+            self.tray_icon.activated.connect(self.on_tray_activated)
     
     def on_tray_activated(self, reason):
         """Handle tray icon activation"""
@@ -92,13 +92,21 @@ class SuperSIDProApp(QApplication):
     def run(self) -> int:
         """Run the application"""
         # Show setup dialog if first run
-        if self.config_manager.get('application. first_run', True):
-            setup_dialog = SetupDialog(self.config_manager)
-            if setup_dialog.exec() == SetupDialog.DialogCode.Accepted:
-                self.config_manager.set('application.first_run', False)
-                self.config_manager.save_config()
-            else:
-                return 0
+        if self.config_manager.get('application.first_run', True):
+            reply = QMessageBox.question(
+                None,
+                "First Run Setup", 
+                "This appears to be your first time running SuperSID Pro.\n\n"
+                "Would you like to run the setup wizard to configure your observatory? ",
+                QMessageBox.StandardButton.Yes | QMessageBox. StandardButton.No
+            )
+            
+            if reply == QMessageBox.StandardButton.Yes:
+                # TODO: Implement setup dialog
+                pass
+            
+            self.config_manager.set('application.first_run', False)
+            self.config_manager.save_config()
         
         self.main_window.show()
         return self.exec()
@@ -117,14 +125,14 @@ class MainWindow(QMainWindow):
         self.setup_toolbar()
         self.setup_statusbar()
         
-        # Start data collection
-        self.start_data_collection()
+        # Start monitoring
+        self.start_monitoring()
         
         self.logger.info("Main window initialized")
     
     def setup_ui(self):
         """Setup the main UI"""
-        self.setWindowTitle("SuperSID Pro - Solar Observatory Monitoring")
+        self.setWindowTitle("SuperSID Pro - Solar Observatory Monitoring System")
         self.setMinimumSize(1200, 800)
         self.resize(1400, 900)
         
@@ -165,11 +173,11 @@ class MainWindow(QMainWindow):
         
         # Observatory info widget
         self.observatory_widget = ObservatoryWidget(self.config_manager)
-        layout.addWidget(self. observatory_widget)
+        layout.addWidget(self.observatory_widget)
         
         # Stations widget
-        self.stations_widget = StationsWidget(self.config_manager)
-        layout.addWidget(self.stations_widget)
+        self.stations_widget = StationsWidget(self. config_manager)
+        layout. addWidget(self.stations_widget)
         
         # Space weather widget
         self.space_weather_widget = SpaceWeatherWidget(self.config_manager)
@@ -185,16 +193,20 @@ class MainWindow(QMainWindow):
         
         layout = QVBoxLayout(panel)
         
-        # Create tab widget
+        # Create tab widget for different views
         tab_widget = QTabWidget()
         
-        # Real-time monitoring tab
-        monitoring_tab = MonitoringWidget(self.config_manager)
-        tab_widget. addTab(monitoring_tab, "Real-time Monitoring")
+        # Real-time monitoring tab (MAIN CHARTS TAB)
+        self.monitoring_tab = MonitoringWidget(self.config_manager)
+        tab_widget. addTab(self.monitoring_tab, "📊 Real-time Monitoring")
         
-        # Charts tab
-        charts_tab = ChartWidget(self.config_manager)
-        tab_widget.addTab(charts_tab, "Historical Data")
+        # Historical data analysis tab
+        self.charts_tab = ChartWidget(self.config_manager)
+        tab_widget.addTab(self. charts_tab, "📈 Historical Analysis")
+        
+        # Space weather details tab
+        space_weather_detail = SpaceWeatherWidget(self.config_manager)
+        tab_widget.addTab(space_weather_detail, "🌞 Space Weather")
         
         layout.addWidget(tab_widget)
         
@@ -207,43 +219,71 @@ class MainWindow(QMainWindow):
         # File menu
         file_menu = menubar.addMenu("File")
         
-        new_action = QAction("New Session", self)
-        new_action.setShortcut("Ctrl+N")
-        file_menu.addAction(new_action)
+        new_session_action = QAction("New Session", self)
+        new_session_action.setShortcut("Ctrl+N")
+        new_session_action.triggered.connect(self.new_session)
+        file_menu.addAction(new_session_action)
         
-        open_action = QAction("Open Data", self)
-        open_action. setShortcut("Ctrl+O")
-        file_menu. addAction(open_action)
+        open_data_action = QAction("Open Data File", self)
+        open_data_action.setShortcut("Ctrl+O")
+        open_data_action.triggered.connect(self.open_data_file)
+        file_menu.addAction(open_data_action)
         
         file_menu.addSeparator()
         
+        export_action = QAction("Export Data", self)
+        export_action.setShortcut("Ctrl+E")
+        export_action.triggered.connect(self.export_data)
+        file_menu.addAction(export_action)
+        
+        file_menu. addSeparator()
+        
         exit_action = QAction("Exit", self)
         exit_action.setShortcut("Ctrl+Q")
-        exit_action.triggered.connect(self.close)
+        exit_action.triggered.connect(self. close)
         file_menu.addAction(exit_action)
+        
+        # View menu
+        view_menu = menubar.addMenu("View")
+        
+        fullscreen_action = QAction("Toggle Fullscreen", self)
+        fullscreen_action.setShortcut("F11")
+        fullscreen_action.triggered.connect(self.toggle_fullscreen)
+        view_menu.addAction(fullscreen_action)
         
         # Tools menu
         tools_menu = menubar.addMenu("Tools")
         
         settings_action = QAction("Settings", self)
+        settings_action. setShortcut("Ctrl+,")
         settings_action.triggered.connect(self.show_settings)
         tools_menu.addAction(settings_action)
         
-        # Help menu
-        help_menu = menubar. addMenu("Help")
+        calibration_action = QAction("Station Calibration", self)
+        calibration_action.triggered.connect(self.show_calibration)
+        tools_menu. addAction(calibration_action)
         
-        about_action = QAction("About", self)
-        about_action.triggered.connect(self. show_about)
+        # Help menu
+        help_menu = menubar.addMenu("Help")
+        
+        about_action = QAction("About SuperSID Pro", self)
+        about_action.triggered.connect(self.show_about)
         help_menu.addAction(about_action)
+        
+        docs_action = QAction("Documentation", self)
+        docs_action. setShortcut("F1")
+        docs_action. triggered.connect(self.show_documentation)
+        help_menu.addAction(docs_action)
     
     def setup_toolbar(self):
         """Setup toolbar"""
-        toolbar = QToolBar()
+        toolbar = QToolBar("Main Toolbar")
         toolbar.setIconSize(QSize(32, 32))
         self.addToolBar(toolbar)
         
         # Start/Stop monitoring
-        self.start_button = QPushButton("Start Monitoring")
+        self.start_button = QPushButton("⏸️ Pause")
+        self.start_button. setToolTip("Pause/Resume monitoring")
         self.start_button.setStyleSheet("""
             QPushButton {
                 background-color: #2d5a27;
@@ -256,40 +296,190 @@ class MainWindow(QMainWindow):
             QPushButton:hover {
                 background-color: #3d7037;
             }
+            QPushButton:pressed {
+                background-color: #1d4a17;
+            }
         """)
+        self.start_button. clicked.connect(self.toggle_monitoring)
         toolbar.addWidget(self.start_button)
         
         toolbar.addSeparator()
         
-        # Status indicator
-        self.status_indicator = QLabel("●")
-        self.status_indicator.setStyleSheet("color: #ff0000; font-size: 20px;")
-        toolbar.addWidget(self.status_indicator)
+        # Status indicators
+        self.connection_status = QLabel("🔴")
+        self.connection_status. setToolTip("Connection Status")
+        toolbar.addWidget(self.connection_status)
         
-        status_label = QLabel("Disconnected")
-        toolbar.addWidget(status_label)
+        self. data_status = QLabel("📊 Ready")
+        toolbar.addWidget(self.data_status)
+        
+        toolbar.addSeparator()
+        
+        # Quick export
+        export_button = QPushButton("💾 Export")
+        export_button.setToolTip("Quick export current data")
+        export_button. clicked.connect(self.export_data)
+        toolbar.addWidget(export_button)
+        
+        # Screenshot
+        screenshot_button = QPushButton("📷 Screenshot")
+        screenshot_button.setToolTip("Take screenshot of current view")
+        screenshot_button.clicked.connect(self.take_screenshot)
+        toolbar.addWidget(screenshot_button)
     
     def setup_statusbar(self):
         """Setup status bar"""
         self.status_bar = QStatusBar()
         self.setStatusBar(self.status_bar)
         
-        self.status_bar.showMessage("SuperSID Pro Ready")
+        # Status messages
+        self.status_message = QLabel("SuperSID Pro Ready")
+        self.status_bar.addWidget(self.status_message)
+        
+        # Permanent widgets (right side)
+        self.data_rate_label = QLabel("Data: 0 Hz")
+        self.status_bar.addPermanentWidget(self.data_rate_label)
+        
+        self.memory_label = QLabel("Memory: 0 MB")
+        self.status_bar.addPermanentWidget(self.memory_label)
+        
+        self.time_label = QLabel()
+        self.status_bar. addPermanentWidget(self. time_label)
+        
+        # Update timer
+        self.status_timer = QTimer()
+        self.status_timer.timeout. connect(self.update_statusbar)
+        self.status_timer.start(1000)
     
-    def start_data_collection(self):
-        """Start data collection processes"""
-        # This will be implemented with actual data collection
-        pass
+    def start_monitoring(self):
+        """Start monitoring processes"""
+        self.connection_status.setText("🟢")
+        self.start_button.setText("⏸️ Pause")
+        self.status_message.setText("Monitoring Active")
+        
+        self.logger.info("Monitoring started")
+    
+    def stop_monitoring(self):
+        """Stop monitoring processes"""
+        self. connection_status.setText("🔴")
+        self.start_button.setText("▶️ Start")
+        self.status_message.setText("Monitoring Paused")
+        
+        self. logger.info("Monitoring paused")
+    
+    def toggle_monitoring(self):
+        """Toggle monitoring state"""
+        if self.start_button.text() == "⏸️ Pause":
+            self.stop_monitoring()
+        else:
+            self.start_monitoring()
+    
+    def update_statusbar(self):
+        """Update status bar information"""
+        from datetime import datetime
+        import psutil
+        
+        # Update time
+        current_time = datetime.now().strftime("%H:%M:%S")
+        self.time_label. setText(f"⏰ {current_time}")
+        
+        # Update memory usage
+        try:
+            memory = psutil.virtual_memory()
+            memory_mb = memory.used / (1024 * 1024)
+            self.memory_label.setText(f"Memory: {memory_mb:.0f} MB")
+        except:
+            self.memory_label. setText("Memory: N/A")
+    
+    # Menu action handlers
+    def new_session(self):
+        """Start a new monitoring session"""
+        self.logger. info("New session requested")
+        # TODO: Implement new session logic
+    
+    def open_data_file(self):
+        """Open a data file for analysis"""
+        from PyQt6.QtWidgets import QFileDialog
+        
+        filename, _ = QFileDialog.getOpenFileName(
+            self,
+            "Open Data File",
+            "",
+            "CSV Files (*.csv);;All Files (*)"
+        )
+        
+        if filename:
+            self.logger. info(f"Opening data file: {filename}")
+            # TODO: Implement data file loading
+    
+    def export_data(self):
+        """Export current data"""
+        self.logger.info("Data export requested")
+        # TODO: Implement data export dialog
+    
+    def toggle_fullscreen(self):
+        """Toggle fullscreen mode"""
+        if self.isFullScreen():
+            self.showNormal()
+        else:
+            self.showFullScreen()
     
     def show_settings(self):
         """Show settings dialog"""
+        self.logger.info("Settings dialog requested")
         # TODO: Implement settings dialog
-        pass
+    
+    def show_calibration(self):
+        """Show calibration dialog"""
+        self.logger.info("Calibration dialog requested")
+        # TODO: Implement calibration dialog
+    
+    def take_screenshot(self):
+        """Take screenshot of current view"""
+        from datetime import datetime
+        
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"supersid_screenshot_{timestamp}.png"
+        
+        pixmap = self.grab()
+        if pixmap. save(filename):
+            self.status_message.setText(f"Screenshot saved: {filename}")
+            self.logger.info(f"Screenshot saved: {filename}")
+        else:
+            self.status_message.setText("Failed to save screenshot")
     
     def show_about(self):
         """Show about dialog"""
-        # TODO: Implement about dialog
-        pass
+        QMessageBox.about(
+            self,
+            "About SuperSID Pro",
+            """
+            <h2>SuperSID Pro v1.0.0</h2>
+            <p><b>Professional Solar Radio Telescope Monitoring Software</b></p>
+            
+            <p>SuperSID Pro is designed for solar observatories worldwide to monitor 
+            VLF (Very Low Frequency) signals and correlate them with space weather 
+            data for solar activity research.</p>
+            
+            <p><b>Features:</b></p>
+            <ul>
+            <li>Real-time VLF signal monitoring</li>
+            <li>Space weather integration</li>
+            <li>Professional data analysis tools</li>
+            <li>Multi-station support</li>
+            <li>Historical data analysis</li>
+            </ul>
+            
+            <p><b>Contact:</b><br>
+            Observatory Software Solutions<br>
+            support@observatorysoftware.com</p>
+            """
+        )
+    
+    def show_documentation(self):
+        """Show documentation"""
+        self.logger.info("Documentation requested")
+        # TODO: Open documentation
     
     def closeEvent(self, event):
         """Handle close event"""
@@ -300,7 +490,7 @@ class MainWindow(QMainWindow):
         if hasattr(QApplication. instance(), 'tray_icon'):
             QApplication.instance(). tray_icon.showMessage(
                 "SuperSID Pro",
-                "Application minimized to tray",
+                "Application minimized to system tray",
                 QSystemTrayIcon.MessageIcon.Information,
                 2000
             )

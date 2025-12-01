@@ -32,7 +32,7 @@ class DarkTheme:
         
         # Base colors
         palette.setColor(QPalette.ColorRole.Base, QColor(DarkTheme.SURFACE))
-        palette.setColor(QPalette.ColorRole.AlternateBase, QColor("#3a3a3a"))
+        palette. setColor(QPalette.ColorRole.AlternateBase, QColor("#3a3a3a"))
         
         # Text colors
         palette.setColor(QPalette.ColorRole.Text, QColor(DarkTheme.TEXT_PRIMARY))
@@ -44,7 +44,7 @@ class DarkTheme:
         
         # Highlight colors
         palette.setColor(QPalette.ColorRole. Highlight, QColor(DarkTheme.PRIMARY))
-        palette.setColor(QPalette.ColorRole. HighlightedText, QColor("#ffffff"))
+        palette. setColor(QPalette.ColorRole.HighlightedText, QColor("#ffffff"))
         
         # Link colors
         palette.setColor(QPalette.ColorRole.Link, QColor(DarkTheme.PRIMARY))
@@ -167,7 +167,7 @@ class DarkTheme:
         
         /* Scrollbar styling */
         QScrollBar:vertical {{
-            background-color: {DarkTheme.BACKGROUND};
+            background-color: {DarkTheme. BACKGROUND};
             width: 12px;
             border: none;
         }}
@@ -232,7 +232,7 @@ class DarkTheme:
         
         /* Progress bar styling */
         QProgressBar {{
-            border: 1px solid {DarkTheme. BORDER};
+            border: 1px solid {DarkTheme.BORDER};
             border-radius: 4px;
             background-color: {DarkTheme.BACKGROUND};
             text-align: center;

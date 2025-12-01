@@ -33,7 +33,7 @@ class ObservatoryConfig:
     monitor_id: int = 0
     name: str = ""
     latitude: float = 0.0
-    longitude: float = 0. 0
+    longitude: float = 0.0
     timezone: str = "UTC"
     elevation: float = 0.0
     contact_email: str = ""
@@ -48,7 +48,7 @@ class VLFStation:
     name: str = ""
     frequency: float = 0.0
     latitude: float = 0.0
-    longitude: float = 0. 0
+    longitude: float = 0.0
     enabled: bool = True
     power: str = ""
     country: str = ""
@@ -116,7 +116,7 @@ class ConfigManager:
     """Advanced configuration manager with validation and auto-save"""
     
     def __init__(self, config_file: str = "config/default_config.json"):
-        self.config_file = Path(config_file)
+        self. config_file = Path(config_file)
         self.config: Dict[str, Any] = {}
         self.logger = get_logger(__name__)
         
@@ -124,6 +124,7 @@ class ConfigManager:
         self._original_config = {}
         self._auto_save = True
         self._validation_errors = []
+        self._saving = False  # Prevent recursion during save
         
         self. load_config()
         self._original_config = copy.deepcopy(self.config)
@@ -141,7 +142,7 @@ class ConfigManager:
                 self._validate_and_upgrade()
                 return True
             else:
-                self.logger.warning(f"Config file not found: {self.config_file}")
+                self.logger. warning(f"Config file not found: {self.config_file}")
                 self.create_default_config()
                 return False
                 
@@ -158,6 +159,12 @@ class ConfigManager:
     
     def save_config(self, backup: bool = True) -> bool:
         """Save configuration to file with backup"""
+        # Prevent recursive calls
+        if self._saving:
+            return False
+        
+        self._saving = True
+        
         try:
             # Ensure directory exists
             self.config_file.parent.mkdir(parents=True, exist_ok=True)
@@ -167,14 +174,16 @@ class ConfigManager:
                 backup_file = self.config_file.with_suffix('.bak')
                 backup_file.write_bytes(self.config_file.read_bytes())
             
-            # Update last modified timestamp
-            self.set('application. last_updated', datetime.now().isoformat())
+            # Update last modified timestamp directly (not through set())
+            if 'application' not in self.config:
+                self.config['application'] = {}
+            self.config['application']['last_updated'] = datetime.now().isoformat()
             
             # Write config with pretty formatting
             with open(self. config_file, 'w', encoding='utf-8') as f:
                 json.dump(self.config, f, indent=4, ensure_ascii=False)
             
-            self.logger.info(f"Configuration saved to {self. config_file}")
+            self.logger.info(f"Configuration saved to {self.config_file}")
             self._original_config = copy.deepcopy(self.config)
             return True
             
@@ -182,6 +191,8 @@ class ConfigManager:
             self.logger. error(f"Error saving config: {e}")
             log_exception(e, f"Saving config to {self.config_file}")
             return False
+        finally:
+            self._saving = False
     
     def create_default_config(self) -> None:
         """Create comprehensive default configuration"""
@@ -193,14 +204,18 @@ class ConfigManager:
                 "theme": "dark",
                 "auto_save_interval": 300,
                 "first_run": True,
-                "created": datetime.now(). isoformat(),
+                "created": datetime.now().isoformat(),
                 "last_updated": datetime.now().isoformat()
+            },
+            
+            "development": {
+                "use_mock_data": False
             },
             
             "observatory": {
                 "monitor_id": 0,
                 "name": "",
-                "latitude": 0. 0,
+                "latitude": 0.0,
                 "longitude": 0.0,
                 "timezone": "UTC",
                 "elevation": 0.0,
@@ -251,7 +266,7 @@ class ConfigManager:
                 },
                 "noaa_swpc": {
                     "enabled": True,
-                    "url": "https://services. swpc.noaa.gov/json/",
+                    "url": "https://services.swpc.noaa.gov/json/",
                     "api_key": "",
                     "update_interval": 300,
                     "timeout": 15,
@@ -291,8 +306,8 @@ class ConfigManager:
         
         return value
     
-    def set(self, key: str, value: Any) -> None:
-        """Set configuration value by dot-notation key"""
+    def set(self, key: str, value: Any, auto_save: bool = None) -> None:
+        """Set configuration value by dot-notation key - FIXED TO PREVENT RECURSION"""
         keys = key.split('.')
         config = self.config
         
@@ -305,8 +320,9 @@ class ConfigManager:
         # Set the value
         config[keys[-1]] = value
         
-        # Auto-save if enabled
-        if self._auto_save and self.has_changes():
+        # Auto-save if enabled and not during save (prevent recursion)
+        should_auto_save = auto_save if auto_save is not None else self._auto_save
+        if should_auto_save and not self._saving and self.has_changes():
             self.save_config(backup=False)
     
     def has_changes(self) -> bool:
@@ -340,13 +356,13 @@ class ConfigManager:
             
             # Check for duplicate codes
             if any(s.get('code') == station.code for s in stations):
-                self. logger.warning(f"Station {station.code} already exists")
+                self.logger.warning(f"Station {station.code} already exists")
                 return False
             
             stations.append(asdict(station))
             self. set('vlf_stations.default_stations', stations)
             
-            self.logger.info(f"Added VLF station: {station.code}")
+            self.logger.info(f"Added VLF station: {station. code}")
             return True
             
         except Exception as e:
@@ -366,7 +382,7 @@ class ConfigManager:
                 self. logger.info(f"Removed VLF station: {station_code}")
                 return True
             else:
-                self.logger. warning(f"Station {station_code} not found")
+                self.logger.warning(f"Station {station_code} not found")
                 return False
                 
         except Exception as e:
@@ -382,7 +398,7 @@ class ConfigManager:
     
     def update_data_source(self, source_name: str, last_update: datetime) -> None:
         """Update data source last update timestamp"""
-        self.set(f'data_sources.{source_name}.last_update', last_update.isoformat())
+        self.set(f'data_sources.{source_name}. last_update', last_update. isoformat())
     
     def _validate_and_upgrade(self) -> None:
         """Validate and upgrade configuration structure"""
@@ -461,7 +477,7 @@ class ConfigManager:
             # Save the imported config
             self.save_config()
             
-            self.logger.info(f"Configuration imported from {import_path}")
+            self. logger.info(f"Configuration imported from {import_path}")
             return True
             
         except Exception as e:

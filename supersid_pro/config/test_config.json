@@ -1,0 +1,28 @@
+{
+    "application": {
+        "name": "SuperSID Pro Test",
+        "version": "1.0.0-test",
+        "debug": true
+    },
+    "development": {
+        "use_mock_data": false
+    },
+    "data_sources": {
+        "spaceweather_live": {
+            "enabled": true,
+            "url": "https://www.spaceweatherlive.com",
+            "update_interval": 300,
+            "timeout": 10
+        },
+        "noaa_swpc": {
+            "enabled": true,
+            "api_url": "https://services.swpc.noaa.gov/json/",
+            "update_interval": 300,
+            "timeout": 10
+        }
+    },
+    "alerts": {
+        "flare_threshold": "M1.0",
+        "signal_threshold": -3.0
+    }
+}

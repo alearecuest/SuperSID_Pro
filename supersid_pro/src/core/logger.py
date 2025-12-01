@@ -36,7 +36,7 @@ class ColoredFormatter(logging.Formatter):
     def format(self, record):
         """Format log record with colors"""
         log_color = self.COLORS. get(record.levelname, self.COLORS['RESET'])
-        record. levelname = f"{log_color}{record.levelname}{self. COLORS['RESET']}"
+        record.levelname = f"{log_color}{record.levelname}{self. COLORS['RESET']}"
         record.name = f"\033[94m{record.name}\033[0m"  # Blue module name
         return super().format(record)
 
@@ -47,13 +47,14 @@ class SuperSIDLogger:
         self.logger = logging.getLogger(name)
         self.logger.setLevel(logging.DEBUG)
         
-        # Prevent duplicate handlers
-        if not self. logger.handlers:
-            self.setup_handlers()
-        
+        # Initialize additional loggers
         self.performance_logger = logging.getLogger(f"{name}. Performance")
         self.data_logger = logging.getLogger(f"{name}.Data")
         self.error_logger = logging.getLogger(f"{name}.Error")
+        
+        # Prevent duplicate handlers
+        if not self. logger.handlers:
+            self. setup_handlers()
     
     def setup_handlers(self):
         """Setup all logging handlers"""
@@ -98,7 +99,7 @@ class SuperSIDLogger:
         self.logger.addHandler(error_handler)
         
         # Performance log handler (for optimization)
-        perf_handler = logging.handlers. RotatingFileHandler(
+        perf_handler = logging.handlers.RotatingFileHandler(
             log_dir / "performance.log",
             maxBytes=5*1024*1024,
             backupCount=2,
@@ -156,7 +157,7 @@ def setup_logger(debug: bool = False) -> None:
     
     if debug:
         # Set more verbose logging in debug mode
-        _logger_instance. logger.setLevel(logging.DEBUG)
+        _logger_instance.logger.setLevel(logging. DEBUG)
         for handler in _logger_instance.logger.handlers:
             if isinstance(handler, logging.StreamHandler):
                 handler.setLevel(logging.DEBUG)

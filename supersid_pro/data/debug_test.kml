@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://earth.google.com/kml/2.2">
+<Document>
+<name>Test VLF Stations</name>
+<Placemark>
+<name>NAA</name>
+<description>Frequency: 24.0 kHz</description>
+<Point>
+<coordinates>-67.2816,44.6449</coordinates>
+</Point>
+</Placemark>
+</Document>
+</kml>

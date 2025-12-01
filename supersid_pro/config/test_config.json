@@ -7,6 +7,17 @@
     "development": {
         "use_mock_data": false
     },
+    "observatory": {
+        "monitor_id": 0,
+        "name": "Test Observatory",
+        "latitude": 40.7128,
+        "longitude": -74.0060,
+        "timezone": "America/New_York",
+        "elevation": 10.0
+    },
+    "vlf_stations": {
+        "default_stations": []
+    },
     "data_sources": {
         "spaceweather_live": {
             "enabled": true,

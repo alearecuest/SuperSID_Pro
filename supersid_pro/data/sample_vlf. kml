@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://earth.google.com/kml/2.2">
+<Document>
+<name>Sample VLF Stations</name>
+<Placemark>
+<name>NAA - Cutler, Maine</name>
+<description>Frequency: 24.0 kHz, Power: 1000kW, Country: USA</description>
+<Point>
+<coordinates>-67.2816,44.6449</coordinates>
+</Point>
+</Placemark>
+<Placemark>
+<name>DHO38 - Burlage, Germany</name>
+<description>Frequency: 23.4 kHz, Power: 800kW, Country: Germany</description>
+<Point>
+<coordinates>7.615,53.0789</coordinates>
+</Point>
+</Placemark>
+</Document>
+</kml>

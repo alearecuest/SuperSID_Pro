@@ -1,73 +1,81 @@
 {
-    "application": {
-        "name": "SuperSID Pro",
-        "version": "1.0.0",
-        "language": "en",
-        "theme": "dark",
-        "auto_save_interval": 300
+  "application": {
+    "name": "SuperSID Pro",
+    "version": "1.0.0",
+    "language": "en",
+    "theme": "dark",
+    "auto_save_interval": 300
+  },
+  "observatory": {
+    "monitor_id": 281,
+    "name": "Montevideo Observatory",
+    "latitude": -34.9011,
+    "longitude": -56.1645,
+    "timezone": "UTC-3",
+    "elevation": 43
+  },
+  "vlf_stations": {
+    "default_stations": [
+      {
+        "code": "NAA",
+        "name": "Cutler, ME",
+        "frequency": 24.0,
+        "latitude": 44.6449,
+        "longitude": -67.2816,
+        "enabled": true
+      },
+      {
+        "code": "DHO38",
+        "name": "Burlage, Germany", 
+        "frequency": 23.4,
+        "latitude": 53.0789,
+        "longitude": 7.615,
+        "enabled": true
+      },
+      {
+        "code": "GBZ",
+        "name": "Anthorn, UK",
+        "frequency": 19.58,
+        "latitude": 54.9116,
+        "longitude": -3.2785,
+        "enabled": false
+      }
+    ]
+  },
+  "data_sources": {
+    "spaceweather_live": {
+      "enabled": true,
+      "url": "https://www.spaceweatherlive.com",
+      "update_interval": 600
     },
-    "observatory": {
-        "monitor_id": 281,
-        "name": "Montevideo Observatory",
-        "latitude": -34.9011,
-        "longitude": -56.1645,
-        "timezone": "UTC-3",
-        "elevation": 43
-    },
-    "vlf_stations": {
-        "default_stations": [
-            {
-                "code": "NAA",
-                "name": "Cutler, ME",
-                "frequency": 24. 0,
-                "latitude": 44.6449,
-                "longitude": -67.2816,
-                "enabled": true
-            },
-            {
-                "code": "DHO38",
-                "name": "Burlage, Germany", 
-                "frequency": 23.4,
-                "latitude": 53.0789,
-                "longitude": 7.615,
-                "enabled": true
-            },
-            {
-                "code": "GBZ",
-                "name": "Anthorn, UK",
-                "frequency": 19.58,
-                "latitude": 54.9116,
-                "longitude": -3.2785,
-                "enabled": false
-            }
-        ]
-    },
-    "data_sources": {
-        "spaceweather_live": {
-            "enabled": true,
-            "url": "https://www.spaceweatherlive.com",
-            "update_interval": 600
-        },
-        "noaa_swpc": {
-            "enabled": true,
-            "api_url": "https://services.swpc.noaa.gov/json/",
-            "update_interval": 300
-        }
-    },
-    "sampling": {
-        "sample_rate": 1,
-        "buffer_size": 1024,
-        "audio_device": "default"
-    },
-    "display": {
-        "chart_colors": {
-            "background": "#1e1e1e",
-            "grid": "#404040",
-            "signal": "#00ff00",
-            "flare_marker": "#ff0000",
-            "text": "#ffffff"
-        },
-        "update_interval": 1000,
-        "history_hours": 24
+    "noaa_swpc": {
+      "enabled": true,
+      "api_url": "https://services.swpc.noaa.gov/json/",
+      "update_interval": 300
     }
+  },
+  "sampling": {
+    "sample_rate": 11025,
+    "buffer_size": 1024,
+    "audio_device": "default"
+  },
+  "display": {
+    "chart_colors": {
+      "background": "#1e1e1e",
+      "grid": "#404040",
+      "signal": "#00ff00",
+      "flare_marker": "#ff0000",
+      "text": "#ffffff"
+    },
+    "update_interval": 1000,
+    "history_hours": 24
+  },
+  "vlf_system": {
+    "audio_sample_rate": 11025,
+    "audio_buffer_size": 1024,
+    "audio_device": null,
+    "storage_batch_size": 10,
+    "anomaly_detection": true,
+    "baseline_update_interval": 300
+  }
 }

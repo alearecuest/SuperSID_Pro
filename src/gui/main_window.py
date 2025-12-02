@@ -18,6 +18,7 @@ from gui.widgets.observatory_widget import ObservatoryWidget
 from gui.widgets.monitoring_widget import MonitoringWidget  # UPDATED
 from gui.widgets.stations_widget import StationsWidget
 from gui.widgets.space_weather_widget import SpaceWeatherWidget
+from gui.widgets.vlf_database_widget import VLFDatabaseWidget
 from gui.widgets. chart_widget import ChartWidget  # NEW
 from gui.dialogs.setup_dialog import SetupDialog
 from gui.styles.dark_theme import DarkTheme
@@ -198,15 +199,19 @@ class MainWindow(QMainWindow):
         
         # Real-time monitoring tab (MAIN CHARTS TAB)
         self.monitoring_tab = MonitoringWidget(self.config_manager)
-        tab_widget. addTab(self.monitoring_tab, "📊 Real-time Monitoring")
+        tab_widget. addTab(self.monitoring_tab, "Real-time Monitoring")
         
         # Historical data analysis tab
         self.charts_tab = ChartWidget(self.config_manager)
-        tab_widget.addTab(self. charts_tab, "📈 Historical Analysis")
+        tab_widget.addTab(self. charts_tab, "Historical Analysis")
         
         # Space weather details tab
         space_weather_detail = SpaceWeatherWidget(self.config_manager)
-        tab_widget.addTab(space_weather_detail, "🌞 Space Weather")
+        tab_widget.addTab(space_weather_detail, "Space Weather")
+        
+        # VLF Database management tab
+        self.vlf_database_tab = VLFDatabaseWidget(self.config_manager)
+        tab_widget.addTab(self.vlf_database_tab, "VLF Database")
         
         layout.addWidget(tab_widget)
         
@@ -282,7 +287,7 @@ class MainWindow(QMainWindow):
         self.addToolBar(toolbar)
         
         # Start/Stop monitoring
-        self.start_button = QPushButton("⏸️ Pause")
+        self.start_button = QPushButton("Pause")
         self.start_button. setToolTip("Pause/Resume monitoring")
         self.start_button.setStyleSheet("""
             QPushButton {
@@ -310,19 +315,19 @@ class MainWindow(QMainWindow):
         self.connection_status. setToolTip("Connection Status")
         toolbar.addWidget(self.connection_status)
         
-        self. data_status = QLabel("📊 Ready")
+        self. data_status = QLabel("Ready")
         toolbar.addWidget(self.data_status)
         
         toolbar.addSeparator()
         
         # Quick export
-        export_button = QPushButton("💾 Export")
+        export_button = QPushButton("Export")
         export_button.setToolTip("Quick export current data")
         export_button. clicked.connect(self.export_data)
         toolbar.addWidget(export_button)
         
         # Screenshot
-        screenshot_button = QPushButton("📷 Screenshot")
+        screenshot_button = QPushButton("Screenshot")
         screenshot_button.setToolTip("Take screenshot of current view")
         screenshot_button.clicked.connect(self.take_screenshot)
         toolbar.addWidget(screenshot_button)
@@ -354,7 +359,7 @@ class MainWindow(QMainWindow):
     def start_monitoring(self):
         """Start monitoring processes"""
         self.connection_status.setText("🟢")
-        self.start_button.setText("⏸️ Pause")
+        self.start_button.setText("Pause")
         self.status_message.setText("Monitoring Active")
         
         self.logger.info("Monitoring started")
@@ -362,14 +367,14 @@ class MainWindow(QMainWindow):
     def stop_monitoring(self):
         """Stop monitoring processes"""
         self. connection_status.setText("🔴")
-        self.start_button.setText("▶️ Start")
+        self.start_button.setText("Start")
         self.status_message.setText("Monitoring Paused")
         
         self. logger.info("Monitoring paused")
     
     def toggle_monitoring(self):
         """Toggle monitoring state"""
-        if self.start_button.text() == "⏸️ Pause":
+        if self.start_button.text() == "Pause":
             self.stop_monitoring()
         else:
             self.start_monitoring()
@@ -381,7 +386,7 @@ class MainWindow(QMainWindow):
         
         # Update time
         current_time = datetime.now().strftime("%H:%M:%S")
-        self.time_label. setText(f"⏰ {current_time}")
+        self.time_label. setText(f"{current_time}")
         
         # Update memory usage
         try:

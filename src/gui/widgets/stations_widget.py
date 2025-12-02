@@ -147,7 +147,7 @@ class StationItem(QWidget):
     
     def update_signal_strength(self, strength: float):
         """Update signal strength indicator"""
-        if strength > 0. 8:
+        if strength > 0.8:
             color = "#00ff00"  # Strong signal - green
         elif strength > 0.5:
             color = "#ffaa00"  # Medium signal - yellow  
@@ -624,7 +624,7 @@ class StationsWidget(QGroupBox):
                         continue
                     
                     # Extract frequency from description if available
-                    frequency = 20. 0  # Default frequency
+                    frequency = 20.0  # Default frequency
                     power = ""
                     country = ""
                     

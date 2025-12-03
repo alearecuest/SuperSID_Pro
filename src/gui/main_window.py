@@ -24,6 +24,8 @@ from gui.dialogs.setup_dialog import SetupDialog
 from gui.styles.dark_theme import DarkTheme
 from core.config_manager import ConfigManager
 from core.logger import get_logger
+from gui.widgets.realtime_vlf_widget import RealtimeVLFWidget
+from core.vlf_gui_integration import VLFGUIIntegration
 
 class SuperSIDProApp(QApplication):
     """Main application class"""
@@ -128,7 +130,8 @@ class MainWindow(QMainWindow):
         
         # Start monitoring
         self.start_monitoring()
-        
+        # Initialize VLF integration
+        self.vlf_integration = VLFGUIIntegration(self.config_manager, self.vlf_widget)
         self.logger.info("Main window initialized")
     
     def setup_ui(self):
@@ -212,6 +215,10 @@ class MainWindow(QMainWindow):
         # VLF Database management tab
         self.vlf_database_tab = VLFDatabaseWidget(self.config_manager)
         tab_widget.addTab(self.vlf_database_tab, "VLF Database")
+
+        # Real-time VLF monitoring tab
+        self.vlf_widget = RealtimeVLFWidget()
+        tab_widget.addTab(self. vlf_widget, "Real-time VLF")
         
         layout.addWidget(tab_widget)
         
@@ -488,12 +495,16 @@ class MainWindow(QMainWindow):
     
     def closeEvent(self, event):
         """Handle close event"""
+        # Cleanup VLF integration
+        if hasattr(self, 'vlf_integration'):
+            self.vlf_integration.cleanup()
+    
         # Hide to system tray instead of closing
         event.ignore()
         self.hide()
-        
-        if hasattr(QApplication. instance(), 'tray_icon'):
-            QApplication.instance(). tray_icon.showMessage(
+    
+        if hasattr(QApplication.instance(), 'tray_icon'):
+            QApplication.instance().tray_icon.showMessage(
                 "SuperSID Pro",
                 "Application minimized to system tray",
                 QSystemTrayIcon.MessageIcon.Information,

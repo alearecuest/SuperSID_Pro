@@ -1,0 +1,498 @@
+/**
+ * SuperSID Pro Web Dashboard
+ * Real-time VLF monitoring interface
+ */
+
+class VLFDashboard {
+    constructor() {
+        this.websocket = null;
+        this. charts = {};
+        this.chartData = {
+            BAND_1: [],
+            BAND_2: [],
+            BAND_3: [],
+            BAND_4: []
+        };
+        
+        this.maxDataPoints = 100;
+        this.isMonitoring = false;
+        this.dataCount = 0;
+        
+        this.colors = {
+            BAND_1: '#FF6B6B',
+            BAND_2: '#4ECDC4',
+            BAND_3: '#45B7D1',
+            BAND_4: '#96CEB4'
+        };
+        
+        this.init();
+    }
+    
+    init() {
+        this.setupEventHandlers();
+        this.initializeCharts();
+        this.connectWebSocket();
+        this.startTimeUpdate();
+        this.updateSystemStatus();
+    }
+    
+    setupEventHandlers() {
+        document.getElementById('startBtn').addEventListener('click', () => this.startMonitoring());
+        document. getElementById('stopBtn').addEventListener('click', () => this.stopMonitoring());
+        document.getElementById('clearBtn').addEventListener('click', () => this.clearData());
+        
+        document.getElementById('timeRange').addEventListener('change', (e) => {
+            this.updateTimeRange(parseInt(e.target.value));
+        });
+        
+        window.addEventListener('beforeunload', () => this.disconnect());
+        window.addEventListener('resize', () => this.resizeCharts());
+    }
+    
+    initializeCharts() {
+        Chart.defaults.color = '#ffffff';
+        Chart.defaults.borderColor = '#444444';
+        Chart.defaults.backgroundColor = '#333333';
+        
+        const bands = ['BAND_1', 'BAND_2', 'BAND_3', 'BAND_4'];
+        bands.forEach(band => {
+            this.createBandChart(band);
+        });
+        
+        this.createOverviewChart();
+    }
+    
+    createBandChart(bandId) {
+        const ctx = document.getElementById(`${bandId. toLowerCase()}Chart`).getContext('2d');
+        
+        this.charts[bandId] = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Amplitude (V)',
+                    data: [],
+                    borderColor: this.colors[bandId],
+                    backgroundColor: this.colors[bandId] + '20',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.1,
+                    pointRadius: 0,
+                    pointHoverRadius: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            displayFormats: {
+                                second: 'HH:mm:ss'
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Time'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Amplitude (V)'
+                        },
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `Amplitude: ${context.  parsed. y.toFixed(4)} V`;
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    duration: 0
+                }
+            }
+        });
+    }
+    
+    createOverviewChart() {
+        const ctx = document.getElementById('overviewChart').getContext('2d');
+        
+        const datasets = Object.keys(this.colors).map(band => ({
+            label: band,
+            data: [],
+            borderColor: this.colors[band],
+            backgroundColor: this.colors[band] + '10',
+            borderWidth: 2,
+            fill: false,
+            tension: 0. 1,
+            pointRadius: 0,
+            pointHoverRadius: 3
+        }));
+        
+        this.charts.overview = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            displayFormats: {
+                                second: 'HH:mm:ss',
+                                minute: 'HH:mm'
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Time'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Amplitude (V)'
+                        },
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.dataset.label}: ${context.parsed.y.toFixed(4)} V`;
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    duration: 0
+                }
+            }
+        });
+    }
+    
+    connectWebSocket() {
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const wsUrl = `${protocol}//${window. location.host}/ws`;
+        
+        this.websocket = new WebSocket(wsUrl);
+        
+        this.websocket. onopen = () => {
+						console.log('WebSocket connected');
+						this. updateConnectionStatus(true);
+						this.enableControls(true);
+
+						this.pingInterval = setInterval(() => {
+								if (this.websocket && this.websocket.readyState === WebSocket.OPEN) {
+										this.websocket.send('ping');
+								}
+						}, 30000);
+					};
+
+        this.websocket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            this.handleWebSocketMessage(data);
+        };
+        
+        this.websocket.onclose = () => {
+            console.log('WebSocket disconnected');
+            this.updateConnectionStatus(false);
+            this. enableControls(false);
+            setTimeout(() => this.connectWebSocket(), 3000);
+        };
+        
+        this. websocket.onerror = (error) => {
+            console. error('WebSocket error:', error);
+            this.updateConnectionStatus(false);
+        };
+    }
+    
+    handleWebSocketMessage(data) {
+        switch (data.type) {
+            case 'vlf_data':
+                this. updateVLFData(data);
+                break;
+            case 'anomaly':
+                this.showAnomaly(data);
+                break;
+            default:
+                console.log('Unknown message type:', data.type);
+        }
+    }
+    
+    updateVLFData(data) {
+        const timestamp = new Date(data.timestamp);
+        
+        Object.keys(data.signals).forEach(band => {
+            const signal = data.signals[band];
+            
+            if (!this.chartData[band]) {
+                this.chartData[band] = [];
+            }
+            
+            this.chartData[band].push({
+                x: timestamp,
+                y: signal.amplitude
+            });
+            
+            if (this.chartData[band].length > this. maxDataPoints) {
+                this.chartData[band].shift();
+            }
+            
+            if (this.charts[band]) {
+                this.charts[band]. data.datasets[0].data = [... this.chartData[band]];
+                this.charts[band]. update('none');
+            }
+            
+            this.updateBandStatus(band, signal);
+            this.updateCurrentValue(band, signal. amplitude);
+        });
+        
+        this.updateOverviewChart();
+        
+        this.dataCount += Object.keys(data.signals).length;
+        this.updateDataCount();
+    }
+    
+    updateOverviewChart() {
+        if (!this.charts.overview) return;
+        
+        Object.keys(this. chartData).forEach((band, index) => {
+            if (this.charts.overview.data.datasets[index]) {
+                this.charts.overview.data. datasets[index].data = [...this.chartData[band]];
+            }
+        });
+        
+        this.charts.overview.update('none');
+    }
+    
+    updateBandStatus(band, signal) {
+        const statusElement = document.getElementById(`${band. toLowerCase()}Status`);
+        if (statusElement) {
+            const freqElement = statusElement.querySelector('.frequency');
+            const ampElement = statusElement.querySelector('.amplitude');
+            
+            if (freqElement) freqElement.textContent = `${signal.frequency.toFixed(2)} kHz`;
+            if (ampElement) ampElement.textContent = `${signal.amplitude.toFixed(4)} V`;
+        }
+    }
+    
+    updateCurrentValue(band, amplitude) {
+        const valueElement = document.getElementById(`${band.toLowerCase()}Value`);
+        if (valueElement) {
+            valueElement.textContent = amplitude.toFixed(4);
+        }
+    }
+    
+    showAnomaly(data) {
+        const anomalyList = document.getElementById('anomalyList');
+        
+        const noAnomalies = anomalyList.querySelector('. no-anomalies');
+        if (noAnomalies) {
+            noAnomalies.remove();
+        }
+        
+        data.anomalies.forEach(anomaly => {
+            const anomalyItem = document.createElement('div');
+            anomalyItem.className = 'anomaly-item';
+            anomalyItem.innerHTML = `
+                <div>${anomaly}</div>
+                <small>${new Date(data.timestamp).toLocaleTimeString()}</small>
+            `;
+            
+            anomalyList.insertBefore(anomalyItem, anomalyList.firstChild);
+        });
+        
+        const anomalyItems = anomalyList.querySelectorAll('.anomaly-item');
+        if (anomalyItems.length > 10) {
+            for (let i = 10; i < anomalyItems.length; i++) {
+                anomalyItems[i].remove();
+            }
+        }
+    }
+    
+    async startMonitoring() {
+        try {
+						console.log('Starting monitoring...');
+            const response = await fetch('/api/start', { method: 'POST' });
+            const result = await response.json();
+            
+            if (response.ok) {
+                this. isMonitoring = true;
+                this.updateMonitoringStatus(true);
+                console.log('Monitoring started:', result.message);
+            } else {
+                throw new Error(result.detail || 'Failed to start monitoring');
+            }
+        } catch (error) {
+            console.error('Error starting monitoring:', error);
+            alert('Failed to start monitoring: ' + error.message);
+        }
+    }
+    
+    async stopMonitoring() {
+        try {
+						console.log('Stopping monitoring...');
+            const response = await fetch('/api/stop', { method: 'POST' });
+            const result = await response.json();
+            
+            if (response.ok) {
+                this.isMonitoring = false;
+                this.updateMonitoringStatus(false);
+                console.log('Monitoring stopped:', result.message);
+            } else {
+                throw new Error(result.detail || 'Failed to stop monitoring');
+            }
+        } catch (error) {
+            console.error('Error stopping monitoring:', error);
+            alert('Failed to stop monitoring: ' + error.message);
+        }
+    }
+    
+    clearData() {
+        Object.keys(this.chartData).forEach(band => {
+            this.chartData[band] = [];
+            
+            if (this.charts[band]) {
+                this.charts[band]. data.datasets[0].data = [];
+                this.charts[band].update();
+            }
+        });
+        
+        if (this.charts.overview) {
+            this.charts.overview. data.datasets. forEach(dataset => {
+                dataset.data = [];
+            });
+            this.charts.overview.update();
+        }
+        
+        this.dataCount = 0;
+        this. updateDataCount();
+        
+        const anomalyList = document.getElementById('anomalyList');
+        anomalyList.innerHTML = '<div class="no-anomalies">No anomalies detected</div>';
+        
+        console.log('Data cleared');
+    }
+    
+    updateConnectionStatus(connected) {
+        const statusElement = document.getElementById('connectionStatus');
+				const statusIcon = statusElement.querySelector('i');
+				const statusText = statusElement.querySelector('span');
+				const wsStatusElement = document.getElementById('wsStatus');
+        
+        if (connected) {
+             statusElement.className = 'status-indicator connected';
+						 statusText.textContent = 'Connected';
+						 if (wsStatusElement) wsStatusElement.textContent = 'Connected';
+        } else {
+            statusElement. className = 'status-indicator disconnected';
+						statusText.textContent = 'Disconnected';
+						if (wsStatusElement) wsStatusElement.textContent = 'Disconnected';
+        }
+    }
+    
+    updateMonitoringStatus(monitoring) {
+        const statusElement = document.getElementById('monitoringStatus');
+        statusElement.textContent = monitoring ? 'Active' : 'Stopped';
+        statusElement.style.color = monitoring ? '#4CAF50' : '#f44336';
+    }
+    
+    updateDataCount() {
+        document.getElementById('totalPoints').textContent = this.dataCount. toLocaleString();
+        
+        const rate = this.dataCount > 0 ? Math.min(4, this.dataCount / 10) : 0;
+        document.getElementById('dataRate').textContent = `${rate.toFixed(1)} Hz`;
+    }
+    
+    enableControls(enabled) {
+        document.getElementById('startBtn').disabled = !enabled;
+        document.getElementById('stopBtn'). disabled = !enabled;
+    }
+    
+    updateTimeRange(minutes) {
+        console.log(`Time range changed to ${minutes} minutes`);
+    }
+    
+    startTimeUpdate() {
+        const updateTime = () => {
+            const now = new Date();
+            document.getElementById('timestamp').textContent = now.toLocaleTimeString();
+            document.getElementById('serverTime').textContent = now.toLocaleString();
+        };
+        
+        updateTime();
+        setInterval(updateTime, 1000);
+    }
+    
+    async updateSystemStatus() {
+        try {
+            const response = await fetch('/api/status');
+            const status = await response.json();
+            
+            if (response.ok) {
+                this.isMonitoring = status.vlf_system.is_monitoring || false;
+                this.updateMonitoringStatus(this.isMonitoring);
+            }
+        } catch (error) {
+            console.error('Error fetching system status:', error);
+        }
+    }
+    
+    resizeCharts() {
+        Object.values(this.charts).forEach(chart => {
+            chart.resize();
+        });
+    }
+    
+    disconnect() {
+        if (this.websocket) {
+            this.websocket.close();
+        }
+    }
+}
+
+enableControls(enabled) {
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document. getElementById('stopBtn');
+    
+    if (startBtn) startBtn.disabled = !enabled;
+    if (stopBtn) stopBtn.disabled = !enabled;
+    
+    console.log(`Controls ${enabled ? 'enabled' : 'disabled'}`);
+}
+
+updateMonitoringStatus(monitoring) {
+    const statusElement = document.getElementById('monitoringStatus');
+    const wsStatusElement = document.getElementById('wsStatus');
+    
+    if (statusElement) {
+        statusElement. textContent = monitoring ? 'Active' : 'Stopped';
+        statusElement.style.color = monitoring ? '#4CAF50' : '#f44336';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    window.vlfDashboard = new VLFDashboard();
+});

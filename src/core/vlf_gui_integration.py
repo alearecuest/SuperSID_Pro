@@ -10,7 +10,7 @@ import time
 from core.vlf_system import VLFMonitoringSystem
 from core.vlf_processor import VLFSignal
 from core.config_manager import ConfigManager
-from core. logger import get_logger
+from core.logger import get_logger
 
 class VLFWorkerThread(QThread):
     """Worker thread for VLF monitoring to avoid blocking GUI"""

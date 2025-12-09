@@ -1,81 +1,131 @@
 {
-  "application": {
-    "name": "SuperSID Pro",
-    "version": "1.0.0",
-    "language": "en",
-    "theme": "dark",
-    "auto_save_interval": 300
-  },
-  "observatory": {
-    "monitor_id": 281,
-    "name": "Montevideo Observatory",
-    "latitude": -34.9011,
-    "longitude": -56.1645,
-    "timezone": "UTC-3",
-    "elevation": 43
-  },
-  "vlf_stations": {
-    "default_stations": [
-      {
-        "code": "NAA",
-        "name": "Cutler, ME",
-        "frequency": 24.0,
-        "latitude": 44.6449,
-        "longitude": -67.2816,
-        "enabled": true
-      },
-      {
-        "code": "DHO38",
-        "name": "Burlage, Germany", 
-        "frequency": 23.4,
-        "latitude": 53.0789,
-        "longitude": 7.615,
-        "enabled": true
-      },
-      {
-        "code": "GBZ",
-        "name": "Anthorn, UK",
-        "frequency": 19.58,
-        "latitude": 54.9116,
-        "longitude": -3.2785,
-        "enabled": false
-      }
-    ]
-  },
-  "data_sources": {
-    "spaceweather_live": {
-      "enabled": true,
-      "url": "https://www.spaceweatherlive.com",
-      "update_interval": 600
+    "application": {
+        "name": "SuperSID Pro",
+        "version": "1.0.0",
+        "debug": false,
+        "first_run": false,
+        "log_level": "INFO",
+        "last_updated": "2025-12-08T18:10:57.732311"
     },
-    "noaa_swpc": {
-      "enabled": true,
-      "api_url": "https://services.swpc.noaa.gov/json/",
-      "update_interval": 300
+    "observatory": {
+        "name": "ClimaSolarUY",
+        "monitor_id": "281",
+        "location": "Montevideo, Uruguay",
+        "coordinates": {
+            "latitude": -34.569,
+            "longitude": -56.871,
+            "elevation": 30
+        },
+        "timezone": "UTC",
+        "contact": {
+            "name": "Alejandro Arévalo",
+            "email": "aarevalo@fcien.edu.uy"
+        }
+    },
+    "vlf_stations": {
+        "monitored_stations": [
+            "NPM",
+            "GQD",
+            "DHO38",
+            "NAA",
+            "NLK",
+            "NML"
+        ],
+        "station_frequencies": {
+            "NPM": {
+                "freq": 21.4,
+                "location": "Lualualei, Hawaii, USA",
+                "lat": 21.420166,
+                "lon": -158.15114,
+                "region": "americas",
+                "type": "vlf"
+            },
+            "GQD": {
+                "freq": 22.1,
+                "location": "Skelton, UK",
+                "lat": 54.731799,
+                "lon": -2.883033,
+                "region": "europe",
+                "type": "vlf"
+            },
+            "DHO38": {
+                "freq": 23.4,
+                "location": "Rhauderfehn, Germany",
+                "lat": 53.0789,
+                "lon": 7.615,
+                "region": "europe",
+                "type": "vlf"
+            },
+            "NAA": {
+                "freq": 24,
+                "location": "Cutler, Maine, USA",
+                "lat": 44.644936,
+                "lon": -67.281639,
+                "region": "americas",
+                "type": "vlf"
+            },
+            "NLK": {
+                "freq": 24.8,
+                "location": "Jim Creek, Washington, USA",
+                "lat": 48.203487,
+                "lon": -121.916827,
+                "region": "americas",
+                "type": "vlf"
+            },
+            "NML": {
+                "freq": 25.2,
+                "location": "La Moure, North Dakota, USA",
+                "lat": 46.36599,
+                "lon": -98.335638,
+                "region": "americas",
+                "type": "vlf"
+            }
+        }
+    },
+    "monitoring": {
+        "auto_start": true,
+        "data_retention_days": 30,
+        "export_format": "csv",
+        "screenshot_interval": 300
+    },
+    "reporting": {
+        "ftp_upload": false,
+        "ftp_server": "sid-ftp.stanford.edu",
+        "ftp_directory": "/incoming/SuperSID/NEW/",
+        "local_tmp": "/tmp",
+        "report_interval": 86400
+    },
+    "space_weather": {
+        "enable_spaceweatherlive": true,
+        "enable_swpc_noaa": true,
+        "update_interval": 600
+    },
+    "vlf_system": {
+        "audio_sample_rate": 11025,
+        "audio_buffer_size": 1024,
+        "audio_device": null,
+        "storage_batch_size": 10,
+        "anomaly_detection": true,
+        "baseline_update_interval": 300
+    },
+    "data_sources": {
+        "audio": {
+            "enabled": true,
+            "sample_rate": 11025,
+            "buffer_size": 1024
+        },
+        "simulation": {
+            "enabled": true,
+            "frequencies": [
+                24.0,
+                19.8,
+                23.4,
+                19.6
+            ],
+            "amplitude_range": [
+                0.001,
+                0.01
+            ]
+        }
     }
-  },
-  "sampling": {
-    "sample_rate": 11025,
-    "buffer_size": 1024,
-    "audio_device": "default"
-  },
-  "display": {
-    "chart_colors": {
-      "background": "#1e1e1e",
-      "grid": "#404040",
-      "signal": "#00ff00",
-      "flare_marker": "#ff0000",
-      "text": "#ffffff"
-    },
-    "update_interval": 1000,
-    "history_hours": 24
-  },
-  "vlf_system": {
-    "audio_sample_rate": 11025,
-    "audio_buffer_size": 1024,
-    "audio_device": null,
-    "storage_batch_size": 10,
-    "anomaly_detection": true,
-    "baseline_update_interval": 300
-  }
 }

@@ -4,8 +4,7 @@ Professional real-time charts for VLF signal monitoring
 """
 import sys
 from pathlib import Path
-from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, 
-                            QLabel, QFrame, QGridLayout, QPushButton)
+from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame, QGridLayout, QPushButton)
 from PyQt6.QtCore import QTimer, pyqtSignal, Qt
 from PyQt6.QtGui import QFont, QPalette
 import pyqtgraph as pg

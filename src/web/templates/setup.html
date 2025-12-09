@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Observatory Setup - SuperSID Pro</title>
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+    <style>
+        .setup-container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 30px;
+            background: var(--bg-card);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+        
+        . setup-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .setup-header img {
+            max-height: 80px;
+            margin-bottom: 20px;
+        }
+        
+        .form-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+        
+        .form-section h3 {
+            margin-bottom: 15px;
+            color: var(--info);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group. full-width {
+            grid-column: 1 / -1;
+        }
+        
+        label {
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        
+        input, select, textarea {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--info);
+        }
+        
+        .stations-container {
+            margin-top: 15px;
+        }
+        
+        .stations-filter {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 6px 12px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-btn. active {
+            background: var(--info);
+            color: white;
+        }
+        
+        .stations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 10px;
+        }
+        
+        .station-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 8px;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            transition: background 0.3s ease;
+        }
+        
+        .station-item:hover {
+            background: #3a3a3a;
+        }
+        
+        .station-item input {
+            margin: 0 8px 0 0;
+            flex-shrink: 0;
+        }
+        
+        .station-info {
+            flex: 1;
+            font-size: 12px;
+        }
+        
+        .station-name {
+            font-weight: bold;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+        
+        .station-freq {
+            color: var(--warning);
+            margin-bottom: 2px;
+        }
+        
+        .station-location {
+            color: var(--text-muted);
+            line-height: 1.2;
+        }
+        
+        .selected-count {
+            font-size: 14px;
+            color: var(--info);
+            margin-top: 10px;
+            font-weight: 600;
+        }
+        
+        .setup-actions {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .btn-primary {
+            background: var(--info);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        . btn-primary:hover {
+            background: #1976D2;
+        }
+        
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="setup-container">
+        <div class="setup-header">
+            <img src="/static/images/radioastronomylogo.png" alt="Radio Astronomy Logo" style="display: none;" 
+                 onerror="this.style.display='none';" onload="this.style.display='block';">
+            <h1>SuperSID Pro Observatory Setup</h1>
+            <p>Configure your radio telescope monitor for VLF monitoring</p>
+        </div>
+        
+        <form id="setupForm">
+            <!-- Observatory Information -->
+            <div class="form-section">
+                <h3>Observatory Information</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="observatoryName">Observatory Name *</label>
+                        <input type="text" id="observatoryName" name="observatory_name" 
+                               placeholder="observatoryName" value="observatoryName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="monitorId">Monitor ID Number *</label>
+                        <input type="number" id="monitorId" name="monitor_id" 
+                               placeholder="numberID" value="numberID" required>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Location Information -->
+            <div class="form-section">
+                <h3>Location Information</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="latitude">Latitude (decimal degrees) *</label>
+                        <input type="number" step="0.001" id="latitude" name="latitude" 
+                               placeholder="-34.569" value="-34.569" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="longitude">Longitude (decimal degrees) *</label>
+                        <input type="number" step="0.001" id="longitude" name="longitude" 
+                               placeholder="-56.871" value="-56.871" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="elevation">Elevation (meters)</label>
+                        <input type="number" id="elevation" name="elevation" 
+                               placeholder="30" value="30">
+                    </div>
+                    <div class="form-group">
+                        <label for="location">Location (City, Country) *</label>
+                        <input type="text" id="location" name="location" 
+                               placeholder="Montevideo, Uruguay" value="Montevideo, Uruguay" required>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Contact Information -->
+            <div class="form-section">
+                <h3>Contact Information</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="contactName">Your Name *</label>
+                        <input type="text" id="contactName" name="contact_name" 
+                               placeholder="User" value="User" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contactEmail">Email *</label>
+                        <input type="email" id="contactEmail" name="contact_email" 
+                               placeholder="user@mail.com" value="user@mail.com" required>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- VLF Stations -->
+            <div class="form-section">
+                <h3>VLF Stations to Monitor</h3>
+                <p>Select the VLF stations you want to monitor (based on your location and reception capabilities):</p>
+                
+                <div class="stations-container">
+                    <div class="stations-filter">
+                        <button type="button" class="filter-btn active" data-filter="all">All Stations</button>
+                        <button type="button" class="filter-btn" data-filter="vlf">VLF (16-30 kHz)</button>
+                        <button type="button" class="filter-btn" data-filter="lf">LF (30-300 kHz)</button>
+                        <button type="button" class="filter-btn" data-filter="americas">Americas</button>
+                        <button type="button" class="filter-btn" data-filter="europe">Europe</button>
+                        <button type="button" class="filter-btn" data-filter="asia">Asia/Pacific</button>
+                        <button type="button" class="filter-btn" data-filter="recommended">Recommended for Uruguay</button>
+                    </div>
+                    
+                    <div class="stations-grid" id="stationsGrid">
+                        <!-- Stations will be populated by JavaScript -->
+                    </div>
+                    
+                    <div class="selected-count" id="selectedCount">
+                        Selected: 0 stations
+                    </div>
+                </div>
+            </div>
+            
+            <div class="setup-actions">
+                <button type="submit" class="btn-primary">
+                    Save Observatory Configuration
+                </button>
+                <button type="button" class="btn-secondary" onclick="window.location.href='/'">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <script>
+        // Complete VLF Stations data
+        const vlfStations = {
+            'VTX1': { freq: 16.3, location: 'South Vijayanarayanam, India', lat: 8.387015, lon: 77.752762, region: 'asia', type: 'vlf' },
+            'JXN': { freq: 16.4, location: 'Novik, Norway', lat: 66.974353, lon: 13.873617, region: 'europe', type: 'vlf' },
+            'VTX2': { freq: 17.0, location: 'South Vijayanarayanam, India', lat: 8.387015, lon: 77.752762, region: 'asia', type: 'vlf' },
+            'SAQ': { freq: 17.2, location: 'Grimeton, Sweden', lat: 57.113171, lon: 12.397277, region: 'europe', type: 'vlf' },
+            'RDL': { freq: 18.1, location: 'Unknown Location', lat: 0, lon: 0, region: 'unknown', type: 'vlf' },
+            'VTX3': { freq: 18.2, location: 'South Vijayanarayanam, India', lat: 8.387015, lon: 77.752762, region: 'asia', type: 'vlf' },
+            'VTX4': { freq: 19.2, location: 'South Vijayanarayanam, India', lat: 8.387015, lon: 77.752762, region: 'asia', type: 'vlf' },
+            'GBZ': { freq: 19.58, location: 'Anthorn, UK', lat: 54.911643, lon: -3.278456, region: 'europe', type: 'vlf' },
+            'NWC': { freq: 19.8, location: 'North West Cape, Australia', lat: -21.816328, lon: 114.165586, region: 'asia', type: 'vlf' },
+            'ICV': { freq: 20.27, location: 'Isola di Tavolara, Italy', lat: 40.923127, lon: 9.731011, region: 'europe', type: 'vlf' },
+            'FTA': { freq: 20.9, location: 'Sainte-Assise, France', lat: 48.544632, lon: 2.579429, region: 'europe', type: 'vlf' },
+            'NPM': { freq: 21.4, location: 'Lualualei, Hawaii, USA', lat: 21.420166, lon: -158.151140, region: 'americas', type: 'vlf' },
+            'HWU': { freq: 21.75, location: 'Rosnay, France', lat: 46.713129, lon: 1.245248, region: 'europe', type: 'vlf' },
+            'GQD': { freq: 22.1, location: 'Skelton, UK', lat: 54.731799, lon: -2.883033, region: 'europe', type: 'vlf' },
+            'NDT': { freq: 22.2, location: 'Ebino, Japan', lat: 32.082084, lon: 130.827960, region: 'asia', type: 'vlf' },
+            'DHO38': { freq: 23.4, location: 'Rhauderfehn, Germany', lat: 53.078900, lon: 7.615000, region: 'europe', type: 'vlf' },
+            'NAA': { freq: 24.0, location: 'Cutler, Maine, USA', lat: 44.644936, lon: -67.281639, region: 'americas', type: 'vlf' },
+            'NLK': { freq: 24.8, location: 'Jim Creek, Washington, USA', lat: 48.203487, lon: -121.916827, region: 'americas', type: 'vlf' },
+            'UNID25': { freq: 25.0, location: 'Mokpo, South Korea', lat: 34.679068, lon: 126.445383, region: 'asia', type: 'vlf' },
+            'NML': { freq: 25.2, location: 'La Moure, North Dakota, USA', lat: 46.365990, lon: -98.335638, region: 'americas', type: 'vlf' },
+            'TBB': { freq: 26.7, location: 'Bafa, Turkey', lat: 37.412725, lon: 27.323342, region: 'europe', type: 'vlf' },
+            'NRK': { freq: 37.5, location: 'Grindavik, Iceland', lat: 63.850365, lon: -22.466773, region: 'europe', type: 'lf' },
+            'JJY40': { freq: 40.0, location: 'Mount Ootakadoya, Japan', lat: 37.372598, lon: 140.848906, region: 'asia', type: 'lf' },
+            'MSF': { freq: 60.0, location: 'Anthorn, UK', lat: 54.911195, lon: -3.279302, region: 'europe', type: 'lf' },
+            'WWVB': { freq: 60.0, location: 'Fort Collins, Colorado, USA', lat: 40.677722, lon: -105.047153, region: 'americas', type: 'lf' },
+            'JJY60': { freq: 60.0, location: 'Mount Hagane, Japan', lat: 33.465433, lon: 130.175415, region: 'asia', type: 'lf' },
+            'DCF77': { freq: 77.5, location: 'Mainflingen, Germany', lat: 50.015411, lon: 9.008307, region: 'europe', type: 'lf' }
+        };
+
+        // Recommended stations for Uruguay (South America)
+        const recommendedForUruguay = ['NAA', 'NPM', 'NLK', 'NML', 'DHO38', 'GQD'];
+        
+        let currentFilter = 'all';
+        
+        function populateStations() {
+            const grid = document.getElementById('stationsGrid');
+            grid.innerHTML = '';
+            
+            Object.entries(vlfStations). forEach(([callSign, station]) => {
+                if (! shouldShowStation(callSign, station)) return;
+                
+                const div = document.createElement('div');
+                div.className = 'station-item';
+                
+                const checked = recommendedForUruguay.includes(callSign) ? 'checked' : '';
+                
+                div.innerHTML = `
+                    <input type="checkbox" id="station_${callSign}" 
+                           name="stations" value="${callSign}" ${checked}
+                           onchange="updateSelectedCount()">
+                    <div class="station-info">
+                        <div class="station-name">${callSign}</div>
+                        <div class="station-freq">${station.freq} kHz</div>
+                        <div class="station-location">${station. location}</div>
+                    </div>
+                `;
+                
+                grid.appendChild(div);
+            });
+            
+            updateSelectedCount();
+        }
+        
+        function shouldShowStation(callSign, station) {
+            switch(currentFilter) {
+                case 'all': return true;
+                case 'vlf': return station.type === 'vlf';
+                case 'lf': return station. type === 'lf';
+                case 'americas': return station.region === 'americas';
+                case 'europe': return station.region === 'europe';
+                case 'asia': return station.region === 'asia';
+                case 'recommended': return recommendedForUruguay.includes(callSign);
+                default: return true;
+            }
+        }
+        
+        function updateSelectedCount() {
+            const selected = document.querySelectorAll('input[name="stations"]:checked'). length;
+            document.getElementById('selectedCount').textContent = `Selected: ${selected} stations`;
+        }
+        
+        // Filter buttons
+        document.addEventListener('click', (e) => {
+            if (e.target.classList. contains('filter-btn')) {
+                document.querySelectorAll('.filter-btn').forEach(btn => btn. classList.remove('active'));
+                e.target.classList.add('active');
+                currentFilter = e.target.dataset.filter;
+                populateStations();
+            }
+        });
+        
+        // Form submission
+        document.getElementById('setupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const selectedStations = Array.from(document.querySelectorAll('input[name="stations"]:checked'))
+                                          .map(cb => cb.value);
+            
+            if (selectedStations.length === 0) {
+                alert('Please select at least one VLF station to monitor.');
+                return;
+            }
+            
+            const config = {
+                observatory: {
+                    name: formData. get('observatory_name'),
+                    monitor_id: formData. get('monitor_id'),
+                    location: formData.get('location'),
+                    coordinates: {
+                        latitude: parseFloat(formData.get('latitude')),
+                        longitude: parseFloat(formData.get('longitude')),
+                        elevation: parseFloat(formData.get('elevation') || '0')
+                    },
+                    contact: {
+                        name: formData.get('contact_name'),
+                        email: formData.get('contact_email')
+                    }
+                },
+                vlf_stations: {
+                    monitored_stations: selectedStations,
+                    station_frequencies: Object.fromEntries(
+                        selectedStations.map(station => [station, vlfStations[station]])
+                    )
+                },
+                application: {
+                    first_run: false
+                }
+            };
+            
+            try {
+                const response = await fetch('/api/setup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(config)
+                });
+                
+                if (response.ok) {
+                    alert('Observatory configuration saved successfully! ');
+                    window.location. href = '/';
+                } else {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Failed to save configuration');
+                }
+            } catch (error) {
+                alert('Error saving configuration: ' + error. message);
+            }
+        });
+        
+        // Initialize page
+        populateStations();
+    </script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+{
+  "application": {
+    "name": "SuperSID Pro",
+    "version": "1.0.0",
+    "debug": false,
+    "first_run": true,
+    "log_level": "INFO"
+  },
+  "observatory": {
+    "name": "SolarUY",
+    "monitor_id": "281",
+    "location": "Montevideo, Uruguay",
+    "coordinates": {
+      "latitude": -34.569,
+      "longitude": -56.871,
+      "elevation": 30.0
+    },
+    "timezone": "UTC",
+    "contact": {
+      "name": "Alejandro",
+      "email": "a.arevalocue@gmail.com"
+    }
+  },
+  "vlf_stations": {
+    "monitored_stations": [
+      "NAA",
+      "NWC"
+    ],
+    "station_frequencies": {
+      "NAA": {
+        "frequency": 24.0,
+        "location": "Maine, USA",
+        "callsign": "NAA",
+        "country": "United States"
+      },
+      "NWC": {
+        "frequency": 19.8,
+        "location": "Exmouth, Australia", 
+        "callsign": "NWC",
+        "country": "Australia"
+      },
+      "DHO": {
+        "frequency": 23.4,
+        "location": "Rhauderfehn, Germany",
+        "callsign": "DHO",
+        "country": "Germany"
+      },
+      "GQD": {
+        "frequency": 19.6,
+        "location": "Anthorn, UK",
+        "callsign": "GQD", 
+        "country": "United Kingdom"
+      },
+      "NPM": {
+        "frequency": 21.4,
+        "location": "Lualualei, Hawaii",
+        "callsign": "NPM",
+        "country": "United States"
+      },
+      "NRK": {
+        "frequency": 37.5,
+        "location": "Grindavik, Iceland",
+        "callsign": "NRK",
+        "country": "Iceland"
+      },
+      "JJI": {
+        "frequency": 22.2,
+        "location": "Ebino, Japan",
+        "callsign": "JJI",
+        "country": "Japan"
+      },
+      "JJY": {
+        "frequency": 40.0,
+        "location": "Fukushima, Japan",
+        "callsign": "JJY",
+        "country": "Japan"
+      },
+      "MSF": {
+        "frequency": 60.0,
+        "location": "Anthorn, UK",
+        "callsign": "MSF",
+        "country": "United Kingdom"
+      },
+      "DCF77": {
+        "frequency": 77.5,
+        "location": "Mainflingen, Germany",
+        "callsign": "DCF77",
+        "country": "Germany"
+      },
+      "WWVB": {
+        "frequency": 60.0,
+        "location": "Fort Collins, Colorado",
+        "callsign": "WWVB",
+        "country": "United States"
+      },
+      "BPC": {
+        "frequency": 68.5,
+        "location": "Shangqiu, China",
+        "callsign": "BPC",
+        "country": "China"
+      },
+      "RTZ": {
+        "frequency": 50.0,
+        "location": "Irkutsk, Russia",
+        "callsign": "RTZ",
+        "country": "Russia"
+      },
+      "TBB": {
+        "frequency": 26.7,
+        "location": "Bafa, Turkey",
+        "callsign": "TBB",
+        "country": "Turkey"
+      },
+      "ITS": {
+        "frequency": 45.9,
+        "location": "Niscemi, Italy",
+        "callsign": "ITS",
+        "country": "Italy"
+      }
+    }
+  },
+  "monitoring": {
+    "auto_start": true,
+    "data_retention_days": 30,
+    "export_format": "csv",
+    "screenshot_interval": 300
+  },
+  "reporting": {
+    "ftp_upload": false,
+    "ftp_server": "sid-ftp.stanford.edu",
+    "ftp_directory": "/incoming/SuperSID/NEW/",
+    "local_tmp": "/tmp",
+    "report_interval": 86400
+  },
+  "space_weather": {
+    "enable_spaceweatherlive": true,
+    "enable_swpc_noaa": true,
+    "update_interval": 600
+  },
+  "vlf_system": {
+    "audio_sample_rate": 11025,
+    "audio_buffer_size": 1024,
+    "audio_device": null,
+    "storage_batch_size": 10,
+    "anomaly_detection": true,
+    "baseline_update_interval": 300
+  },
+  "data_sources": {
+    "audio": {
+      "enabled": true,
+      "sample_rate": 11025,
+      "buffer_size": 1024
+    },
+    "simulation": {
+      "enabled": true,
+      "frequencies": [24.0, 19.8, 23.4, 19.6],
+      "amplitude_range": [0.001, 0.01]
+    }
+  }
+}

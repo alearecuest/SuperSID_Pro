@@ -12,7 +12,7 @@ sys.path.insert(0, 'src')
 
 from core.vlf_system import VLFMonitoringSystem
 from core.config_manager import ConfigManager
-from core. logger import setup_logger
+from core.logger import setup_logger
 from core.vlf_processor import VLFProcessor, VLFSignal
 from data.realtime_storage import RealtimeStorage, VLFMeasurement
 from datetime import datetime, timezone

@@ -15,7 +15,7 @@
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
     
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min. css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
         .observatory-section {
@@ -126,7 +126,7 @@
                     </div>
                     <div class="card-content">
                         <div class="status-item">
-                            <span>Monitoring: </span>
+                            <span>Monitoring:</span>
                             <span id="monitoringStatus" class="status-value">Stopped</span>
                         </div>
                         <div class="status-item">
@@ -197,50 +197,8 @@
             </section>
 
             <section class="charts-section">
-                <div class="charts-grid">
-                    <div class="chart-container">
-                        <div class="chart-header">
-                            <h4 id="station1Name">Loading Station... </h4>
-                            <div class="chart-status" id="station1Status">
-                                <span class="frequency">0. 00 kHz</span>
-                                <span class="amplitude">0.000 V</span>
-                            </div>
-                        </div>
-                        <canvas id="station1Chart"></canvas>
-                    </div>
-
-                    <div class="chart-container">
-                        <div class="chart-header">
-                            <h4 id="station2Name">Loading Station...</h4>
-                            <div class="chart-status" id="station2Status">
-                                <span class="frequency">0.00 kHz</span>
-                                <span class="amplitude">0.000 V</span>
-                            </div>
-                        </div>
-                        <canvas id="station2Chart"></canvas>
-                    </div>
-
-                    <div class="chart-container">
-                        <div class="chart-header">
-                            <h4 id="station3Name">Loading Station...</h4>
-                            <div class="chart-status" id="station3Status">
-                                <span class="frequency">0.00 kHz</span>
-                                <span class="amplitude">0.000 V</span>
-                            </div>
-                        </div>
-                        <canvas id="station3Chart"></canvas>
-                    </div>
-
-                    <div class="chart-container">
-                        <div class="chart-header">
-                            <h4 id="station4Name">Loading Station...</h4>
-                            <div class="chart-status" id="station4Status">
-                                <span class="frequency">0.00 kHz</span>
-                                <span class="amplitude">0.000 V</span>
-                            </div>
-                        </div>
-                        <canvas id="station4Chart"></canvas>
-                    </div>
+                <div class="charts-grid" id="chartsGrid">
+                    <div class="loading-message">Loading station charts...</div>
                 </div>
 
                 <div class="chart-container overview">
@@ -260,7 +218,6 @@
             </section>
         </main>
 
-        <!-- Footer -->
         <footer class="footer">
             <div class="footer-left">
                 <span>SuperSID Pro v1.0.0</span>
@@ -278,17 +235,20 @@
         let isMonitoring = false;
         let observatoryConfig = null;
         let totalDataPoints = 0;
+        let charts = {};
+        let chartColors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FECA57', '#FF9FF3', '#54A0FF', '#5F27CD'];
 
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Dashboard loading.. .');
+            console.log('Dashboard loading...');
             initializeDashboard();
         });
 
         async function initializeDashboard() {
             try {
                 await loadObservatoryConfig();
-                
                 initializeWebSocket();
+                initializeCharts();
+                setupTimeRangeSelector();
                 setupEventListeners();
                 updateSpaceWeather();
                 setInterval(updateTimestamp, 1000);
@@ -297,6 +257,235 @@
             } catch (error) {
                 console.error('Error initializing dashboard:', error);
             }
+        }
+
+        function createDynamicCharts() {
+            if (! observatoryConfig) return;
+            
+            const stations = observatoryConfig.vlf_stations?.monitored_stations || [];
+            const stationFreqs = observatoryConfig.vlf_stations?.station_frequencies || {};
+            const chartsGrid = document.getElementById('chartsGrid');
+            
+            chartsGrid.innerHTML = '';
+            
+            stations.forEach((station, index) => {
+                const freq = stationFreqs[station]?.freq || 0;
+                const location = stationFreqs[station]?.location || '';
+                
+                const chartContainer = document.createElement('div');
+                chartContainer.className = 'chart-container';
+                chartContainer.innerHTML = `
+                    <div class="chart-header">
+                        <h4>${station} (${freq} kHz)</h4>
+                        <div class="chart-status" id="station${index + 1}Status">
+                            <span class="frequency">0. 00 kHz</span>
+                            <span class="amplitude">0.000 V</span>
+                        </div>
+                    </div>
+                    <canvas id="station${index + 1}Chart"></canvas>
+                `;
+                
+                chartsGrid.appendChild(chartContainer);
+                
+                const canvas = chartContainer.querySelector('canvas');
+                const chartId = `station${index + 1}Chart`;
+                const colorIndex = index % chartColors.length;
+                
+                charts[chartId] = new Chart(canvas.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'Amplitude',
+                            data: [],
+                            borderColor:  chartColors[colorIndex],
+                            backgroundColor: chartColors[colorIndex] + '20',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 0,
+                            pointHoverRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction:  {
+                            intersect: false,
+                            mode: 'index'
+                        },
+                        scales: {
+                            x: {
+                                display: true,
+                                grid:  { color: '#444444' },
+                                ticks: { color:  '#cccccc', maxTicksLimit: 6 }
+                            },
+                            y: {
+                                display: true,
+                                grid:  { color: '#444444' },
+                                ticks: { color: '#cccccc' },
+                                beginAtZero:  true
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        animation: { duration: 0 }
+                    }
+                });
+            });
+            
+            console.log(`Created ${stations.length} dynamic charts for stations:  ${stations.join(', ')}`);
+        }
+
+        function initializeCharts() {
+            createDynamicCharts();
+            
+            const overviewCtx = document.getElementById('overviewChart');
+            if (overviewCtx && ! charts.overviewChart) {
+                charts.overviewChart = new Chart(overviewCtx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: []
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: { intersect: false, mode: 'index' },
+                        scales: {
+                            x: {
+                                display: true,
+                                grid: { color: '#444444' },
+                                ticks: { color: '#cccccc', maxTicksLimit: 10 }
+                            },
+                            y: {
+                                display: true,
+                                grid:  { color: '#444444' },
+                                ticks: { color: '#cccccc' },
+                                beginAtZero: true
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: true,
+                                labels: { color: '#cccccc', usePointStyle: true }
+                            }
+                        },
+                        animation: { duration: 0 }
+                    }
+                });
+            }
+            
+            console.log('Charts initialized successfully');
+        }
+
+        function updateChart(chartId, timestamp, amplitude) {
+            const chart = charts[chartId];
+            if (!chart) return;
+            
+            const timeString = new Date(timestamp).toLocaleTimeString();
+            
+            chart.data.labels.push(timeString);
+            chart.data.datasets[0].data.push(amplitude);
+            
+            const timeRange = parseInt(document.getElementById('timeRange').value);
+            const maxPoints = timeRange * 60;
+            
+            if (chart. data.labels.length > maxPoints) {
+                chart.data. labels.shift();
+                chart. data.datasets[0].data. shift();
+            }
+            
+            chart.update('none');
+        }
+
+        function updateOverviewChart(timestamp, stationsData) {
+            const overview = charts.overviewChart;
+            if (!overview || !observatoryConfig) return;
+            
+            const stations = observatoryConfig.vlf_stations?.monitored_stations || [];
+            const stationFreqs = observatoryConfig.vlf_stations?.station_frequencies || {};
+            const timeString = new Date(timestamp).toLocaleTimeString();
+            
+            if (overview.data.datasets.length === 0) {
+                stations.forEach((station, index) => {
+                    const freq = stationFreqs[station]?.freq || 0;
+                    const colorIndex = index % chartColors.length;
+                    overview.data.datasets.push({
+                        label: `${station} (${freq} kHz)`,
+                        data: [],
+                        borderColor: chartColors[colorIndex],
+                        backgroundColor: chartColors[colorIndex] + '20',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.4,
+                        pointRadius: 0,
+                        pointHoverRadius: 4
+                    });
+                });
+            }
+            
+            overview.data.labels. push(timeString);
+            
+            overview.data.datasets.forEach((dataset, index) => {
+                const stationKey = `BAND_${index + 1}`;
+                const amplitude = stationsData[stationKey]?.amplitude || 0;
+                dataset.data.push(amplitude);
+            });
+            
+            const timeRange = parseInt(document.getElementById('timeRange').value);
+            const maxPoints = timeRange * 60;
+            
+            if (overview.data.labels. length > maxPoints) {
+                overview.data.labels.shift();
+                overview.data.datasets. forEach(dataset => {
+                    dataset.data.shift();
+                });
+            }
+            
+            overview.update('none');
+        }
+
+        function setupTimeRangeSelector() {
+            const selector = document.getElementById('timeRange');
+            if (selector) {
+                selector.addEventListener('change', function() {
+                    const minutes = parseInt(this.value);
+                    const maxPoints = minutes * 60;
+                    
+                    Object. values(charts).forEach(chart => {
+                        while (chart.data.labels.length > maxPoints) {
+                            chart.data.labels.shift();
+                            chart.data.datasets. forEach(dataset => {
+                                dataset.data.shift();
+                            });
+                        }
+                        chart.update();
+                    });
+                    
+                    console.log(`Time range updated to ${minutes} minutes`);
+                });
+            }
+        }
+
+        function clearCharts() {
+            Object. values(charts).forEach(chart => {
+                chart.data.labels = [];
+                chart.data.datasets.forEach(dataset => {
+                    dataset.data = [];
+                });
+                chart.update();
+            });
+            
+            document.querySelectorAll('.band-value').forEach(el => el.textContent = '0.000');
+            
+            document.getElementById('anomalyList').innerHTML = '<div class="no-anomalies">No anomalies detected</div>';
+            
+            totalDataPoints = 0;
+            updateDataStats();
+            
+            console.log('Charts and data cleared');
         }
 
         async function loadObservatoryConfig() {
@@ -314,7 +503,6 @@
                 
                 updateObservatoryInfo();
                 updateCurrentValuesSection();
-                updateChartHeaders();
                 
             } catch (error) {
                 console.error('Error loading observatory config:', error);
@@ -325,7 +513,7 @@
                         location: 'Loading...',
                         coordinates: { latitude: 0, longitude: 0 }
                     },
-                    vlf_stations: { 
+                    vlf_stations:  { 
                         monitored_stations: ['NPM', 'GQD', 'DHO38', 'NAA'],
                         station_frequencies: {
                             'NPM': { freq: 21.4 },
@@ -337,7 +525,6 @@
                 };
                 updateObservatoryInfo();
                 updateCurrentValuesSection();
-                updateChartHeaders();
             }
         }
 
@@ -363,13 +550,13 @@
         function updateCurrentValuesSection() {
             if (!observatoryConfig) return;
             
-            const stations = observatoryConfig.vlf_stations?. monitored_stations || [];
+            const stations = observatoryConfig.vlf_stations?.monitored_stations || [];
             const stationFreqs = observatoryConfig.vlf_stations?.station_frequencies || {};
             
             const currentValuesDiv = document.getElementById('currentValues');
             currentValuesDiv.innerHTML = '';
             
-            stations.slice(0, 6).forEach((station, index) => {
+            stations.forEach((station, index) => {
                 const freq = stationFreqs[station]?.freq || 0;
                 const div = document.createElement('div');
                 div.className = 'value-row';
@@ -381,26 +568,8 @@
             });
         }
 
-        function updateChartHeaders() {
-            if (!observatoryConfig) return;
-            
-            const stations = observatoryConfig.vlf_stations?.monitored_stations || [];
-            const stationFreqs = observatoryConfig.vlf_stations?.station_frequencies || {};
-            
-            stations.slice(0, 4).forEach((station, index) => {
-                const freq = stationFreqs[station]?.freq || 0;
-                const location = stationFreqs[station]?.location || '';
-                
-                const headerElement = document.getElementById(`station${index + 1}Name`);
-                if (headerElement) {
-                    headerElement.textContent = `${station} (${freq} kHz)`;
-                    headerElement.title = location;
-                }
-            });
-        }
-
         function initializeWebSocket() {
-            const protocol = window.location.protocol === 'https:' ? 'wss: ' : 'ws:';
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
             const wsUrl = `${protocol}//${window.location.host}/ws`;
             
             console.log('Connecting to WebSocket:', wsUrl);
@@ -414,12 +583,12 @@
             };
             
             ws.onmessage = function(event) {
-                const data = JSON.parse(event. data);
+                const data = JSON.parse(event.data);
                 handleWebSocketMessage(data);
             };
             
             ws.onclose = function(event) {
-                console. log('WebSocket disconnected');
+                console.log('WebSocket disconnected');
                 updateConnectionStatus('Disconnected', 'disconnected');
                 document.getElementById('wsStatus').textContent = 'Disconnected';
                 document.getElementById('startBtn').disabled = true;
@@ -427,7 +596,7 @@
             };
             
             ws.onerror = function(error) {
-                console.error('WebSocket error:', error);
+                console. error('WebSocket error:', error);
                 updateConnectionStatus('Error', 'error');
             };
         }
@@ -435,13 +604,13 @@
         function handleWebSocketMessage(data) {
             console.log('WebSocket message received:', data. type);
             switch(data.type) {
-                case 'vlf_data': 
+                case 'vlf_data':  
                     updateVLFData(data);
                     break;
-                case 'anomaly':  
+                case 'anomaly':   
                     addAnomaly(data);
                     break;
-                case 'connection':  
+                case 'connection':   
                     console.log('WebSocket connection message:', data.message);
                     break;
             }
@@ -451,16 +620,17 @@
             if (!observatoryConfig) return;
             
             const stations = observatoryConfig.vlf_stations?.monitored_stations || [];
+            const timestamp = new Date(data.timestamp);
             totalDataPoints++;
             
-            stations.slice(0, 6).forEach((station, index) => {
+            stations.forEach((station, index) => {
                 const stationKey = `BAND_${index + 1}`;
                 const signalData = data.signals[stationKey];
                 
                 if (signalData) {
                     const valueElement = document.getElementById(`station${index + 1}Value`);
                     if (valueElement) {
-                        valueElement.textContent = signalData.amplitude. toFixed(3);
+                        valueElement. textContent = signalData.amplitude. toFixed(3);
                     }
                     
                     const statusElement = document.getElementById(`station${index + 1}Status`);
@@ -470,16 +640,22 @@
                         if (freqSpan) freqSpan.textContent = `${signalData.frequency.toFixed(2)} kHz`;
                         if (ampSpan) ampSpan.textContent = `${signalData.amplitude.toFixed(3)} V`;
                     }
+                    
+                    const chartId = `station${index + 1}Chart`;
+                    if (charts[chartId]) {
+                        updateChart(chartId, timestamp, signalData.amplitude);
+                    }
                 }
             });
             
+            updateOverviewChart(timestamp, data.signals);
             updateDataStats();
         }
 
         function setupEventListeners() {
             document.getElementById('startBtn').addEventListener('click', startMonitoring);
-            document. getElementById('stopBtn').addEventListener('click', stopMonitoring);
-            document.getElementById('clearBtn').addEventListener('click', clearData);
+            document.getElementById('stopBtn').addEventListener('click', stopMonitoring);
+            document.getElementById('clearBtn').addEventListener('click', clearCharts);
         }
 
         async function startMonitoring() {
@@ -491,7 +667,7 @@
                 if (result.status === 'started') {
                     isMonitoring = true;
                     document.getElementById('startBtn').disabled = true;
-                    document.getElementById('stopBtn').disabled = false;
+                    document. getElementById('stopBtn').disabled = false;
                     document.getElementById('monitoringStatus').textContent = 'Active';
                     document.getElementById('monitoringStatus').className = 'status-value active';
                     console.log('Monitoring started successfully');
@@ -520,17 +696,6 @@
             }
         }
 
-        function clearData() {
-            document.querySelectorAll('.band-value').forEach(el => el.textContent = '0.000');
-            
-            document.getElementById('anomalyList').innerHTML = '<div class="no-anomalies">No anomalies detected</div>';
-            
-            totalDataPoints = 0;
-            updateDataStats();
-            
-            console.log('Data cleared');
-        }
-
         function updateConnectionStatus(status, className) {
             const statusElement = document.getElementById('connectionStatus');
             if (statusElement) {
@@ -551,8 +716,8 @@
                 
                 const data = await response.json();
                 
-                document.getElementById('solarActivity').textContent = data.status || 'Unknown';
-                document. getElementById('kpIndex').textContent = data.kp_index || '--';
+                document.getElementById('solarActivity').textContent = data. status || 'Unknown';
+                document.getElementById('kpIndex').textContent = data. kp_index || '--';
                 document.getElementById('solarWindSpeed').textContent = data.solar_wind_speed || '-- km/s';
                 
                 if (data.last_update) {
@@ -586,7 +751,7 @@
             
             const noAnomalies = anomalyList.querySelector('.no-anomalies');
             if (noAnomalies) {
-                noAnomalies. remove();
+                noAnomalies.remove();
             }
             
             data.anomalies.forEach(anomaly => {
@@ -599,7 +764,7 @@
                 anomalyList.insertBefore(div, anomalyList.firstChild);
             });
             
-            while (anomalyList.children. length > 5) {
+            while (anomalyList.children.length > 5) {
                 anomalyList.removeChild(anomalyList.lastChild);
             }
         }

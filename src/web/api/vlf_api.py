@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 from typing import List, Dict
 import uvicorn
 from pathlib import Path
-
+#from core.audio_manager import AudioManager
 from core.vlf_system import VLFMonitoringSystem
 from core.vlf_processor import VLFSignal
 from core.config_manager import ConfigManager
@@ -25,13 +25,14 @@ class VLFWebAPI:
     
     def __init__(self, config_manager: ConfigManager):
         self.config_manager = config_manager
+        #self.audio_manager = AudioManager()
         self. logger = get_logger(__name__)
         
         # Initialize FastAPI
         self.app = FastAPI(
             title="SuperSID Pro Web API",
             description="Real-time VLF monitoring web interface",
-            version="1. 0.0"
+            version="1.0.0"
         )
         
         # Setup static files and templates
@@ -81,7 +82,38 @@ class VLFWebAPI:
                     }
             except Exception as e:
                 raise HTTPException(status_code=500, detail=str(e))
+
+        @self.app.get("/api/audio-devices")
+        async def get_audio_devices():
+            """Get available audio input devices"""
+            try:
+                devices = self.audio_manager.get_audio_devices()
+                return {
+                    "status": "ok",
+                    "devices": devices,
+                    "count": len(devices)
+                }
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=str(e))
         
+        @self.app.post("/api/test-audio-device")
+        async def test_audio_device(device_data: dict):
+            """Test audio device with specified parameters"""
+            try:
+                device_index = device_data. get('device_index')
+                sample_rate = device_data.get('sample_rate', 11025)
+                channels = device_data.get('channels', 1)
+                
+                success = self.audio_manager.test_device(device_index, sample_rate, channels)
+                return {
+                    "status":  "ok",
+                    "device_index": device_index,
+                    "working": success,
+                    "sample_rate": sample_rate
+                }
+            except Exception as e:
+                raise HTTPException(status_code=500, detail=str(e))
+
         @self.app.get("/setup", response_class=HTMLResponse)
         async def setup_page(request: Request):
             """Observatory setup page"""
@@ -357,8 +389,9 @@ class VLFWebAPI:
                 # Create simulated signals for each band
                 vlf_signals = {}
                 
-                for i, band in enumerate(['BAND_1', 'BAND_2', 'BAND_3', 'BAND_4'], 1):
-                    # Vary amplitude with time for realistic simulation
+                stations = self. config_manager.config.get('vlf_stations', {}).get('monitored_stations', ['NPM', 'GQD', 'DHO38', 'NAA'])
+                for i, station in enumerate(stations):
+                    band = f'BAND_{i + 1}'
                     base_amplitude = 0.001 * i
                     variation = 0.0005 * np.sin(t * 0.1 * i) + 0.0001 * np.random.randn()
                     amplitude = base_amplitude + variation

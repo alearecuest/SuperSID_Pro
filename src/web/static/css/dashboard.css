@@ -139,7 +139,7 @@ h4 {
 
 .header-left h1 i {
     color: var(--info);
-    margin-right: 10px;
+    margin-right: 15px;
 }
 
 .subtitle {
@@ -149,6 +149,7 @@ h4 {
     color: var(--text-secondary);
     display: block;
     margin-top: -5px;
+    margin-left: 55px;
     letter-spacing: var(--letter-space-wide);
     text-transform: uppercase;
 }
@@ -347,7 +348,7 @@ h4 {
 }
 
 .anomaly-list {
-    max-height: 120px;
+    max-height: 200px;
     overflow-y:  auto;
 }
 

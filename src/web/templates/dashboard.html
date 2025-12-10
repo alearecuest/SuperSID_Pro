@@ -71,6 +71,9 @@
                 </div>
                 
                 <div class="controls">
+                    <button id="settingsBtn" class="btn btn-secondary">
+                        <i class="fas fa-cog"></i> Settings
+                    </button>
                     <button id="startBtn" class="btn btn-success" disabled>
                         <i class="fas fa-play"></i> Start
                     </button>
@@ -324,7 +327,12 @@
                                 display: true,
                                 grid:  { color: '#444444' },
                                 ticks: { color: '#cccccc' },
-                                beginAtZero:  true
+                                beginAtZero:  true,
+                                title: {
+                                    display: true,
+                                    text: 'Amplitude (V)',
+                                    color: '#cccccc'
+                                }
                             }
                         },
                         plugins: {
@@ -653,6 +661,9 @@
         }
 
         function setupEventListeners() {
+            document.getElementById('settingsBtn').addEventListener('click', function() {
+                window.location.href = '/setup';
+            });
             document.getElementById('startBtn').addEventListener('click', startMonitoring);
             document.getElementById('stopBtn').addEventListener('click', stopMonitoring);
             document.getElementById('clearBtn').addEventListener('click', clearCharts);

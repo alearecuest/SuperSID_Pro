@@ -15,20 +15,20 @@
             box-shadow: var(--shadow);
         }
         
-        . setup-header {
+        .setup-header {
             text-align: center;
             margin-bottom: 30px;
         }
         
         .setup-header img {
             max-height: 80px;
-            margin-bottom: 20px;
+            margin-bottom:  20px;
         }
         
         .form-section {
             margin-bottom: 30px;
             padding: 20px;
-            border: 1px solid var(--border-color);
+            border:  1px solid var(--border-color);
             border-radius: 8px;
         }
         
@@ -52,7 +52,7 @@
             flex-direction: column;
         }
         
-        .form-group. full-width {
+        .form-group.full-width {
             grid-column: 1 / -1;
         }
         
@@ -108,7 +108,7 @@
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 8px;
             max-height: 400px;
-            overflow-y: auto;
+            overflow-y:  auto;
             border: 1px solid var(--border-color);
             border-radius: 4px;
             padding: 10px;
@@ -125,21 +125,21 @@
         }
         
         .station-item:hover {
-            background: #3a3a3a;
+            background:  #3a3a3a;
         }
         
         .station-item input {
-            margin: 0 8px 0 0;
+            margin:  0 8px 0 0;
             flex-shrink: 0;
         }
         
         .station-info {
-            flex: 1;
+            flex:  1;
             font-size: 12px;
         }
         
         .station-name {
-            font-weight: bold;
+            font-weight:  bold;
             color: var(--text-primary);
             margin-bottom: 2px;
         }
@@ -160,6 +160,53 @@
             margin-top: 10px;
             font-weight: 600;
         }
+
+        .audio-device-item {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            margin-bottom: 8px;
+            background: var(--bg-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .audio-device-item:hover {
+            background: #3a3a3a;
+        }
+        
+        .audio-device-item.selected {
+            border-color: var(--info);
+            background: rgba(33, 150, 243, 0.1);
+        }
+        
+        .device-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .device-info {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        
+        .test-result {
+            margin-top: 5px;
+            padding: 5px 8px;
+            border-radius:  3px;
+            font-size:  12px;
+        }
+        
+        .test-success {
+            background: rgba(76, 175, 80, 0.2);
+            color: var(--success);
+        }
+        
+        .test-error {
+            background: rgba(244, 67, 54, 0.2);
+            color: var(--danger);
+        }
         
         .setup-actions {
             text-align: center;
@@ -172,13 +219,13 @@
             padding: 12px 24px;
             border: none;
             border-radius: 6px;
-            font-size: 16px;
+            font-size:  16px;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.3s ease;
+            transition:  background 0.3s ease;
         }
         
-        . btn-primary:hover {
+        .btn-primary:hover {
             background: #1976D2;
         }
         
@@ -192,6 +239,17 @@
             cursor: pointer;
             margin-left: 10px;
         }
+
+        .btn-test {
+            background: var(--warning);
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            font-size:  12px;
+            cursor:  pointer;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -204,26 +262,24 @@
         </div>
         
         <form id="setupForm">
-            <!-- Observatory Information -->
             <div class="form-section">
-                <h3>Observatory Information</h3>
+                <h3><i class="fas fa-building"></i> Observatory Information</h3>
                 <div class="form-row">
                     <div class="form-group">
                         <label for="observatoryName">Observatory Name *</label>
                         <input type="text" id="observatoryName" name="observatory_name" 
-                               placeholder="observatoryName" value="observatoryName" required>
+                               placeholder="ClimaSolarUY" value="ClimaSolarUY" required>
                     </div>
                     <div class="form-group">
                         <label for="monitorId">Monitor ID Number *</label>
                         <input type="number" id="monitorId" name="monitor_id" 
-                               placeholder="numberID" value="numberID" required>
+                               placeholder="281" value="281" required>
                     </div>
                 </div>
             </div>
             
-            <!-- Location Information -->
             <div class="form-section">
-                <h3>Location Information</h3>
+                <h3><i class="fas fa-map-marker-alt"></i> Location Information</h3>
                 <div class="form-row">
                     <div class="form-group">
                         <label for="latitude">Latitude (decimal degrees) *</label>
@@ -249,27 +305,62 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Contact Information -->
+
             <div class="form-section">
-                <h3>Contact Information</h3>
+                <h3><i class="fas fa-microphone"></i> Audio Input Configuration</h3>
+                <p>Select the audio input device for your radio telescope connection:</p>
+                
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="contactName">Your Name *</label>
-                        <input type="text" id="contactName" name="contact_name" 
-                               placeholder="User" value="User" required>
+                        <label for="sampleRate">Sample Rate (Hz)</label>
+                        <select id="sampleRate" name="sample_rate">
+                            <option value="11025" selected>11,025 Hz (Recommended)</option>
+                            <option value="22050">22,050 Hz</option>
+                            <option value="44100">44,100 Hz</option>
+                            <option value="48000">48,000 Hz</option>
+                        </select>
                     </div>
                     <div class="form-group">
-                        <label for="contactEmail">Email *</label>
-                        <input type="email" id="contactEmail" name="contact_email" 
-                               placeholder="user@mail.com" value="user@mail.com" required>
+                        <label for="bufferSize">Buffer Size (samples)</label>
+                        <select id="bufferSize" name="buffer_size">
+                            <option value="512">512</option>
+                            <option value="1024" selected>1,024 (Recommended)</option>
+                            <option value="2048">2,048</option>
+                            <option value="4096">4,096</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Available Audio Input Devices: </label>
+                    <div id="audioDevicesList">
+                        <div style="text-align: center; padding: 20px; color: var(--text-muted);">
+                            <button type="button" class="btn-secondary" onclick="loadAudioDevices()">
+                                Load Audio Devices
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <!-- VLF Stations -->
             <div class="form-section">
-                <h3>VLF Stations to Monitor</h3>
+                <h3><i class="fas fa-user"></i> Contact Information</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="contactName">Your Name *</label>
+                        <input type="text" id="contactName" name="contact_name" 
+                               placeholder="Your Name" value="" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contactEmail">Email *</label>
+                        <input type="email" id="contactEmail" name="contact_email" 
+                               placeholder="your.email@domain.com" value="" required>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3><i class="fas fa-radio"></i> VLF Stations to Monitor</h3>
                 <p>Select the VLF stations you want to monitor (based on your location and reception capabilities):</p>
                 
                 <div class="stations-container">
@@ -284,7 +375,6 @@
                     </div>
                     
                     <div class="stations-grid" id="stationsGrid">
-                        <!-- Stations will be populated by JavaScript -->
                     </div>
                     
                     <div class="selected-count" id="selectedCount">
@@ -297,7 +387,7 @@
                 <button type="submit" class="btn-primary">
                     Save Observatory Configuration
                 </button>
-                <button type="button" class="btn-secondary" onclick="window.location.href='/'">
+                <button type="button" class="btn-secondary" onclick="window. location.href='/'">
                     Cancel
                 </button>
             </div>
@@ -305,15 +395,14 @@
     </div>
     
     <script>
-        // Complete VLF Stations data
         const vlfStations = {
             'VTX1': { freq: 16.3, location: 'South Vijayanarayanam, India', lat: 8.387015, lon: 77.752762, region: 'asia', type: 'vlf' },
-            'JXN': { freq: 16.4, location: 'Novik, Norway', lat: 66.974353, lon: 13.873617, region: 'europe', type: 'vlf' },
+            'JXN':  { freq: 16.4, location: 'Novik, Norway', lat: 66.974353, lon: 13.873617, region: 'europe', type: 'vlf' },
             'VTX2': { freq: 17.0, location: 'South Vijayanarayanam, India', lat: 8.387015, lon: 77.752762, region: 'asia', type: 'vlf' },
             'SAQ': { freq: 17.2, location: 'Grimeton, Sweden', lat: 57.113171, lon: 12.397277, region: 'europe', type: 'vlf' },
             'RDL': { freq: 18.1, location: 'Unknown Location', lat: 0, lon: 0, region: 'unknown', type: 'vlf' },
             'VTX3': { freq: 18.2, location: 'South Vijayanarayanam, India', lat: 8.387015, lon: 77.752762, region: 'asia', type: 'vlf' },
-            'VTX4': { freq: 19.2, location: 'South Vijayanarayanam, India', lat: 8.387015, lon: 77.752762, region: 'asia', type: 'vlf' },
+            'VTX4':  { freq: 19.2, location: 'South Vijayanarayanam, India', lat: 8.387015, lon: 77.752762, region: 'asia', type: 'vlf' },
             'GBZ': { freq: 19.58, location: 'Anthorn, UK', lat: 54.911643, lon: -3.278456, region: 'europe', type: 'vlf' },
             'NWC': { freq: 19.8, location: 'North West Cape, Australia', lat: -21.816328, lon: 114.165586, region: 'asia', type: 'vlf' },
             'ICV': { freq: 20.27, location: 'Isola di Tavolara, Italy', lat: 40.923127, lon: 9.731011, region: 'europe', type: 'vlf' },
@@ -322,7 +411,7 @@
             'HWU': { freq: 21.75, location: 'Rosnay, France', lat: 46.713129, lon: 1.245248, region: 'europe', type: 'vlf' },
             'GQD': { freq: 22.1, location: 'Skelton, UK', lat: 54.731799, lon: -2.883033, region: 'europe', type: 'vlf' },
             'NDT': { freq: 22.2, location: 'Ebino, Japan', lat: 32.082084, lon: 130.827960, region: 'asia', type: 'vlf' },
-            'DHO38': { freq: 23.4, location: 'Rhauderfehn, Germany', lat: 53.078900, lon: 7.615000, region: 'europe', type: 'vlf' },
+            'DHO38': { freq: 23.4, location: 'Rhauderfehn, Germany', lat:  53.078900, lon: 7.615000, region: 'europe', type: 'vlf' },
             'NAA': { freq: 24.0, location: 'Cutler, Maine, USA', lat: 44.644936, lon: -67.281639, region: 'americas', type: 'vlf' },
             'NLK': { freq: 24.8, location: 'Jim Creek, Washington, USA', lat: 48.203487, lon: -121.916827, region: 'americas', type: 'vlf' },
             'UNID25': { freq: 25.0, location: 'Mokpo, South Korea', lat: 34.679068, lon: 126.445383, region: 'asia', type: 'vlf' },
@@ -331,21 +420,21 @@
             'NRK': { freq: 37.5, location: 'Grindavik, Iceland', lat: 63.850365, lon: -22.466773, region: 'europe', type: 'lf' },
             'JJY40': { freq: 40.0, location: 'Mount Ootakadoya, Japan', lat: 37.372598, lon: 140.848906, region: 'asia', type: 'lf' },
             'MSF': { freq: 60.0, location: 'Anthorn, UK', lat: 54.911195, lon: -3.279302, region: 'europe', type: 'lf' },
-            'WWVB': { freq: 60.0, location: 'Fort Collins, Colorado, USA', lat: 40.677722, lon: -105.047153, region: 'americas', type: 'lf' },
+            'WWVB': { freq: 60.0, location: 'Fort Collins, Colorado, USA', lat:  40.677722, lon: -105.047153, region: 'americas', type: 'lf' },
             'JJY60': { freq: 60.0, location: 'Mount Hagane, Japan', lat: 33.465433, lon: 130.175415, region: 'asia', type: 'lf' },
             'DCF77': { freq: 77.5, location: 'Mainflingen, Germany', lat: 50.015411, lon: 9.008307, region: 'europe', type: 'lf' }
         };
 
-        // Recommended stations for Uruguay (South America)
         const recommendedForUruguay = ['NAA', 'NPM', 'NLK', 'NML', 'DHO38', 'GQD'];
         
         let currentFilter = 'all';
+        let selectedAudioDevice = null;
         
         function populateStations() {
             const grid = document.getElementById('stationsGrid');
             grid.innerHTML = '';
             
-            Object.entries(vlfStations). forEach(([callSign, station]) => {
+            Object.entries(vlfStations).forEach(([callSign, station]) => {
                 if (! shouldShowStation(callSign, station)) return;
                 
                 const div = document.createElement('div');
@@ -360,7 +449,7 @@
                     <div class="station-info">
                         <div class="station-name">${callSign}</div>
                         <div class="station-freq">${station.freq} kHz</div>
-                        <div class="station-location">${station. location}</div>
+                        <div class="station-location">${station.location}</div>
                     </div>
                 `;
                 
@@ -372,7 +461,7 @@
         
         function shouldShowStation(callSign, station) {
             switch(currentFilter) {
-                case 'all': return true;
+                case 'all':  return true;
                 case 'vlf': return station.type === 'vlf';
                 case 'lf': return station. type === 'lf';
                 case 'americas': return station.region === 'americas';
@@ -384,26 +473,112 @@
         }
         
         function updateSelectedCount() {
-            const selected = document.querySelectorAll('input[name="stations"]:checked'). length;
+            const selected = document.querySelectorAll('input[name="stations"]:checked').length;
             document.getElementById('selectedCount').textContent = `Selected: ${selected} stations`;
         }
+
+        async function loadAudioDevices() {
+            const devicesList = document.getElementById('audioDevicesList');
+            devicesList. innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-muted);">Loading audio devices...</div>';
+            
+            try {
+                const response = await fetch('/api/audio-devices');
+                if (!response.ok) throw new Error('Failed to load devices');
+                
+                const data = await response.json();
+                const devices = data.devices;
+                
+                devicesList. innerHTML = '';
+                
+                if (devices.length === 0) {
+                    devicesList.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-muted);">No audio input devices found</div>';
+                    return;
+                }
+                
+                devices.forEach((device, index) => {
+                    const deviceDiv = document.createElement('div');
+                    deviceDiv.className = 'audio-device-item';
+                    deviceDiv.dataset.deviceIndex = device.index;
+                    
+                    deviceDiv.innerHTML = `
+                        <div class="device-name">${device.name}</div>
+                        <div class="device-info">
+                            ${device.channels} channels, ${device.sample_rate} Hz, API:  ${device.api}
+                        </div>
+                        <button type="button" class="btn-test" onclick="testAudioDevice(${device.index}, this)">
+                            Test Device
+                        </button>
+                        <div class="test-result" id="test-result-${device.index}"></div>
+                    `;
+                    
+                    deviceDiv.addEventListener('click', () => selectAudioDevice(device.index));
+                    devicesList.appendChild(deviceDiv);
+                });
+                
+            } catch (error) {
+                devicesList.innerHTML = `<div style="text-align:  center; padding: 20px; color: var(--danger);">Error loading devices: ${error.message}</div>`;
+            }
+        }
+
+        function selectAudioDevice(deviceIndex) {
+            document.querySelectorAll('.audio-device-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            const selectedItem = document.querySelector(`[data-device-index="${deviceIndex}"]`);
+            selectedItem.classList.add('selected');
+            selectedAudioDevice = deviceIndex;
+        }
+
+        async function testAudioDevice(deviceIndex, button) {
+            const resultDiv = document.getElementById(`test-result-${deviceIndex}`);
+            button.disabled = true;
+            button.textContent = 'Testing... ';
+            
+            try {
+                const response = await fetch('/api/test-audio-device', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        device_index: deviceIndex,
+                        sample_rate: parseInt(document.getElementById('sampleRate').value),
+                        channels: 1
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.working) {
+                    resultDiv. className = 'test-result test-success';
+                    resultDiv.textContent = 'Device working correctly';
+                } else {
+                    resultDiv.className = 'test-result test-error';
+                    resultDiv.textContent = 'Device test failed';
+                }
+                
+            } catch (error) {
+                resultDiv.className = 'test-result test-error';
+                resultDiv.textContent = `Test error: ${error.message}`;
+            } finally {
+                button. disabled = false;
+                button. textContent = 'Test Device';
+            }
+        }
         
-        // Filter buttons
         document.addEventListener('click', (e) => {
-            if (e.target.classList. contains('filter-btn')) {
-                document.querySelectorAll('.filter-btn').forEach(btn => btn. classList.remove('active'));
+            if (e.target.classList.contains('filter-btn')) {
+                document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
                 e.target.classList.add('active');
                 currentFilter = e.target.dataset.filter;
                 populateStations();
             }
         });
         
-        // Form submission
         document.getElementById('setupForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
+            e. preventDefault();
             
-            const formData = new FormData(e.target);
-            const selectedStations = Array.from(document.querySelectorAll('input[name="stations"]:checked'))
+            const formData = new FormData(e. target);
+            const selectedStations = Array.from(document. querySelectorAll('input[name="stations"]:checked'))
                                           .map(cb => cb.value);
             
             if (selectedStations.length === 0) {
@@ -412,9 +587,9 @@
             }
             
             const config = {
-                observatory: {
-                    name: formData. get('observatory_name'),
-                    monitor_id: formData. get('monitor_id'),
+                observatory:  {
+                    name: formData.get('observatory_name'),
+                    monitor_id: formData.get('monitor_id'),
                     location: formData.get('location'),
                     coordinates: {
                         latitude: parseFloat(formData.get('latitude')),
@@ -423,7 +598,7 @@
                     },
                     contact: {
                         name: formData.get('contact_name'),
-                        email: formData.get('contact_email')
+                        email: formData. get('contact_email')
                     }
                 },
                 vlf_stations: {
@@ -431,6 +606,12 @@
                     station_frequencies: Object.fromEntries(
                         selectedStations.map(station => [station, vlfStations[station]])
                     )
+                },
+                audio_settings: {
+                    device_index: selectedAudioDevice,
+                    sample_rate: parseInt(formData.get('sample_rate')),
+                    buffer_size: parseInt(formData. get('buffer_size')),
+                    channels: 1
                 },
                 application: {
                     first_run: false
@@ -440,13 +621,13 @@
             try {
                 const response = await fetch('/api/setup', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers:  { 'Content-Type': 'application/json' },
                     body: JSON.stringify(config)
                 });
                 
                 if (response.ok) {
-                    alert('Observatory configuration saved successfully! ');
-                    window.location. href = '/';
+                    alert('Observatory configuration saved successfully!');
+                    window.location.href = '/';
                 } else {
                     const error = await response.json();
                     throw new Error(error.detail || 'Failed to save configuration');
@@ -456,7 +637,6 @@
             }
         });
         
-        // Initialize page
         populateStations();
     </script>
 </body>

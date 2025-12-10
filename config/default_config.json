@@ -5,7 +5,7 @@
         "debug": false,
         "first_run": false,
         "log_level": "INFO",
-        "last_updated": "2025-12-08T18:10:57.732311"
+        "last_updated": "2025-12-10T18:25:30.311899"
     },
     "observatory": {
         "name": "ClimaSolarUY",
@@ -18,20 +18,129 @@
         },
         "timezone": "UTC",
         "contact": {
-            "name": "Alejandro Arévalo",
-            "email": "aarevalo@fcien.edu.uy"
+            "name": "Alejandro",
+            "email": "aarevalo1234@hotmail.com"
         }
     },
     "vlf_stations": {
         "monitored_stations": [
+            "VTX1",
+            "JXN",
+            "VTX2",
+            "SAQ",
+            "RDL",
+            "VTX3",
+            "VTX4",
+            "GBZ",
+            "NWC",
+            "ICV",
+            "FTA",
             "NPM",
+            "HWU",
             "GQD",
+            "NDT",
             "DHO38",
             "NAA",
             "NLK",
-            "NML"
+            "UNID25",
+            "NML",
+            "TBB",
+            "NRK",
+            "JJY40",
+            "MSF",
+            "WWVB",
+            "JJY60",
+            "DCF77"
         ],
         "station_frequencies": {
+            "VTX1": {
+                "freq": 16.3,
+                "location": "South Vijayanarayanam, India",
+                "lat": 8.387015,
+                "lon": 77.752762,
+                "region": "asia",
+                "type": "vlf"
+            },
+            "JXN": {
+                "freq": 16.4,
+                "location": "Novik, Norway",
+                "lat": 66.974353,
+                "lon": 13.873617,
+                "region": "europe",
+                "type": "vlf"
+            },
+            "VTX2": {
+                "freq": 17,
+                "location": "South Vijayanarayanam, India",
+                "lat": 8.387015,
+                "lon": 77.752762,
+                "region": "asia",
+                "type": "vlf"
+            },
+            "SAQ": {
+                "freq": 17.2,
+                "location": "Grimeton, Sweden",
+                "lat": 57.113171,
+                "lon": 12.397277,
+                "region": "europe",
+                "type": "vlf"
+            },
+            "RDL": {
+                "freq": 18.1,
+                "location": "Unknown Location",
+                "lat": 0,
+                "lon": 0,
+                "region": "unknown",
+                "type": "vlf"
+            },
+            "VTX3": {
+                "freq": 18.2,
+                "location": "South Vijayanarayanam, India",
+                "lat": 8.387015,
+                "lon": 77.752762,
+                "region": "asia",
+                "type": "vlf"
+            },
+            "VTX4": {
+                "freq": 19.2,
+                "location": "South Vijayanarayanam, India",
+                "lat": 8.387015,
+                "lon": 77.752762,
+                "region": "asia",
+                "type": "vlf"
+            },
+            "GBZ": {
+                "freq": 19.58,
+                "location": "Anthorn, UK",
+                "lat": 54.911643,
+                "lon": -3.278456,
+                "region": "europe",
+                "type": "vlf"
+            },
+            "NWC": {
+                "freq": 19.8,
+                "location": "North West Cape, Australia",
+                "lat": -21.816328,
+                "lon": 114.165586,
+                "region": "asia",
+                "type": "vlf"
+            },
+            "ICV": {
+                "freq": 20.27,
+                "location": "Isola di Tavolara, Italy",
+                "lat": 40.923127,
+                "lon": 9.731011,
+                "region": "europe",
+                "type": "vlf"
+            },
+            "FTA": {
+                "freq": 20.9,
+                "location": "Sainte-Assise, France",
+                "lat": 48.544632,
+                "lon": 2.579429,
+                "region": "europe",
+                "type": "vlf"
+            },
             "NPM": {
                 "freq": 21.4,
                 "location": "Lualualei, Hawaii, USA",
@@ -40,12 +149,28 @@
                 "region": "americas",
                 "type": "vlf"
             },
+            "HWU": {
+                "freq": 21.75,
+                "location": "Rosnay, France",
+                "lat": 46.713129,
+                "lon": 1.245248,
+                "region": "europe",
+                "type": "vlf"
+            },
             "GQD": {
                 "freq": 22.1,
                 "location": "Skelton, UK",
                 "lat": 54.731799,
                 "lon": -2.883033,
                 "region": "europe",
+                "type": "vlf"
+            },
+            "NDT": {
+                "freq": 22.2,
+                "location": "Ebino, Japan",
+                "lat": 32.082084,
+                "lon": 130.82796,
+                "region": "asia",
                 "type": "vlf"
             },
             "DHO38": {
@@ -72,6 +197,14 @@
                 "region": "americas",
                 "type": "vlf"
             },
+            "UNID25": {
+                "freq": 25,
+                "location": "Mokpo, South Korea",
+                "lat": 34.679068,
+                "lon": 126.445383,
+                "region": "asia",
+                "type": "vlf"
+            },
             "NML": {
                 "freq": 25.2,
                 "location": "La Moure, North Dakota, USA",
@@ -79,6 +212,62 @@
                 "lon": -98.335638,
                 "region": "americas",
                 "type": "vlf"
+            },
+            "TBB": {
+                "freq": 26.7,
+                "location": "Bafa, Turkey",
+                "lat": 37.412725,
+                "lon": 27.323342,
+                "region": "europe",
+                "type": "vlf"
+            },
+            "NRK": {
+                "freq": 37.5,
+                "location": "Grindavik, Iceland",
+                "lat": 63.850365,
+                "lon": -22.466773,
+                "region": "europe",
+                "type": "lf"
+            },
+            "JJY40": {
+                "freq": 40,
+                "location": "Mount Ootakadoya, Japan",
+                "lat": 37.372598,
+                "lon": 140.848906,
+                "region": "asia",
+                "type": "lf"
+            },
+            "MSF": {
+                "freq": 60,
+                "location": "Anthorn, UK",
+                "lat": 54.911195,
+                "lon": -3.279302,
+                "region": "europe",
+                "type": "lf"
+            },
+            "WWVB": {
+                "freq": 60,
+                "location": "Fort Collins, Colorado, USA",
+                "lat": 40.677722,
+                "lon": -105.047153,
+                "region": "americas",
+                "type": "lf"
+            },
+            "JJY60": {
+                "freq": 60,
+                "location": "Mount Hagane, Japan",
+                "lat": 33.465433,
+                "lon": 130.175415,
+                "region": "asia",
+                "type": "lf"
+            },
+            "DCF77": {
+                "freq": 77.5,
+                "location": "Mainflingen, Germany",
+                "lat": 50.015411,
+                "lon": 9.008307,
+                "region": "europe",
+                "type": "lf"
             }
         }
     },

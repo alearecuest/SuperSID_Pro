@@ -29,13 +29,13 @@ class FlareClass(Enum):
 class SolarFlare:
     """Solar flare data"""
     timestamp: datetime
-    flare_class: str  # e.g., "M2.1", "X1.5"
+    flare_class: str
     peak_time: Optional[datetime] = None
     start_time: Optional[datetime] = None
     end_time: Optional[datetime] = None
-    location: Optional[str] = None  # e.g., "N15W28"
-    region: Optional[str] = None  # Active region number
-    intensity: float = 0.0  # Numerical intensity
+    location: Optional[str] = None
+    region: Optional[str] = None
+    intensity: float = 0.0
 
 @dataclass
 class GeomagnticData:
@@ -44,13 +44,13 @@ class GeomagnticData:
     kp_index: float
     ap_index: Optional[int] = None
     dst_index: Optional[int] = None
-    activity_level: str = "Quiet"  # Quiet, Unsettled, Active, Minor Storm, etc.  
+    activity_level: str = "Quiet"
 
 @dataclass
 class SolarWindData:
     """Solar wind parameters"""
     timestamp: datetime
-    speed: float  # km/s
+    speed: float 
     density: float  # protons/cm³
     temperature: float  # K
     bz: float  # Magnetic field Z component (nT)
@@ -75,15 +75,12 @@ class SpaceWeatherAPI:
         self.config_manager = config_manager
         self.logger = get_logger(__name__)
         
-        # API endpoints (URLs actualizadas)
-        self.noaa_base_url = "https://services. swpc.noaa.gov/json/"
+        self.noaa_base_url = "https://services.swpc.noaa.gov/json/"
         self.spaceweather_base_url = "https://www.spaceweatherlive.com"
         
-        # Cache for reducing API calls
         self._cache = {}
-        self._cache_timeout = 300  # 5 minutes
+        self._cache_timeout = 600
         
-        # Session for HTTP requests
         self._session: Optional[aiohttp.ClientSession] = None
     
     async def __aenter__(self):
@@ -101,7 +98,6 @@ class SpaceWeatherAPI:
     async def get_current_conditions(self) -> SpaceWeatherSummary:
         """Get current space weather conditions"""
         try:
-            # Get data from multiple sources in parallel
             tasks = [
                 self. get_noaa_current_conditions(),
                 self.get_spaceweatherlive_data(),
@@ -112,10 +108,8 @@ class SpaceWeatherAPI:
             
             results = await asyncio.gather(*tasks, return_exceptions=True)
             
-            # Combine results
             summary = SpaceWeatherSummary(timestamp=datetime.utcnow())
             
-            # Process each result
             if not isinstance(results[0], Exception):
                 summary.current_conditions. update(results[0])
             
@@ -135,18 +129,16 @@ class SpaceWeatherAPI:
             
         except Exception as e:
             log_exception(e, "Getting space weather conditions")
-            # Return empty summary on error
             return SpaceWeatherSummary(timestamp=datetime.utcnow())
     
     async def get_noaa_current_conditions(self) -> Dict[str, Any]:
         """Get current conditions from NOAA SWPC"""
         try:
-            # URLs actualizadas para NOAA SWPC
             endpoints = [
-                "planetary_k_index. json",  # Cambió de 1m a datos principales
-                "solar_wind_speed. json",    # URL simplificada
-                "solar_wind_mag_field.json", # URL simplificada
-                "goes_xrs.json",           # URL simplificada para X-ray flux
+                "planetary_k_index. json",
+                "solar_wind_speed. json",
+                "solar_wind_mag_field.json",
+                "goes_xrs.json",
             ]
             
             conditions = {}
@@ -156,7 +148,7 @@ class SpaceWeatherAPI:
                 data = await self._fetch_json(url)
                 
                 if data and len(data) > 0:
-                    latest = data[-1]  # Get most recent data point
+                    latest = data[-1] 
                     
                     if "planetary_k_index" in endpoint:
                         conditions["kp_index"] = float(latest. get("kp_index", 0))
@@ -193,10 +185,6 @@ class SpaceWeatherAPI:
             soup = BeautifulSoup(html, 'html. parser')
             conditions = {}
             
-            # Look for current values in the main page
-            # This is website-specific scraping, may need updates
-            
-            # Try to find solar wind speed
             speed_elements = soup.find_all(text=re.compile(r'\d+\s*km/s'))
             if speed_elements:
                 for elem in speed_elements:
@@ -205,7 +193,6 @@ class SpaceWeatherAPI:
                         conditions["swl_sw_speed"] = int(match.group(1))
                         break
             
-            # Try to find Kp index
             kp_elements = soup.find_all(text=re.compile(r'Kp.*? (\d+\.  ?\d*)'))
             if kp_elements:
                 for elem in kp_elements:
@@ -214,7 +201,6 @@ class SpaceWeatherAPI:
                         conditions["swl_kp"] = float(match.group(1))
                         break
             
-            # Try to find solar flux
             flux_elements = soup. find_all(text=re. compile(r'(\d+\. ?\d*)\s*sfu'))
             if flux_elements:
                 for elem in flux_elements:
@@ -234,7 +220,6 @@ class SpaceWeatherAPI:
     async def get_recent_solar_flares(self, hours: int = 24) -> List[SolarFlare]:
         """Get recent solar flares from NOAA"""
         try:
-            # Intentar múltiples endpoints para X-ray data
             possible_endpoints = [
                 "goes_xrs.json",
                 "xray_5m.json",
@@ -257,7 +242,6 @@ class SpaceWeatherAPI:
             current_time = datetime.utcnow()
             cutoff_time = current_time - timedelta(hours=hours)
             
-            # Process X-ray data to detect flares
             for i, point in enumerate(data):
                 try:
                     timestamp = datetime.fromisoformat(point["time_tag"]. replace('Z', '+00:00'))
@@ -267,11 +251,9 @@ class SpaceWeatherAPI:
                     
                     flux = float(point.get("flux", 0))
                     
-                    # Detect flare based on flux level
                     flare_class = self._classify_xray_flux(flux)
                     
-                    if flare_class and flare_class != "A":  # Only report B-class and above
-                        # Check if this is a peak (simple peak detection)
+                    if flare_class and flare_class != "A":
                         is_peak = True
                         if i > 0 and i < len(data) - 1:
                             prev_flux = float(data[i-1].get("flux", 0))
@@ -292,7 +274,6 @@ class SpaceWeatherAPI:
                 except (ValueError, KeyError) as e:
                     continue
             
-            # Remove duplicate/overlapping flares (keep strongest in time window)
             filtered_flares = self._filter_duplicate_flares(flares)
             
             return sorted(filtered_flares, key=lambda x: x.timestamp, reverse=True)
@@ -325,12 +306,10 @@ class SpaceWeatherAPI:
         window = timedelta(minutes=window_minutes)
         
         for flare in sorted(flares, key=lambda x: x.timestamp):
-            # Check if this flare is too close to any existing flare
             is_duplicate = False
             
             for existing in filtered:
                 if abs(flare.timestamp - existing.timestamp) < window:
-                    # Keep the stronger flare
                     if flare.intensity > existing.intensity:
                         filtered.remove(existing)
                         filtered.append(flare)
@@ -345,7 +324,6 @@ class SpaceWeatherAPI:
     async def get_geomagnetic_data(self) -> Optional[GeomagnticData]:
         """Get current geomagnetic conditions"""
         try:
-            # Intentar múltiples endpoints para Kp index
             possible_endpoints = [
                 "planetary_k_index. json",
                 "kp_index.json", 
@@ -368,7 +346,6 @@ class SpaceWeatherAPI:
             timestamp = datetime.fromisoformat(latest["time_tag"].replace('Z', '+00:00'))
             kp_index = float(latest. get("kp_index", 0))
             
-            # Determine activity level
             activity_level = self._get_activity_level(kp_index)
             
             return GeomagnticData(
@@ -403,7 +380,6 @@ class SpaceWeatherAPI:
     async def get_solar_wind_data(self) -> Optional[SolarWindData]:
         """Get current solar wind parameters"""
         try:
-            # Intentar múltiples endpoints para solar wind
             wind_endpoints = [
                 ("solar_wind_speed.json", "speed"),
                 ("solar_wind_mag_field.json", "magnetic"),
@@ -453,7 +429,6 @@ class SpaceWeatherAPI:
     
     async def _fetch_json(self, url: str) -> Optional[Dict]:
         """Fetch JSON data from URL with caching"""
-        # Check cache first
         cache_key = f"json_{url}"
         if cache_key in self._cache:
             cached_time, cached_data = self._cache[cache_key]
@@ -482,7 +457,6 @@ class SpaceWeatherAPI:
     
     async def _fetch_html(self, url: str) -> Optional[str]:
         """Fetch HTML content from URL with caching"""
-        # Check cache first
         cache_key = f"html_{url}"
         if cache_key in self._cache:
             cached_time, cached_data = self._cache[cache_key]
@@ -497,7 +471,6 @@ class SpaceWeatherAPI:
                 if response.status == 200:
                     text = await response.text()
                     
-                    # Cache the result
                     self._cache[cache_key] = (datetime.utcnow(), text)
                     
                     return text
@@ -509,7 +482,6 @@ class SpaceWeatherAPI:
             log_exception(e, f"Fetching HTML from {url}")
             return None
 
-# Convenience functions for synchronous usage
 def get_space_weather_sync(config_manager: ConfigManager) -> SpaceWeatherSummary:
     """Get space weather data synchronously"""
     async def _get_data():

@@ -15,11 +15,11 @@ from PyQt6.QtCore import Qt, QTimer, QThread, pyqtSignal, QSize
 from PyQt6.QtGui import QIcon, QPixmap, QAction, QFont, QPalette, QColor
 
 from gui.widgets.observatory_widget import ObservatoryWidget
-from gui.widgets.monitoring_widget import MonitoringWidget  # UPDATED
+from gui.widgets.monitoring_widget import MonitoringWidget
 from gui.widgets.stations_widget import StationsWidget
 from gui.widgets.space_weather_widget import SpaceWeatherWidget
 from gui.widgets.vlf_database_widget import VLFDatabaseWidget
-from gui.widgets. chart_widget import ChartWidget  # NEW
+from gui.widgets. chart_widget import ChartWidget
 from gui.dialogs.setup_dialog import SetupDialog
 from gui.styles.dark_theme import DarkTheme
 from core.config_manager import ConfigManager
@@ -37,18 +37,14 @@ class SuperSIDProApp(QApplication):
         self.debug = debug
         self.logger = get_logger(__name__)
         
-        # Set application properties
         self.setApplicationName("SuperSID Pro")
         self.setApplicationVersion("1.0.0")
         self.setOrganizationName("Observatory Software Solutions")
         
-        # Apply dark theme
         self.apply_theme()
         
-        # Create main window
         self.main_window = MainWindow(config_manager)
         
-        # Setup system tray
         self.setup_system_tray()
         
         self.logger.info("SuperSID Pro application initialized")
@@ -64,12 +60,10 @@ class SuperSIDProApp(QApplication):
         if QSystemTrayIcon.isSystemTrayAvailable():
             self. tray_icon = QSystemTrayIcon(self)
             
-            # Create tray icon
             icon_path = Path("assets/icons/supersid_icon.png")
             if icon_path.exists():
                 self.tray_icon.setIcon(QIcon(str(icon_path)))
             
-            # Create tray menu
             tray_menu = QMenu()
             
             show_action = QAction("Show SuperSID Pro", self)
@@ -94,7 +88,6 @@ class SuperSIDProApp(QApplication):
     
     def run(self) -> int:
         """Run the application"""
-        # Show setup dialog if first run
         if self.config_manager.get('application.first_run', True):
             reply = QMessageBox.question(
                 None,
@@ -128,9 +121,7 @@ class MainWindow(QMainWindow):
         self.setup_toolbar()
         self.setup_statusbar()
         
-        # Start monitoring
         self.start_monitoring()
-        # Initialize VLF integration
         self.vlf_integration = VLFGUIIntegration(self.config_manager, self.vlf_widget)
         self.logger.info("Main window initialized")
     
@@ -140,31 +131,24 @@ class MainWindow(QMainWindow):
         self.setMinimumSize(1200, 800)
         self.resize(1400, 900)
         
-        # Set window icon
         icon_path = Path("assets/icons/supersid_icon.png")
         if icon_path.exists():
             self.setWindowIcon(QIcon(str(icon_path)))
         
-        # Create central widget
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         
-        # Create main layout
         main_layout = QHBoxLayout(central_widget)
         
-        # Create main splitter
         main_splitter = QSplitter(Qt. Orientation.Horizontal)
         main_layout.addWidget(main_splitter)
         
-        # Left panel - Controls and info
         left_panel = self.create_left_panel()
         main_splitter.addWidget(left_panel)
         
-        # Right panel - Charts and monitoring
         right_panel = self.create_right_panel()
         main_splitter.addWidget(right_panel)
         
-        # Set splitter proportions
         main_splitter. setSizes([400, 1000])
     
     def create_left_panel(self) -> QWidget:
@@ -197,7 +181,6 @@ class MainWindow(QMainWindow):
         
         layout = QVBoxLayout(panel)
         
-        # Create tab widget for different views
         tab_widget = QTabWidget()
         
         # Real-time monitoring tab (MAIN CHARTS TAB)
@@ -212,11 +195,9 @@ class MainWindow(QMainWindow):
         space_weather_detail = SpaceWeatherWidget(self.config_manager)
         tab_widget.addTab(space_weather_detail, "Space Weather")
         
-        # VLF Database management tab
         self.vlf_database_tab = VLFDatabaseWidget(self.config_manager)
         tab_widget.addTab(self.vlf_database_tab, "VLF Database")
 
-        # Real-time VLF monitoring tab
         self.vlf_widget = RealtimeVLFWidget()
         tab_widget.addTab(self. vlf_widget, "Real-time VLF")
         
@@ -228,7 +209,6 @@ class MainWindow(QMainWindow):
         """Setup menu bar"""
         menubar = self.menuBar()
         
-        # File menu
         file_menu = menubar.addMenu("File")
         
         new_session_action = QAction("New Session", self)
@@ -255,7 +235,6 @@ class MainWindow(QMainWindow):
         exit_action.triggered.connect(self. close)
         file_menu.addAction(exit_action)
         
-        # View menu
         view_menu = menubar.addMenu("View")
         
         fullscreen_action = QAction("Toggle Fullscreen", self)
@@ -263,7 +242,6 @@ class MainWindow(QMainWindow):
         fullscreen_action.triggered.connect(self.toggle_fullscreen)
         view_menu.addAction(fullscreen_action)
         
-        # Tools menu
         tools_menu = menubar.addMenu("Tools")
         
         settings_action = QAction("Settings", self)
@@ -275,7 +253,6 @@ class MainWindow(QMainWindow):
         calibration_action.triggered.connect(self.show_calibration)
         tools_menu. addAction(calibration_action)
         
-        # Help menu
         help_menu = menubar.addMenu("Help")
         
         about_action = QAction("About SuperSID Pro", self)
@@ -293,7 +270,6 @@ class MainWindow(QMainWindow):
         toolbar.setIconSize(QSize(32, 32))
         self.addToolBar(toolbar)
         
-        # Start/Stop monitoring
         self.start_button = QPushButton("Pause")
         self.start_button. setToolTip("Pause/Resume monitoring")
         self.start_button.setStyleSheet("""
@@ -317,7 +293,6 @@ class MainWindow(QMainWindow):
         
         toolbar.addSeparator()
         
-        # Status indicators
         self.connection_status = QLabel("🔴")
         self.connection_status. setToolTip("Connection Status")
         toolbar.addWidget(self.connection_status)
@@ -327,13 +302,11 @@ class MainWindow(QMainWindow):
         
         toolbar.addSeparator()
         
-        # Quick export
         export_button = QPushButton("Export")
         export_button.setToolTip("Quick export current data")
         export_button. clicked.connect(self.export_data)
         toolbar.addWidget(export_button)
         
-        # Screenshot
         screenshot_button = QPushButton("Screenshot")
         screenshot_button.setToolTip("Take screenshot of current view")
         screenshot_button.clicked.connect(self.take_screenshot)
@@ -344,11 +317,9 @@ class MainWindow(QMainWindow):
         self.status_bar = QStatusBar()
         self.setStatusBar(self.status_bar)
         
-        # Status messages
         self.status_message = QLabel("SuperSID Pro Ready")
         self.status_bar.addWidget(self.status_message)
         
-        # Permanent widgets (right side)
         self.data_rate_label = QLabel("Data: 0 Hz")
         self.status_bar.addPermanentWidget(self.data_rate_label)
         
@@ -391,11 +362,9 @@ class MainWindow(QMainWindow):
         from datetime import datetime
         import psutil
         
-        # Update time
         current_time = datetime.now().strftime("%H:%M:%S")
         self.time_label. setText(f"{current_time}")
         
-        # Update memory usage
         try:
             memory = psutil.virtual_memory()
             memory_mb = memory.used / (1024 * 1024)
@@ -403,7 +372,6 @@ class MainWindow(QMainWindow):
         except:
             self.memory_label. setText("Memory: N/A")
     
-    # Menu action handlers
     def new_session(self):
         """Start a new monitoring session"""
         self.logger. info("New session requested")
@@ -495,11 +463,9 @@ class MainWindow(QMainWindow):
     
     def closeEvent(self, event):
         """Handle close event"""
-        # Cleanup VLF integration
         if hasattr(self, 'vlf_integration'):
             self.vlf_integration.cleanup()
     
-        # Hide to system tray instead of closing
         event.ignore()
         self.hide()
     

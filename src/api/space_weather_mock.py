@@ -29,18 +29,16 @@ class MockSpaceWeatherAPI:
     async def get_current_conditions(self) -> SpaceWeatherSummary:
         """Get mock space weather conditions"""
         try:
-            # Generate realistic mock data
             current_time = datetime.utcnow()
             
             # Mock geomagnetic data
-            kp_index = random.uniform(0.0, 6.0)  # Most activity is below 6
+            kp_index = random.uniform(0.0, 6.0)
             geomagnetic = GeomagnticData(
                 timestamp=current_time,
                 kp_index=kp_index,
                 activity_level=self._get_activity_level(kp_index)
             )
             
-            # Mock solar wind data
             solar_wind = SolarWindData(
                 timestamp=current_time,
                 speed=random.uniform(300, 700),  # km/s
@@ -51,7 +49,6 @@ class MockSpaceWeatherAPI:
                 phi=random.uniform(-180, 180)  # degrees
             )
             
-            # Mock current conditions
             current_conditions = {
                 "kp_index": kp_index,
                 "kp_time": current_time. isoformat(),
@@ -68,7 +65,6 @@ class MockSpaceWeatherAPI:
                 "swl_last_update": current_time.isoformat()
             }
             
-            # Mock solar flares
             solar_flares = self._generate_mock_flares()
             
             summary = SpaceWeatherSummary(
@@ -109,22 +105,17 @@ class MockSpaceWeatherAPI:
         flares = []
         current_time = datetime.utcnow()
         
-        # Generate 0-3 flares in last 24 hours
         num_flares = random.randint(0, 3)
         
         for i in range(num_flares):
-            # Random time in last 24 hours
             flare_time = current_time - timedelta(hours=random.uniform(0, 24))
             
-            # Random flare class (weighted towards smaller flares)
             flare_classes = ["A", "B", "C", "M", "X"]
-            weights = [0.4, 0.3, 0.2, 0.08, 0.02]  # Most flares are A/B class
+            weights = [0.4, 0.3, 0.2, 0.08, 0.02]
             flare_class = random.choices(flare_classes, weights=weights)[0]
             
-            # Random magnitude
             magnitude = random. uniform(1.0, 9.9)
             
-            # Random location
             locations = ["N15W28", "S20E35", "N08W45", "S12E12", "N25W60"]
             location = random.choice(locations)
             
@@ -140,17 +131,14 @@ class MockSpaceWeatherAPI:
         
         return sorted(flares, key=lambda x: x.timestamp, reverse=True)
 
-# Factory function to choose between real and mock API
 def create_space_weather_api(config_manager, force_mock=False):
     """Create appropriate space weather API instance"""
     
-    # Check if we should use mock data
     use_mock = force_mock or config_manager.get('development. use_mock_data', False)
     
     if use_mock:
         return MockSpaceWeatherAPI(config_manager)
     else:
-        # Try to import real API, fallback to mock on network issues
         try:
             from api.space_weather_api import SpaceWeatherAPI
             return SpaceWeatherAPI(config_manager)

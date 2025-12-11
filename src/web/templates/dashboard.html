@@ -9,13 +9,13 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono: wght@400;500;600&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="/static/css/dashboard.css">
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
     
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min. css">
     
     <style>
         .observatory-section {
@@ -49,6 +49,32 @@
             color: var(--text-muted);
             padding: 20px;
         }
+
+        .charts-section {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .overview-top {
+            height: 400px; 
+            margin-bottom: 20px;
+            width: 100%;
+            background: var(--bg-card);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .charts-grid .chart-container {
+            height: 250px; 
+        }
     </style>
 </head>
 <body>
@@ -58,10 +84,10 @@
             <div class="header-left">
                 <h1>
                     <img src="/static/images/radioastronomylogo.png" alt="SuperSID Pro" 
-                         style="height: 40px; margin-right: 10px; vertical-align: middle;">
+                         style="height: 40px; margin-right: 15px; vertical-align: middle;">
                     SuperSID Pro
                 </h1>
-                <span class="subtitle">VLF Real-time Monitoring Dashboard</span>
+                <span class="subtitle" style="margin-left: 55px;">VLF Real-time Monitoring Dashboard</span>
             </div>
             
             <div class="header-right">
@@ -100,11 +126,11 @@
                 <div class="card-content">
                     <div class="observatory-info">
                         <div class="info-item">
-                            <span>Observatory: </span>
+                            <span>Observatory:  </span>
                             <span id="obsName" class="info-value">Loading...</span>
                         </div>
                         <div class="info-item">
-                            <span>Monitor ID:</span>
+                            <span>Monitor ID: </span>
                             <span id="obsMonitorId" class="info-value">Loading...</span>
                         </div>
                         <div class="info-item">
@@ -141,7 +167,7 @@
                             <span id="totalPoints" class="status-value">0</span>
                         </div>
                         <div class="status-item">
-                            <span>WebSocket:</span>
+                            <span>WebSocket: </span>
                             <span id="wsStatus" class="status-value">Disconnected</span>
                         </div>
                     </div>
@@ -153,7 +179,7 @@
                         <h3>Anomalies</h3>
                     </div>
                     <div class="card-content">
-                        <div id="anomalyList" class="anomaly-list">
+                        <div id="anomalyList" class="anomaly-list" style="max-height: 200px; overflow-y: auto;">
                             <div class="no-anomalies">No anomalies detected</div>
                         </div>
                     </div>
@@ -187,7 +213,7 @@
                                 <span id="kpIndex" class="status-value">--</span>
                             </div>
                             <div class="status-item">
-                                <span>Solar Wind: </span>
+                                <span>Solar Wind:  </span>
                                 <span id="solarWindSpeed" class="status-value">-- km/s</span>
                             </div>
                             <div class="status-item">
@@ -200,11 +226,7 @@
             </section>
 
             <section class="charts-section">
-                <div class="charts-grid" id="chartsGrid">
-                    <div class="loading-message">Loading station charts...</div>
-                </div>
-
-                <div class="chart-container overview">
+                <div class="chart-container overview-top">
                     <div class="chart-header">
                         <h4>All Stations Overview</h4>
                         <div class="chart-controls">
@@ -217,6 +239,10 @@
                         </div>
                     </div>
                     <canvas id="overviewChart"></canvas>
+                </div>
+
+                <div class="charts-grid" id="chartsGrid">
+                    <div class="loading-message">Loading station charts...</div>
                 </div>
             </section>
         </main>
@@ -242,7 +268,7 @@
         let chartColors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FECA57', '#FF9FF3', '#54A0FF', '#5F27CD'];
 
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Dashboard loading...');
+            console.log('Dashboard loading.. .');
             initializeDashboard();
         });
 
@@ -265,7 +291,7 @@
         function createDynamicCharts() {
             if (! observatoryConfig) return;
             
-            const stations = observatoryConfig.vlf_stations?.monitored_stations || [];
+            const stations = observatoryConfig.vlf_stations?. monitored_stations || [];
             const stationFreqs = observatoryConfig.vlf_stations?.station_frequencies || {};
             const chartsGrid = document.getElementById('chartsGrid');
             
@@ -307,35 +333,35 @@
                             fill: true,
                             tension: 0.4,
                             pointRadius: 0,
-                            pointHoverRadius: 4
+                            pointHoverRadius:  4
                         }]
                     },
-                    options: {
+                    options:  {
                         responsive: true,
                         maintainAspectRatio: false,
-                        interaction:  {
+                        interaction: {
                             intersect: false,
-                            mode: 'index'
+                            mode:  'index'
                         },
                         scales: {
                             x: {
                                 display: true,
                                 grid:  { color: '#444444' },
-                                ticks: { color:  '#cccccc', maxTicksLimit: 6 }
+                                ticks: { color: '#cccccc', maxTicksLimit: 6 }
                             },
-                            y: {
+                            y:  {
                                 display: true,
                                 grid:  { color: '#444444' },
                                 ticks: { color: '#cccccc' },
-                                beginAtZero:  true,
+                                beginAtZero: true,
                                 title: {
                                     display: true,
-                                    text: 'Amplitude (V)',
+                                    text: 'Amplitude (A)',
                                     color: '#cccccc'
                                 }
                             }
                         },
-                        plugins: {
+                        plugins:  {
                             legend: { display: false }
                         },
                         animation: { duration: 0 }
@@ -343,7 +369,7 @@
                 });
             });
             
-            console.log(`Created ${stations.length} dynamic charts for stations:  ${stations.join(', ')}`);
+            console.log(`Created ${stations.length} dynamic charts for stations: ${stations.join(', ')}`);
         }
 
         function initializeCharts() {
@@ -355,10 +381,10 @@
                     type: 'line',
                     data: {
                         labels: [],
-                        datasets: []
+                        datasets:  []
                     },
                     options: {
-                        responsive: true,
+                        responsive:  true,
                         maintainAspectRatio: false,
                         interaction: { intersect: false, mode: 'index' },
                         scales: {
@@ -369,15 +395,24 @@
                             },
                             y: {
                                 display: true,
-                                grid:  { color: '#444444' },
+                                grid: { color: '#444444' },
                                 ticks: { color: '#cccccc' },
-                                beginAtZero: true
+                                beginAtZero:  true,
+                                title: {
+                                    display:  true,
+                                    text:  'Amplitude (A)',
+                                    color: '#cccccc',
+                                    font: {
+                                        size: 14,
+                                        weight: 'bold'
+                                    }
+                                }
                             }
                         },
-                        plugins: {
+                        plugins:  {
                             legend: {
                                 display: true,
-                                labels: { color: '#cccccc', usePointStyle: true }
+                                labels: { color: '#cccccc', usePointStyle:  true }
                             }
                         },
                         animation: { duration: 0 }
@@ -394,7 +429,7 @@
             
             const timeString = new Date(timestamp).toLocaleTimeString();
             
-            chart.data.labels.push(timeString);
+            chart. data.labels.push(timeString);
             chart.data.datasets[0].data.push(amplitude);
             
             const timeRange = parseInt(document.getElementById('timeRange').value);

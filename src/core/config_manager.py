@@ -120,11 +120,10 @@ class ConfigManager:
         self.config: Dict[str, Any] = {}
         self.logger = get_logger(__name__)
         
-        # Configuration change tracking
         self._original_config = {}
         self._auto_save = True
         self._validation_errors = []
-        self._saving = False  # Prevent recursion during save
+        self._saving = False
         
         self. load_config()
         self._original_config = copy.deepcopy(self.config)
@@ -138,7 +137,6 @@ class ConfigManager:
                 
                 self. logger.info(f"Configuration loaded from {self.config_file}")
                 
-                # Validate and upgrade config if needed
                 self._validate_and_upgrade()
                 return True
             else:
@@ -159,27 +157,22 @@ class ConfigManager:
     
     def save_config(self, backup: bool = True) -> bool:
         """Save configuration to file with backup"""
-        # Prevent recursive calls
         if self._saving:
             return False
         
         self._saving = True
         
         try:
-            # Ensure directory exists
             self.config_file.parent.mkdir(parents=True, exist_ok=True)
             
-            # Create backup if requested
             if backup and self.config_file.exists():
                 backup_file = self.config_file.with_suffix('.bak')
                 backup_file.write_bytes(self.config_file.read_bytes())
             
-            # Update last modified timestamp directly (not through set())
             if 'application' not in self.config:
                 self.config['application'] = {}
             self.config['application']['last_updated'] = datetime.now().isoformat()
             
-            # Write config with pretty formatting
             with open(self. config_file, 'w', encoding='utf-8') as f:
                 json.dump(self.config, f, indent=4, ensure_ascii=False)
             
@@ -311,16 +304,13 @@ class ConfigManager:
         keys = key.split('.')
         config = self.config
         
-        # Navigate to parent dictionary
         for k in keys[:-1]:
             if k not in config:
                 config[k] = {}
             config = config[k]
         
-        # Set the value
         config[keys[-1]] = value
         
-        # Auto-save if enabled and not during save (prevent recursion)
         should_auto_save = auto_save if auto_save is not None else self._auto_save
         if should_auto_save and not self._saving and self.has_changes():
             self.save_config(backup=False)
@@ -354,7 +344,6 @@ class ConfigManager:
         try:
             stations = self.get('vlf_stations.default_stations', [])
             
-            # Check for duplicate codes
             if any(s.get('code') == station.code for s in stations):
                 self.logger.warning(f"Station {station.code} already exists")
                 return False
@@ -404,14 +393,12 @@ class ConfigManager:
         """Validate and upgrade configuration structure"""
         self._validation_errors. clear()
         
-        # Check required sections
         required_sections = ['application', 'observatory', 'vlf_stations', 'data_sources']
         for section in required_sections:
             if section not in self.config:
                 self. config[section] = {}
                 self._validation_errors.append(f"Missing section: {section}")
         
-        # Validate observatory coordinates
         obs = self.config. get('observatory', {})
         lat = obs.get('latitude', 0)
         lon = obs.get('longitude', 0)
@@ -421,14 +408,13 @@ class ConfigManager:
         if not (-180 <= lon <= 180):
             self._validation_errors.append(f"Invalid longitude: {lon}")
         
-        # Validate VLF stations
         stations = self.get('vlf_stations. default_stations', [])
         for i, station in enumerate(stations):
             if not isinstance(station, dict):
                 continue
             
             freq = station.get('frequency', 0)
-            if not (10 <= freq <= 100):  # VLF range approximately
+            if not (10 <= freq <= 100):
                 self._validation_errors.append(f"Station {i}: Invalid frequency {freq}")
         
         if self._validation_errors:
@@ -467,14 +453,11 @@ class ConfigManager:
             with open(import_file, 'r', encoding='utf-8') as f:
                 imported_config = json.load(f)
             
-            # Backup current config
             self. save_config(backup=True)
             
-            # Load imported config
             self.config = imported_config
             self._validate_and_upgrade()
             
-            # Save the imported config
             self.save_config()
             
             self. logger.info(f"Configuration imported from {import_path}")

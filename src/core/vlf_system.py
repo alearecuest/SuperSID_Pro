@@ -34,18 +34,14 @@ class VLFMonitoringSystem:
         self.config_manager = config_manager
         self.logger = get_logger(__name__)
         
-        # Load VLF system configuration
         self.vlf_config = self._load_vlf_config()
         
-        # Initialize components
         self._init_components()
         
-        # Data storage
         self.measurement_buffer: List[VLFMeasurement] = []
         self.baseline_data: Dict[str, float] = {}
         self.last_baseline_update = 0
         
-        # Callbacks for real-time updates
         self.data_callbacks: List[Callable] = []
         self.anomaly_callbacks: List[Callable] = []
         
@@ -66,14 +62,12 @@ class VLFMonitoringSystem:
         
     def _init_components(self):
         """Initialize all system components"""
-        # Audio configuration
         audio_config = AudioConfig(
             sample_rate=self.vlf_config.audio_sample_rate,
             buffer_size=self.vlf_config.audio_buffer_size,
             device=self.vlf_config.audio_device
         )
         
-        # Initialize components
         self.audio_capture = VLFAudioCapture(audio_config, self._process_audio_data)
         self.vlf_processor = VLFProcessor(self.vlf_config. audio_sample_rate)
         self.storage = RealtimeStorage()
@@ -83,10 +77,8 @@ class VLFMonitoringSystem:
     def _process_audio_data(self, audio_data: np.ndarray, sample_rate: int):
         """Main audio processing callback"""
         try:
-            # Process VLF signals
             vlf_signals = self.vlf_processor.process_chunk(audio_data)
             
-            # Convert to measurements
             timestamp = datetime.now(timezone.utc)
             measurements = []
             
@@ -100,27 +92,22 @@ class VLFMonitoringSystem:
                 )
                 measurements.append(measurement)
             
-            # Buffer measurements for batch storage
             self.measurement_buffer. extend(measurements)
             
-            # Store batch if buffer is full
             if len(self.measurement_buffer) >= self. vlf_config.storage_batch_size:
                 self. storage.store_batch(self. measurement_buffer)
                 self. measurement_buffer. clear()
             
-            # Check for anomalies
             if self.vlf_config.anomaly_detection:
                 anomalies = self. vlf_processor.detect_anomalies(vlf_signals, self.baseline_data)
                 if anomalies:
                     self._handle_anomalies(anomalies, timestamp)
             
-            # Update baseline periodically
             current_time = time.time()
             if current_time - self. last_baseline_update > self.vlf_config.baseline_update_interval:
                 self._update_baseline()
                 self. last_baseline_update = current_time
             
-            # Call registered callbacks with real-time data
             self._notify_data_callbacks(vlf_signals)
             
         except Exception as e:
@@ -130,7 +117,6 @@ class VLFMonitoringSystem:
         """Handle detected anomalies"""
         self.logger.warning(f"VLF anomalies detected at {timestamp}: {anomalies}")
         
-        # Notify anomaly callbacks
         for callback in self.anomaly_callbacks:
             try:
                 callback(anomalies, timestamp)
@@ -140,12 +126,10 @@ class VLFMonitoringSystem:
     def _update_baseline(self):
         """Update baseline signal levels"""
         try:
-            # Get recent data for each station
             for station in ['NAA', 'NWC', 'DHO', 'GQD']:
                 recent_data = self. storage.get_recent_data(station, minutes=30)
                 
                 if recent_data:
-                    # Calculate average amplitude as baseline
                     amplitudes = [m.amplitude for m in recent_data]
                     self.baseline_data[station] = np.mean(amplitudes)
             
@@ -167,7 +151,6 @@ class VLFMonitoringSystem:
         try:
             self.logger.info("Starting VLF monitoring system...")
             
-            # Start audio capture
             self. audio_capture.start_capture()
             
             self.logger.info("VLF monitoring system started successfully")
@@ -181,10 +164,8 @@ class VLFMonitoringSystem:
         try:
             self. logger.info("Stopping VLF monitoring system...")
             
-            # Stop audio capture
             self. audio_capture.stop_capture()
             
-            # Store any remaining buffered measurements
             if self.measurement_buffer:
                 self.storage.store_batch(self.measurement_buffer)
                 self.measurement_buffer.clear()

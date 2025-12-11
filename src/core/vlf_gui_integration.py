@@ -15,9 +15,9 @@ from core.logger import get_logger
 class VLFWorkerThread(QThread):
     """Worker thread for VLF monitoring to avoid blocking GUI"""
     
-    data_received = pyqtSignal(dict)  # VLF signals data
-    anomaly_detected = pyqtSignal(list, object)  # anomalies, timestamp
-    status_changed = pyqtSignal(str)  # status message
+    data_received = pyqtSignal(dict)
+    anomaly_detected = pyqtSignal(list, object)
+    status_changed = pyqtSignal(str)
     
     def __init__(self, config_manager: ConfigManager):
         super().__init__()
@@ -32,7 +32,6 @@ class VLFWorkerThread(QThread):
             if not self.vlf_system:
                 self. vlf_system = VLFMonitoringSystem(self.config_manager)
                 
-                # Register callbacks
                 self.vlf_system.register_data_callback(self._on_vlf_data)
                 self. vlf_system.register_anomaly_callback(self._on_anomaly)
             
@@ -60,7 +59,6 @@ class VLFWorkerThread(QThread):
     
     def _on_vlf_data(self, vlf_signals: Dict[str, VLFSignal]):
         """Handle VLF data callback"""
-        # Convert VLFSignal objects to dict for signal emission
         signal_data = {}
         for station, signal in vlf_signals. items():
             signal_data[station] = {
@@ -80,7 +78,7 @@ class VLFWorkerThread(QThread):
     def run(self):
         """Main thread loop"""
         while self.is_monitoring:
-            time.sleep(0.1)  # Small delay to prevent high CPU usage
+            time.sleep(0.1)
 
 class VLFGUIIntegration(QObject):
     """Integration layer between VLF system and GUI"""
@@ -91,30 +89,24 @@ class VLFGUIIntegration(QObject):
         self.vlf_widget = vlf_widget
         self.logger = get_logger(__name__)
         
-        # Create worker thread
         self.worker = VLFWorkerThread(config_manager)
         
-        # Connect signals
         self._connect_signals()
         
         self.logger.info("VLF GUI integration initialized")
     
     def _connect_signals(self):
         """Connect worker signals to GUI"""
-        # Connect worker signals to methods
         self.worker.data_received.connect(self._handle_vlf_data)
         self.worker.anomaly_detected.connect(self._handle_anomaly)
         self.worker. status_changed.connect(self._handle_status_change)
         
-        # Connect GUI signals to worker
         self.vlf_widget.start_button.clicked.connect(self._toggle_monitoring)
     
     def _handle_vlf_data(self, signal_data: Dict):
         """Handle incoming VLF data"""
-        # Convert back to VLFSignal objects for the widget
         vlf_signals = {}
         for station, data in signal_data.items():
-            # Create a simple object with the required attributes
             class SimpleSignal:
                 def __init__(self, data):
                     self.timestamp = data['timestamp']
@@ -125,13 +117,11 @@ class VLFGUIIntegration(QObject):
             
             vlf_signals[station] = SimpleSignal(data)
         
-        # Send to visualization widget
         self.vlf_widget.add_vlf_data(vlf_signals)
     
     def _handle_anomaly(self, anomalies, timestamp):
         """Handle anomaly detection"""
         for anomaly in anomalies:
-            # Extract station from anomaly message
             station = anomaly.split(':')[0] if ':' in anomaly else 'Unknown'
             self.vlf_widget.show_anomaly(station, anomaly)
         
@@ -145,12 +135,10 @@ class VLFGUIIntegration(QObject):
     def _toggle_monitoring(self):
         """Toggle VLF monitoring on/off"""
         if not self.worker.is_monitoring:
-            # Start monitoring
             self.worker. start_monitoring()
             if not self.worker.isRunning():
                 self.worker.start()
         else:
-            # Stop monitoring
             self.worker. stop_monitoring()
     
     def cleanup(self):

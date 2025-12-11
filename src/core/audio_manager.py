@@ -20,7 +20,7 @@ class AudioManager:
         devices = []
         for i in range(self. audio.get_device_count()):
             device_info = self.audio.get_device_info_by_index(i)
-            if device_info['maxInputChannels'] > 0:  # Input device
+            if device_info['maxInputChannels'] > 0:
                 devices.append({
                     'index': i,
                     'name': device_info['name'],
@@ -41,7 +41,6 @@ class AudioManager:
                 input_device_index=device_index,
                 frames_per_buffer=1024
             )
-            # Try to read some data
             test_stream.read(1024, exception_on_overflow=False)
             test_stream.stop_stream()
             test_stream. close()

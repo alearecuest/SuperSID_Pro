@@ -37,7 +37,7 @@ class ColoredFormatter(logging.Formatter):
         """Format log record with colors"""
         log_color = self.COLORS. get(record.levelname, self.COLORS['RESET'])
         record.levelname = f"{log_color}{record.levelname}{self. COLORS['RESET']}"
-        record.name = f"\033[94m{record.name}\033[0m"  # Blue module name
+        record.name = f"\033[94m{record.name}\033[0m"
         return super().format(record)
 
 class SuperSIDLogger:
@@ -47,23 +47,19 @@ class SuperSIDLogger:
         self.logger = logging.getLogger(name)
         self.logger.setLevel(logging.DEBUG)
         
-        # Initialize additional loggers
         self.performance_logger = logging.getLogger(f"{name}. Performance")
         self.data_logger = logging.getLogger(f"{name}.Data")
         self.error_logger = logging.getLogger(f"{name}.Error")
         
-        # Prevent duplicate handlers
         if not self. logger.handlers:
             self. setup_handlers()
     
     def setup_handlers(self):
         """Setup all logging handlers"""
-        # Create logs directory
         log_dir = Path("data/logs")
         log_dir.mkdir(parents=True, exist_ok=True)
         
-        # Console handler with colors (for development)
-        if sys.stdout.isatty():  # Only add colors if terminal supports it
+        if sys.stdout.isatty():
             console_handler = logging. StreamHandler()
             console_handler.setLevel(logging.INFO)
             console_formatter = ColoredFormatter(
@@ -73,10 +69,9 @@ class SuperSIDLogger:
             console_handler.setFormatter(console_formatter)
             self.logger.addHandler(console_handler)
         
-        # Main file handler with rotation
         main_handler = logging.handlers.RotatingFileHandler(
             log_dir / "supersid_pro.log",
-            maxBytes=10*1024*1024,  # 10MB
+            maxBytes=10*1024*1024, 
             backupCount=5,
             encoding='utf-8'
         )
@@ -87,10 +82,9 @@ class SuperSIDLogger:
         main_handler.setFormatter(main_formatter)
         self.logger.addHandler(main_handler)
         
-        # Error-only file handler
         error_handler = logging.handlers.RotatingFileHandler(
             log_dir / "supersid_pro_errors.log",
-            maxBytes=5*1024*1024,   # 5MB
+            maxBytes=5*1024*1024,
             backupCount=3,
             encoding='utf-8'
         )
@@ -98,7 +92,6 @@ class SuperSIDLogger:
         error_handler.setFormatter(main_formatter)
         self.logger.addHandler(error_handler)
         
-        # Performance log handler (for optimization)
         perf_handler = logging.handlers.RotatingFileHandler(
             log_dir / "performance.log",
             maxBytes=5*1024*1024,
@@ -112,7 +105,6 @@ class SuperSIDLogger:
         self.performance_logger.addHandler(perf_handler)
         self.performance_logger.setLevel(logging.INFO)
         
-        # Data processing log handler
         data_handler = logging.handlers.RotatingFileHandler(
             log_dir / "data_processing.log",
             maxBytes=10*1024*1024,
@@ -133,7 +125,6 @@ class SuperSIDLogger:
         
         self.error_logger.error(f"{error_msg}\nTraceback:\n{traceback_str}")
         
-        # Also log to main logger
         self.logger.error(f"Exception: {exception} (Context: {context})")
     
     def log_performance(self, operation: str, duration: float, details: dict = None):
@@ -147,7 +138,6 @@ class SuperSIDLogger:
         """Log data processing events"""
         self.data_logger.info(f"{event_type}: {data}")
 
-# Global logger instances
 _logger_instance: Optional[SuperSIDLogger] = None
 
 def setup_logger(debug: bool = False) -> None:
@@ -156,7 +146,6 @@ def setup_logger(debug: bool = False) -> None:
     _logger_instance = SuperSIDLogger()
     
     if debug:
-        # Set more verbose logging in debug mode
         _logger_instance.logger.setLevel(logging. DEBUG)
         for handler in _logger_instance.logger.handlers:
             if isinstance(handler, logging.StreamHandler):
@@ -184,7 +173,6 @@ def log_data_event(event_type: str, data: dict):
     if _logger_instance:
         _logger_instance.log_data_event(event_type, data)
 
-# Decorator for automatic performance logging
 def log_execution_time(operation_name: str = None):
     """Decorator to automatically log function execution time"""
     def decorator(func):

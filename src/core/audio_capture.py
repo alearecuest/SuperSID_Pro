@@ -13,10 +13,10 @@ from core.logger import get_logger
 @dataclass
 class AudioConfig:
     """Audio capture configuration"""
-    sample_rate: int = 11025  # VLF optimal rate
-    channels: int = 1         # Mono capture
-    buffer_size: int = 1024   # Samples per buffer
-    device: Optional[int] = None  # Auto-select device
+    sample_rate: int = 11025 
+    channels: int = 1
+    buffer_size: int = 1024
+    device: Optional[int] = None
 
 class VLFAudioCapture:
     """Professional VLF audio capture system"""
@@ -39,7 +39,6 @@ class VLFAudioCapture:
         self.logger. info(f"Starting VLF audio capture at {self.config. sample_rate}Hz")
         
         try:
-            # Start audio stream
             self.stream = sd.InputStream(
                 samplerate=self.config. sample_rate,
                 channels=self.config.channels,
@@ -49,7 +48,6 @@ class VLFAudioCapture:
             )
             self.stream.start()
             
-            # Start processing thread
             self.capture_thread = threading.Thread(target=self._process_audio)
             self.capture_thread.daemon = True
             self.capture_thread. start()
@@ -65,31 +63,26 @@ class VLFAudioCapture:
         if status:
             self. logger. warning(f"Audio callback status: {status}")
         
-        # Add audio data to processing queue
         self.audio_queue.put(indata.copy())
         
     def _process_audio(self):
         """Process audio data in separate thread"""
         while self. is_capturing:
             try:
-                # Get audio data (with timeout)
                 audio_data = self.audio_queue.get(timeout=1.0)
                 
-                # Process the audio chunk
                 self._process_chunk(audio_data)
                 
             except queue.Empty:
-                continue  # Continue if no data
+                continue
             except Exception as e:
                 self. logger.error(f"Audio processing error: {e}")
                 
     def _process_chunk(self, audio_data):
         """Process individual audio chunk"""
-        # Convert to mono if needed
         if len(audio_data.shape) > 1:
             audio_data = np.mean(audio_data, axis=1)
             
-        # Call user callback with processed data
         self.callback(audio_data, self.config.sample_rate)
         
     def stop_capture(self):

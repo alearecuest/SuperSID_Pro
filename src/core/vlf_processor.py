@@ -24,7 +24,6 @@ class VLFProcessor:
         self.sample_rate = sample_rate
         self.logger = get_logger(__name__)
         
-        # Simple frequency bands in Hz (well within Nyquist limit)
         self.vlf_bands = {
             'BAND_1': (200, 400),   # 200-400 Hz
             'BAND_2': (400, 800),   # 400-800 Hz  
@@ -32,7 +31,6 @@ class VLFProcessor:
             'BAND_4': (1200, 2000), # 1200-2000 Hz
         }
         
-        # Initialize filters
         self.filters = {}
         self._create_filters()
         
@@ -42,13 +40,10 @@ class VLFProcessor:
         
         for band_name, (low_hz, high_hz) in self. vlf_bands.items():
             try:
-                # Normalize to [0, 1] range
                 low_norm = low_hz / nyquist
                 high_norm = high_hz / nyquist
                 
-                # Ensure valid range
                 if low_norm >= 0.01 and high_norm <= 0.99 and low_norm < high_norm:
-                    # Create simple 2nd order filter
                     b, a = signal.butter(2, [low_norm, high_norm], btype='band')
                     self.filters[band_name] = (b, a)
                     self.logger.debug(f"Filter {band_name}: {low_hz}-{high_hz}Hz created")
@@ -62,32 +57,25 @@ class VLFProcessor:
         """Process audio data and return VLF signals"""
         results = {}
         
-        # Validate input
         if len(audio_data) < 50:
             return results
             
         try:
-            # Ensure 1D array
             if audio_data.ndim > 1:
                 audio_data = audio_data.flatten()
             
-            # Process each frequency band
             for band_name, filter_coeffs in self.filters.items():
                 try:
                     b, a = filter_coeffs
                     
-                    # Apply band-pass filter
                     filtered_signal = signal.filtfilt(b, a, audio_data)
                     
-                    # Calculate signal amplitude (RMS)
                     amplitude = np.sqrt(np.mean(filtered_signal**2))
                     
-                    # Estimate frequency using FFT
                     if len(filtered_signal) >= 64:
                         fft = np.fft.fft(filtered_signal)
                         freqs = np.fft.fftfreq(len(filtered_signal), 1/self.sample_rate)
                         
-                        # Find peak frequency in positive spectrum
                         positive_freqs = freqs[:len(freqs)//2]
                         positive_fft = np.abs(fft[:len(fft)//2])
                         
@@ -99,14 +87,12 @@ class VLFProcessor:
                     else:
                         peak_frequency = 0.0
                     
-                    # Calculate phase
                     if amplitude > 0:
                         analytic = signal.hilbert(filtered_signal)
                         phase = np.mean(np.angle(analytic))
                     else:
                         phase = 0.0
                     
-                    # Create VLF signal
                     vlf_signal = VLFSignal(
                         timestamp=time.time(),
                         frequency=peak_frequency,
@@ -117,7 +103,6 @@ class VLFProcessor:
                     
                     results[band_name] = vlf_signal
                     
-                    # Log if significant signal detected
                     if amplitude > 0.001:
                         self.logger. debug(f"{band_name}: amp={amplitude:.6f}, freq={peak_frequency:.3f}kHz")
                 
@@ -141,7 +126,7 @@ class VLFProcessor:
                 baseline_amp = baseline[station_id]
                 amplitude_change = abs(signal_data.amplitude - baseline_amp) / baseline_amp
                 
-                if amplitude_change > 0.3:  # 30% threshold
+                if amplitude_change > 0.3: 
                     anomalies.append(f"{station_id}: {amplitude_change:.1%} amplitude change")
         
         return anomalies

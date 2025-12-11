@@ -100,7 +100,6 @@ def setup_observatory():
         }
     }
     
-    # Save configuration
     config_path = Path("config/default_config.json")
     config_path.parent.mkdir(parents=True, exist_ok=True)
     

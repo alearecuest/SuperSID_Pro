@@ -49,7 +49,6 @@ class SpaceWeatherAPI:
         
         self.logger.info("Starting space weather monitoring")
         
-        # Start periodic updates
         asyncio.create_task(self._update_loop())
     
     async def stop_monitoring(self):
@@ -72,11 +71,10 @@ class SpaceWeatherAPI:
                 break
             except Exception as e:
                 self.logger.error(f"Error in space weather update loop: {e}")
-                await asyncio.sleep(60)  # Wait 1 minute on error
+                await asyncio.sleep(60)
     
     async def fetch_all_data(self):
         """Fetch data from all space weather sources"""
-        # Auto-initialize session if needed
         if not self.session:
             self.session = aiohttp.ClientSession()
         
@@ -216,13 +214,11 @@ class SpaceWeatherAPI:
             swpc_data = solar_wind. get('swpc_data', [])
             self.logger.info(f"Processing {len(swpc_data)} SWPC data points")
             
-            if len(swpc_data) > 1:  # Skip header row
-                # Get the latest data point
-                latest_point = swpc_data[-1]  # Last row
+            if len(swpc_data) > 1:
+                latest_point = swpc_data[-1]
                 
                 if len(latest_point) >= 7:
                     try:
-                        # Extract magnetic field components
                         bx = float(latest_point[1]) if latest_point[1] != '' else 0
                         by = float(latest_point[2]) if latest_point[2] != '' else 0
                         bz = float(latest_point[3]) if latest_point[3] != '' else 0
@@ -230,7 +226,7 @@ class SpaceWeatherAPI:
                         
                         # Calculate approximate Kp index from magnetic field
                         # Simple approximation: higher magnetic field disturbance = higher Kp
-                        magnetic_disturbance = abs(bz)  # Bz component is most important
+                        magnetic_disturbance = abs(bz)
                         
                         if magnetic_disturbance < 3:
                             kp_approx = 0 + int(magnetic_disturbance)

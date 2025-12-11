@@ -27,19 +27,15 @@ def main():
     
     args = parser.parse_args()
     
-    # Setup logging
     setup_logger(debug=args.debug)
     
-    # System check
     if not SystemCheck.verify_requirements():
         print("System requirements not met. Please check the documentation.")
         return 1
     
-    # Initialize configuration
     config_file = args.config or 'config/default_config.json'
     config_manager = ConfigManager(config_file)
     
-    # Start application
     app = SuperSIDProApp(config_manager, debug=args.debug)
     return app.run()
 

@@ -9,7 +9,6 @@ import asyncio
 from pathlib import Path
 import uvicorn
 
-# Add src directory to path
 sys.path. insert(0, 'src')
 
 from web.api.vlf_api import create_vlf_web_api
@@ -62,7 +61,6 @@ def parse_arguments():
 
 def setup_environment():
     """Setup the environment and create necessary directories"""
-    # Create directories if they don't exist
     directories = [
         'data',
         'logs',
@@ -75,7 +73,6 @@ def setup_environment():
     for directory in directories:
         Path(directory).mkdir(parents=True, exist_ok=True)
     
-    # Create default config if it doesn't exist
     config_path = Path('config/default_config.json')
     if not config_path.exists():
         create_default_config(config_path)
@@ -186,23 +183,17 @@ def print_startup_info(host: str, port: int, config_path: str, debug: bool):
 async def run_server(host: str, port: int, config_path: str, debug: bool, reload: bool, log_level: str):
     """Run the web server"""
     try:
-        # Setup logging
         setup_logger(debug=(log_level == 'DEBUG'))
         logger = get_logger(__name__)
         
-        # Setup environment
         setup_environment()
         
-        # Validate configuration
         config_manager = validate_config(config_path)
         
-        # Create web API
         web_api = create_vlf_web_api(config_path)
         
-        # Print startup info
         print_startup_info(host, port, config_path, debug)
         
-        # Configure uvicorn
         uvicorn_config = uvicorn.Config(
             app=web_api. app,
             host=host,
@@ -212,7 +203,6 @@ async def run_server(host: str, port: int, config_path: str, debug: bool, reload
             access_log=debug
         )
         
-        # Create and run server
         server = uvicorn.Server(uvicorn_config)
         
         logger.info(f"Starting web server on {host}:{port}")
@@ -229,7 +219,6 @@ def main():
     args = parse_arguments()
     
     try:
-        # Run the server
         asyncio.run(run_server(
             host=args.host,
             port=args.port,

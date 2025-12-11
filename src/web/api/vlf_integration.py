@@ -20,14 +20,11 @@ class VLFWebIntegration:
     async def initialize_vlf_system(self):
         """Initialize VLF system in simulation mode for web"""
         try:
-            # Create VLF system
             self.vlf_system = VLFMonitoringSystem(self.config_manager)
             
-            # Register callbacks
             self.vlf_system.register_data_callback(self._on_vlf_data)
             self. vlf_system.register_anomaly_callback(self._on_anomaly)
             
-            # Start in simulation mode
             self.vlf_system.start_monitoring()
             
             self.logger.info("VLF system initialized for web interface")
@@ -39,7 +36,6 @@ class VLFWebIntegration:
     
     def _on_vlf_data(self, vlf_signals: Dict[str, VLFSignal]):
         """Handle VLF data from monitoring system"""
-        # This is called from VLF system, send to web clients
         asyncio.create_task(self. web_api._on_vlf_data(vlf_signals))
     
     def _on_anomaly(self, anomalies, timestamp):

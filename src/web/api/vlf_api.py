@@ -272,11 +272,11 @@ class VLFWebAPI:
                     self.vlf_system.register_data_callback(self._on_vlf_data)
                     self.vlf_system.register_anomaly_callback(self._on_anomaly)
                 
-                self. vlf_system.start_monitoring()
-                
                 if not self._monitoring_task:
-                    self._monitoring_task = asyncio. create_task(self._simulation_loop())
+                    self._monitoring_task = asyncio.create_task(self._simulation_loop())
                 
+                self. vlf_system.start_monitoring()
+
                 try:
                     await self.space_weather.start_monitoring()
                     self.logger.info("Space weather monitoring started successfully")

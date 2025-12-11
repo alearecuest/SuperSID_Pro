@@ -1,200 +1,246 @@
 """
-VLF Real-time Monitoring System - Main Integration Hub
-Connects audio capture, signal processing, and data storage
+VLF Monitoring System - Real audio integration
 """
-import time
+import asyncio
 import numpy as np
-from datetime import datetime, timezone
-from typing import Dict, List, Optional, Callable
-from dataclasses import dataclass
-
-from core.audio_capture import VLFAudioCapture, AudioConfig
+import pyaudio
+from typing import Dict, List, Callable, Optional
 from core.vlf_processor import VLFProcessor, VLFSignal
-from data. realtime_storage import RealtimeStorage, VLFMeasurement
-from core.logger import get_logger
 from core.config_manager import ConfigManager
-
-@dataclass
-class VLFSystemConfig:
-    """Configuration for the VLF monitoring system"""
-    audio_sample_rate: int = 11025
-    audio_buffer_size: int = 1024
-    audio_device: Optional[int] = None
-    storage_batch_size: int = 10
-    anomaly_detection: bool = True
-    baseline_update_interval: int = 300  # seconds
+from core. logger import get_logger
+from data.realtime_storage import RealtimeStorage
+import threading
+import queue
+import time
 
 class VLFMonitoringSystem:
-    """
-    Main VLF Real-time Monitoring System
-    Integrates all components for continuous VLF monitoring
-    """
+    """Complete VLF monitoring system with real audio"""
     
     def __init__(self, config_manager: ConfigManager):
         self.config_manager = config_manager
         self.logger = get_logger(__name__)
         
-        self.vlf_config = self._load_vlf_config()
+        self.audio = pyaudio.PyAudio()
+        self.stream = None
+        self.is_monitoring = False
         
-        self._init_components()
+        config = config_manager.config
+        audio_config = config.get('audio_settings', {})
+        vlf_config = config.get('vlf_system', {})
         
-        self.measurement_buffer: List[VLFMeasurement] = []
-        self.baseline_data: Dict[str, float] = {}
-        self.last_baseline_update = 0
+        self.device_index = audio_config.get('device_index', None)
+        self.sample_rate = audio_config.get('sample_rate', 11025) 
+        self.buffer_size = audio_config.get('buffer_size', 1024)
+        self.channels = audio_config.get('channels', 1)
         
-        self.data_callbacks: List[Callable] = []
-        self.anomaly_callbacks: List[Callable] = []
+        stations_config = config.get('vlf_stations', {})
+        station_frequencies = stations_config.get('station_frequencies', {})
+        
+        self.vlf_processor = VLFProcessor(
+            sample_rate=self.sample_rate,
+            station_frequencies=station_frequencies
+        )
+        
+        self.storage = RealtimeStorage()
+        self.data_callbacks = []
+        self.anomaly_callbacks = []
+        
+        self.audio_queue = queue.Queue(maxsize=10)
+        self.processing_thread = None
+        self.audio_thread = None
         
         self.logger.info("VLF Monitoring System initialized")
         
-    def _load_vlf_config(self) -> VLFSystemConfig:
-        """Load VLF configuration from config manager"""
-        config_data = self.config_manager.get('vlf_system', {})
-        
-        return VLFSystemConfig(
-            audio_sample_rate=config_data.get('audio_sample_rate', 11025),
-            audio_buffer_size=config_data.get('audio_buffer_size', 1024),
-            audio_device=config_data.get('audio_device'),
-            storage_batch_size=config_data.get('storage_batch_size', 10),
-            anomaly_detection=config_data.get('anomaly_detection', True),
-            baseline_update_interval=config_data.get('baseline_update_interval', 300)
-        )
-        
-    def _init_components(self):
-        """Initialize all system components"""
-        audio_config = AudioConfig(
-            sample_rate=self.vlf_config.audio_sample_rate,
-            buffer_size=self.vlf_config.audio_buffer_size,
-            device=self.vlf_config.audio_device
-        )
-        
-        self.audio_capture = VLFAudioCapture(audio_config, self._process_audio_data)
-        self.vlf_processor = VLFProcessor(self.vlf_config. audio_sample_rate)
-        self.storage = RealtimeStorage()
-        
-        self.logger.info("VLF system components initialized")
-        
-    def _process_audio_data(self, audio_data: np.ndarray, sample_rate: int):
-        """Main audio processing callback"""
-        try:
-            vlf_signals = self.vlf_processor.process_chunk(audio_data)
-            
-            timestamp = datetime.now(timezone.utc)
-            measurements = []
-            
-            for station_id, signal_data in vlf_signals.items():
-                measurement = VLFMeasurement(
-                    timestamp=timestamp,
-                    station_id=station_id,
-                    frequency=signal_data.frequency,
-                    amplitude=signal_data.amplitude,
-                    phase=signal_data.phase
-                )
-                measurements.append(measurement)
-            
-            self.measurement_buffer. extend(measurements)
-            
-            if len(self.measurement_buffer) >= self. vlf_config.storage_batch_size:
-                self. storage.store_batch(self. measurement_buffer)
-                self. measurement_buffer. clear()
-            
-            if self.vlf_config.anomaly_detection:
-                anomalies = self. vlf_processor.detect_anomalies(vlf_signals, self.baseline_data)
-                if anomalies:
-                    self._handle_anomalies(anomalies, timestamp)
-            
-            current_time = time.time()
-            if current_time - self. last_baseline_update > self.vlf_config.baseline_update_interval:
-                self._update_baseline()
-                self. last_baseline_update = current_time
-            
-            self._notify_data_callbacks(vlf_signals)
-            
-        except Exception as e:
-            self.logger.error(f"Error processing audio data: {e}")
-    
-    def _handle_anomalies(self, anomalies: List[str], timestamp: datetime):
-        """Handle detected anomalies"""
-        self.logger.warning(f"VLF anomalies detected at {timestamp}: {anomalies}")
-        
-        for callback in self.anomaly_callbacks:
-            try:
-                callback(anomalies, timestamp)
-            except Exception as e:
-                self.logger. error(f"Error in anomaly callback: {e}")
-    
-    def _update_baseline(self):
-        """Update baseline signal levels"""
-        try:
-            for station in ['NAA', 'NWC', 'DHO', 'GQD']:
-                recent_data = self. storage.get_recent_data(station, minutes=30)
-                
-                if recent_data:
-                    amplitudes = [m.amplitude for m in recent_data]
-                    self.baseline_data[station] = np.mean(amplitudes)
-            
-            self.logger.debug("Updated baseline data")
-            
-        except Exception as e:
-            self.logger.error(f"Error updating baseline: {e}")
-    
-    def _notify_data_callbacks(self, vlf_signals: Dict[str, VLFSignal]):
-        """Notify registered callbacks with new data"""
-        for callback in self.data_callbacks:
-            try:
-                callback(vlf_signals)
-            except Exception as e:
-                self.logger.error(f"Error in data callback: {e}")
-    
-    def start_monitoring(self):
-        """Start the VLF monitoring system"""
-        try:
-            self.logger.info("Starting VLF monitoring system...")
-            
-            self. audio_capture.start_capture()
-            
-            self.logger.info("VLF monitoring system started successfully")
-            
-        except Exception as e:
-            self.logger. error(f"Failed to start VLF monitoring: {e}")
-            raise
-    
-    def stop_monitoring(self):
-        """Stop the VLF monitoring system"""
-        try:
-            self. logger.info("Stopping VLF monitoring system...")
-            
-            self. audio_capture.stop_capture()
-            
-            if self.measurement_buffer:
-                self.storage.store_batch(self.measurement_buffer)
-                self.measurement_buffer.clear()
-            
-            self.logger.info("VLF monitoring system stopped")
-            
-        except Exception as e:
-            self.logger.error(f"Error stopping VLF monitoring: {e}")
-    
     def register_data_callback(self, callback: Callable[[Dict[str, VLFSignal]], None]):
-        """Register callback for real-time data updates"""
+        """Register callback for VLF data"""
         self.data_callbacks.append(callback)
         
-    def register_anomaly_callback(self, callback: Callable[[List[str], datetime], None]):
-        """Register callback for anomaly notifications"""
+    def register_anomaly_callback(self, callback: Callable[[List[str], any], None]):
+        """Register callback for anomalies"""
         self.anomaly_callbacks.append(callback)
-    
+        
+    def _audio_callback(self, in_data, frame_count, time_info, status):
+        """PyAudio callback - runs in audio thread"""
+        if status:
+            self.logger.warning(f"Audio status: {status}")
+            
+        try:
+            audio_data = np.frombuffer(in_data, dtype=np.int16)
+            
+            audio_data = audio_data.astype(np. float32) / 32768.0
+            
+            try:
+                self.audio_queue.put_nowait(audio_data)
+            except queue.Full:
+                try:
+                    self.audio_queue.get_nowait()
+                    self.audio_queue.put_nowait(audio_data)
+                except queue.Empty:
+                    pass
+                    
+        except Exception as e: 
+            self.logger.error(f"Audio callback error: {e}")
+            
+        return (in_data, pyaudio. paContinue)
+        
+    def _processing_worker(self):
+        """Background thread for VLF processing"""
+        self.logger.info("VLF processing worker started")
+        
+        while self.is_monitoring:
+            try:
+                try:
+                    audio_data = self.audio_queue.get(timeout=1.0)
+                except queue. Empty:
+                    continue
+                    
+                vlf_signals = self.vlf_processor.process_chunk(audio_data)
+                
+                if vlf_signals:
+                    self.vlf_processor.update_baseline(vlf_signals)
+                    
+                    self._store_signals(vlf_signals)
+                    
+                    for callback in self.data_callbacks:
+                        try:
+                            callback(vlf_signals)
+                        except Exception as e:
+                            self. logger.error(f"Data callback error: {e}")
+                    
+                    anomalies = self.vlf_processor.detect_anomalies(vlf_signals)
+                    if anomalies:
+                        self.logger.info(f"Anomalies detected: {anomalies}")
+                        
+                        for callback in self.anomaly_callbacks:
+                            try:
+                                callback(anomalies, time.time())
+                            except Exception as e:
+                                self. logger.error(f"Anomaly callback error: {e}")
+                
+            except Exception as e:
+                self.logger.error(f"Processing worker error: {e}")
+                time.sleep(0.1)
+                
+        self.logger.info("VLF processing worker stopped")
+        
+    def _store_signals(self, vlf_signals: Dict[str, VLFSignal]):
+        """Store VLF signals to database"""
+        try:
+            for signal in vlf_signals. values():
+                self.storage. store_measurement(signal)
+        except Exception as e:
+            self.logger.error(f"Storage error: {e}")
+            
+    def start_monitoring(self) -> bool:
+        """Start VLF monitoring with real audio"""
+        if self.is_monitoring:
+            self.logger.warning("Monitoring already active")
+            return True
+            
+        try:
+            if self.device_index is None:
+                self. logger.warning("No audio device configured, using default")
+                self.device_index = None
+                
+            if not self._test_audio_device():
+                self.logger.error("Audio device test failed")
+                return False
+            
+            self.stream = self.audio.open(
+                format=pyaudio.paInt16,
+                channels=self.channels,
+                rate=self.sample_rate,
+                input=True,
+                input_device_index=self.device_index,
+                frames_per_buffer=self.buffer_size,
+                stream_callback=self._audio_callback
+            )
+            
+            self.is_monitoring = True
+            
+            self.processing_thread = threading.Thread(
+                target=self._processing_worker, 
+                daemon=True
+            )
+            self.processing_thread.start()
+            
+            self.stream.start_stream()
+            
+            self.logger.info(f"VLF monitoring started - Device: {self.device_index}, "
+                           f"Rate:  {self.sample_rate}Hz, Buffer: {self.buffer_size}")
+            return True
+            
+        except Exception as e: 
+            self.logger.error(f"Failed to start monitoring: {e}")
+            self.stop_monitoring()
+            return False
+            
+    def stop_monitoring(self):
+        """Stop VLF monitoring"""
+        self.logger.info("Stopping VLF monitoring...")
+        
+        self.is_monitoring = False
+        
+        if self. stream:
+            try:
+                self.stream.stop_stream()
+                self.stream.close()
+            except Exception as e: 
+                self.logger.error(f"Error stopping audio stream: {e}")
+            self.stream = None
+            
+        if self.processing_thread and self.processing_thread. is_alive():
+            self.processing_thread.join(timeout=2.0)
+            
+        try: 
+            while True:
+                self.audio_queue.get_nowait()
+        except queue.Empty:
+            pass
+            
+        self.logger.info("VLF monitoring stopped")
+        
+    def _test_audio_device(self) -> bool:
+        """Test if audio device works"""
+        try:
+            test_stream = self.audio.open(
+                format=pyaudio.paInt16,
+                channels=self. channels,
+                rate=self. sample_rate,
+                input=True,
+                input_device_index=self.device_index,
+                frames_per_buffer=self.buffer_size
+            )
+            
+            test_data = test_stream.read(self. buffer_size, exception_on_overflow=False)
+            test_stream.stop_stream()
+            test_stream.close()
+            
+            self.logger.info(f"Audio device {self.device_index} test successful")
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"Audio device test failed: {e}")
+            return False
+            
     def get_system_status(self) -> Dict:
-        """Get current system status"""
+        """Get system status"""
         return {
-            'is_monitoring': self.audio_capture.is_capturing if hasattr(self, 'audio_capture') else False,
-            'buffer_size': len(self.measurement_buffer),
-            'baseline_stations': list(self.baseline_data.keys()),
-            'last_baseline_update': self.last_baseline_update,
-            'available_devices': self.audio_capture.get_available_devices() if hasattr(self, 'audio_capture') else []
+            "is_monitoring": self.is_monitoring,
+            "sample_rate":  self.sample_rate,
+            "buffer_size": self.buffer_size,
+            "device_index": self.device_index,
+            "audio_queue_size": self.audio_queue.qsize() if hasattr(self, 'audio_queue') else 0,
+            "vlf_bands_count": len(self. vlf_processor.vlf_bands),
+            "baselines_count": len(self.vlf_processor.baselines)
         }
-    
-    def get_available_audio_devices(self) -> List[tuple]:
-        """Get available audio input devices"""
-        if hasattr(self, 'audio_capture'):
-            return self. audio_capture.get_available_devices()
-        return []
+        
+    def cleanup(self):
+        """Cleanup resources"""
+        self.stop_monitoring()
+        
+        if hasattr(self, 'audio'):
+            try:
+                self.audio.terminate()
+            except Exception as e:
+                self.logger. error(f"Error terminating audio:  {e}")

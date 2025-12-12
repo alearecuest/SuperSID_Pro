@@ -546,6 +546,9 @@
                         <button type="button" class="btn-test" onclick="testAudioDevice(${device.index}, this)">
                             Test Device
                         </button>
+                        <button type="button" class="btn btn-primary" onclick="selectAudioDevice(device.index)">
+                            <i class="fas fa-check"></i> Use This Device
+                        </button>
                         <div class="test-result" id="test-result-${device.index}"></div>
                     `;
                     
@@ -554,7 +557,7 @@
                 });
                 
             } catch (error) {
-                devicesList.innerHTML = `<div style="text-align:  center; padding: 20px; color: var(--danger);">Error loading devices: ${error.message}</div>`;
+                devicesList.innerHTML = `<div style="text-align: center; padding: 20px; color: var(--danger);">Error loading devices: ${error.message}</div>`;
             }
         }
 
@@ -603,6 +606,57 @@
             }
         }
         
+        async function selectAudioDevice(deviceIndex) {
+            try {
+                const sampleRate = document.getElementById('sampleRate').value;
+                const bufferSize = document.getElementById('bufferSize').value;
+        
+                const response = await fetch('/api/select-audio-device', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        device_index: deviceIndex,
+                        sample_rate: parseInt(sampleRate),
+                        buffer_size: parseInt(bufferSize)
+                    })
+                });
+        
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    showNotification('Audio device selected successfully!  Use START in the dashboard to begin real-time monitoring.', 'success');
+                } else {
+                    showNotification('Failed to select audio device', 'error');
+                }
+        
+            } catch (error) {
+                console.error('Error selecting audio device:', error);
+                showNotification('Error selecting audio device', 'error');
+            }
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'}`;
+            notification.style.position = 'fixed';
+            notification.style.top = '20px';
+            notification.style.right = '20px';
+            notification.style.zIndex = '9999';
+            notification.style.padding = '15px';
+            notification.style.borderRadius = '5px';
+            notification.style.backgroundColor = type === 'success' ?  '#d4edda' : '#f8d7da';
+            notification.style.color = type === 'success' ? '#155724' : '#721c24';
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 5000);
+        }
+
         document.addEventListener('click', (e) => {
             if (e. target.classList.contains('filter-btn')) {
                 document.querySelectorAll('.filter-btn').forEach(btn => btn.classList. remove('active'));
@@ -648,7 +702,7 @@
                 audio_settings: {
                     device_index: selectedAudioDevice,
                     sample_rate: parseInt(formData.get('sample_rate')),
-                    buffer_size: parseInt(formData. get('buffer_size')),
+                    buffer_size: parseInt(formData.get('buffer_size')),
                     channels: 1
                 },
                 application:  {

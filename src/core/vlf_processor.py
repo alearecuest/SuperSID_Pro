@@ -163,7 +163,6 @@ class VLFProcessor:
         if len(signal_data) < 64:
             return 0.0
             
-        # FFT
         fft_data = np.fft.fft(signal_data)
         freqs = np.fft.fftfreq(len(signal_data), 1/self.sample_rate)
         

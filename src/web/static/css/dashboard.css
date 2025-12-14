@@ -3,12 +3,12 @@
 
 :root {
     --bg-primary: #1a1a1a;
-    --bg-secondary:  #2d2d2d;
+    --bg-secondary: #2d2d2d;
     --bg-card: #333333;
     --border-color: #444444;
     --text-primary: #ffffff;
     --text-secondary: #cccccc;
-    --text-muted:  #999999;
+    --text-muted: #999999;
 
     --success: #4CAF50;
     --danger: #f44336;
@@ -42,13 +42,13 @@
 
     --font-light: 300;
     --font-normal: 400;
-    --font-medium:  500;
+    --font-medium: 500;
     --font-semibold: 600;
     --font-bold: 700;
     --font-black: 900;
 
     --leading-tight: 1.25;
-    --leading-normal:  1.5;
+    --leading-normal: 1.5;
     --leading-relaxed: 1.625;
 
     --letter-space-wide: 0.1em;
@@ -66,7 +66,7 @@
 
 body {
     font-family: var(--font-primary);
-    background:  var(--bg-primary);
+    background: var(--bg-primary);
     color: var(--text-primary);
     line-height: var(--leading-normal);
     overflow-x: hidden;
@@ -118,7 +118,7 @@ h4 {
     background: var(--bg-secondary);
     height: var(--header-height);
     padding: 0 20px;
-    display:  flex;
+    display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 2px solid var(--border-color);
@@ -233,7 +233,7 @@ h4 {
 }
 
 .btn-danger {
-    background:  var(--danger);
+    background: var(--danger);
     color: white;
 }
 
@@ -250,7 +250,7 @@ h4 {
 
 .btn-secondary:hover {
     background: #5a6268;
-    transform:  translateY(-1px);
+    transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(108, 117, 125, 0.4);
 }
 
@@ -260,7 +260,7 @@ h4 {
     font-weight: var(--font-normal);
     color: var(--text-secondary);
     min-width: 120px;
-    text-align:  right;
+    text-align: right;
     letter-spacing: var(--letter-space-tight);
 }
 
@@ -278,12 +278,12 @@ h4 {
 }
 
 .status-cards .card {
-    height: 180px;
+    height: 270px;
 }
 
 .card {
     background: var(--bg-card);
-    border:  1px solid var(--border-color);
+    border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
     overflow: hidden;
     box-shadow: var(--shadow);
@@ -325,7 +325,6 @@ h4 {
 
 .status-cards .card-content {
     height: calc(100% - 50px);
-    overflow-y: auto;
     padding: 15px;
 }
 
@@ -334,7 +333,7 @@ h4 {
     justify-content: space-between;
     margin-bottom: 12px;
     padding-bottom: 8px;
-    border-bottom:  1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .status-item:last-child {
@@ -358,33 +357,45 @@ h4 {
 }
 
 .current-values::-webkit-scrollbar,
+.anomaly-list::-webkit-scrollbar,
+.card-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.current-values::-webkit-scrollbar-track,
 .anomaly-list::-webkit-scrollbar-track,
 .card-content::-webkit-scrollbar-track {
     background: var(--bg-secondary);
     border-radius: 3px;
-		width: 6px;
+}
+
+.current-values::-webkit-scrollbar-thumb,
+.anomaly-list::-webkit-scrollbar-thumb,
+.card-content::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--info), var(--border-color));
+    border-radius: 4px;
 }
 
 .current-values {
-	max-height: 120px;
-	overflow-y: auto;
-	padding-right: 5px;
-	margin: -15px;
-	padding: 15px 20px 15px 15px;
+    font-family: var(--font-mono);
+    max-height: 120px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 10px;
 }
 
 .anomaly-list {
     max-height: 120px;
     overflow-y: auto;
-		padding-right: 5px;
-		margin: -15px;
-		padding: 15px 20px 15px 15px;
+    overflow-x: hidden;
+    padding-right: 10px;
 }
 
 .anomalies {
     max-height: 200px;
-    overflow-y:  auto;
+    overflow-y: auto;
     overflow-x: hidden;
+    padding-right: 10px;
 }
 
 .no-anomalies {
@@ -421,41 +432,31 @@ h4 {
     height: 1800px;
     margin-bottom: 20px;
     width: 100%;
-		background:  var(--bg-card);
+    background: var(--bg-card);
     border-radius: var(--border-radius);
     padding: 15px;
     box-shadow: var(--shadow);
 }
 
 .overview-top .chart-header {
-	height: 50px;
-	margin-bottom: 10px;
+    height: 50px;
+    margin-bottom: 10px;
 }
 
 .overview-top canvas {
-	height: calc(100% - 70px) !important;
-	width: 100% !important;
+    height: calc(100% - 70px) !important;
+    width: 100% !important;
 }
 
 @keyframes slideIn {
     from {
         opacity: 0;
-        transform:  translateX(-20px);
+        transform: translateX(-20px);
     }
     to {
         opacity: 1;
         transform: translateX(0);
     }
-}
-
-.current-values {
-    font-family: var(--font-mono);
-}
-
-.current-values {
-	max-height: 120px;
-	overflow-y: auto;
-	padding-right: 5px;
 }
 
 .value-row {
@@ -503,26 +504,26 @@ h4 {
 }
 
 .charts-grid .chart-container {
-    height: 280px;
+    height: 320px;
     padding: 15px;
     background: var(--bg-card);
     border-radius: var(--border-radius);
     box-shadow: var(--shadow);
-    overflow:  hidden;
+    overflow: hidden;
 }
 
 .charts-grid .chart-header {
-	height: 50px;
-	margin-bottom:  10px;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
+    height: 50px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .charts-grid canvas {
-	height: calc(100% - 60px) !important;
-	width: 100% !important;
-	max-height: 200px !important;
+    height: calc(100% - 60px) !important;
+    width: 100% !important;
+    max-height: 200px !important;
 }
 
 .chart-container {
@@ -539,15 +540,15 @@ h4 {
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
 }
 
-.chart-container.overview {
+.chart-container .overview {
     grid-column: 1 / -1;
 }
 
 .chart-header {
     display: flex;
     justify-content: space-between;
-    align-items:  center;
-    margin-bottom:  15px;
+    align-items: center;
+    margin-bottom: 15px;
     padding-bottom: 10px;
     border-bottom: 1px solid var(--border-color);
 }
@@ -562,11 +563,11 @@ h4 {
 }
 
 .chart-status {
-	font-size: 11px;
-	display: flex;
-	flex-direction: column;
-	align-items: flex-end;
-	gap: 2px;
+    font-size: 11px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
 }
 
 .chart-status span {
@@ -582,7 +583,7 @@ h4 {
 .chart-status .frequency,
 .chart-status .amplitude {
     padding: 2px 6px;
-    border-radius:  3px;
+    border-radius: 3px;
     background: rgba(255, 255, 255, 0.1);
 }
 
@@ -620,7 +621,7 @@ canvas {
     height: 200px !important;
 }
 
-.chart-container.overview canvas {
+.chart-container .overview canvas {
     height: 300px !important;
 }
 
@@ -628,8 +629,8 @@ canvas {
     background: var(--bg-secondary);
     height: var(--footer-height);
     padding: 0 20px;
-    display:  flex;
-    justify-content:  space-between;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
     border-top: 1px solid var(--border-color);
     font-family: var(--font-primary);
@@ -642,7 +643,7 @@ canvas {
     font-family: var(--font-mono);
     font-size: var(--text-sm);
     font-weight: var(--font-normal);
-    letter-spacing:  var(--letter-space-tight);
+    letter-spacing: var(--letter-space-tight);
 }
 
 .observatory-section {
@@ -650,7 +651,7 @@ canvas {
 }
 
 .observatory-card {
-    background:  var(--bg-card);
+    background: var(--bg-card);
 }
 
 .observatory-info {
@@ -691,10 +692,10 @@ canvas {
 }
 
 .space-weather-status.status-item {
-    display:  flex;
-    justify-content:  space-between;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    padding:  4px 0;
+    padding: 4px 0;
     border-bottom: 1px solid var(--border-color);
 }
 
@@ -716,10 +717,12 @@ input, select, button {
 
 @media (max-width: 768px) {
     .header {
-        flex-direction: column;
-        height: auto;
-        padding: 15px;
-    }
+			.overview-top { height: 420px; }
+			.charts-grid .chart-container { height: 260px; }
+			flex-direction: column;
+			height: auto;
+			padding: 15px;
+		}
 
     .header-right {
         width: 100%;
@@ -728,21 +731,21 @@ input, select, button {
     }
 
     .main-content {
-        padding:  15px;
+        padding: 15px;
     }
 
     .status-cards {
-        grid-template-columns:  1fr;
+        grid-template-columns: 1fr;
     }
 
-		.status-cards .card-content {
-			height: calc(100% - 50px);
-			overflow: visible;
-			padding: 15px;
-	}
+    .status-cards .card-content {
+        height: calc(100% - 50px);
+        overflow: visible;
+        padding: 15px;
+    }
 
     .charts-grid {
-        grid-template-columns:  1fr;
+        grid-template-columns: 1fr;
     }
 
     .chart-header {
@@ -759,24 +762,25 @@ input, select, button {
     }
 }
 
-@media (max-width:  1400px) {
-	.charts-grid {
-			grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-	}
-	
-	.charts-grid .chart-container {
-			height: 260px;
-	}
+@media (max-width: 1400px) {
+    .charts-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+
+    .charts-grid .chart-container {
+        height: 360px;
+				min-height: 320px;
+    }
 }
 
-@media (max-width:  1200px) {
-	.status-cards {
-			grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-	}
-	
-	.overview-top {
-			height: 450px;
-	}
+@media (max-width: 1200px) {
+    .status-cards {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+
+    .overview-top {
+        height: 450px;
+    }
 }
 
 .loading {
@@ -791,7 +795,7 @@ input, select, button {
     }
     to {
         opacity: 0.5;
-        text-shadow:  0 0 10px rgba(33, 150, 243, 0.8);
+        text-shadow: 0 0 10px rgba(33, 150, 243, 0.8);
     }
 }
 

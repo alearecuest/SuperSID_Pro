@@ -5,7 +5,7 @@
         "debug": false,
         "first_run": false,
         "log_level": "INFO",
-        "last_updated": "2025-12-12T15:52:05.975350"
+        "last_updated": "2025-12-14T19:43:16.051837"
     },
     "observatory": {
         "name": " Alejandro SolarUY",
@@ -24,9 +24,6 @@
     },
     "vlf_stations": {
         "monitored_stations": [
-            "VTX1",
-            "JXN",
-            "VTX2",
             "NPM",
             "GQD",
             "DHO38",
@@ -35,30 +32,6 @@
             "NML"
         ],
         "station_frequencies": {
-            "VTX1": {
-                "freq": 16.3,
-                "location": "South Vijayanarayanam, India",
-                "lat": 8.387015,
-                "lon": 77.752762,
-                "region": "asia",
-                "type": "vlf"
-            },
-            "JXN": {
-                "freq": 16.4,
-                "location": "Novik, Norway",
-                "lat": 66.974353,
-                "lon": 13.873617,
-                "region": "europe",
-                "type": "vlf"
-            },
-            "VTX2": {
-                "freq": 17,
-                "location": "South Vijayanarayanam, India",
-                "lat": 8.387015,
-                "lon": 77.752762,
-                "region": "asia",
-                "type": "vlf"
-            },
             "NPM": {
                 "freq": 21.4,
                 "location": "Lualualei, Hawaii, USA",

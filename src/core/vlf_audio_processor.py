@@ -9,9 +9,9 @@ import threading
 import time
 from datetime import datetime, timezone
 from core.logger import get_logger
-from core. vlf_processor import VLFSignal
+from core.vlf_processor import VLFSignal
 
-class VLFAudioProcessor:   
+class VLFAudioProcessor:    
     """Processes real-time audio from radio telescope to extract VLF station data"""
     
     def __init__(self, config_manager):
@@ -24,7 +24,7 @@ class VLFAudioProcessor:
         
         if self.sample_rate < 70000:
             self.logger.warning(f"Sample rate {self.sample_rate} Hz may be too low for VLF frequencies up to 80kHz")
-            self.logger.warning("Recommended: 160000 Hz or higher")
+            self.logger.warning("Recommended:  160000 Hz or higher")
             
         self.overlap = 0.5
         
@@ -32,7 +32,7 @@ class VLFAudioProcessor:
         self.vlf_max_freq = 80000  # 80 kHz
         
         self.is_processing = False
-        self.data_callback = None
+        self. data_callback = None
         self.anomaly_callback = None
         
         self.stations = []
@@ -75,17 +75,17 @@ class VLFAudioProcessor:
     def register_callbacks(self, data_callback=None, anomaly_callback=None):
         """Register callbacks for data and anomaly notifications"""
         self.data_callback = data_callback
-        self.anomaly_callback = anomaly_callback
+        self. anomaly_callback = anomaly_callback
     
     def _get_window_and_freqs(self, buffer_size: int):
         """Get window and frequency bins for given buffer size (with caching)"""
         if buffer_size not in self._cached_windows:
             self._cached_windows[buffer_size] = windows. hann(buffer_size)
-            self._cached_freq_bins[buffer_size] = np.fft.fftfreq(buffer_size, 1/self.sample_rate)
+            self._cached_freq_bins[buffer_size] = np. fft.fftfreq(buffer_size, 1/self.sample_rate)
         
         return self._cached_windows[buffer_size], self._cached_freq_bins[buffer_size]
     
-    def process_audio_buffer(self, audio_data: np.ndarray) -> Dict[str, VLFSignal]:  
+    def process_audio_buffer(self, audio_data: np.ndarray) -> Dict[str, VLFSignal]:   
         """Process audio buffer and extract VLF station data"""
         try:
             if audio_data is None or len(audio_data) == 0:
@@ -93,12 +93,12 @@ class VLFAudioProcessor:
                 
             if not np.isfinite(audio_data).all():
                 if not hasattr(self, '_nan_warning_logged'):
-                    self.logger.warning("Audio device producing invalid data - cleaning automatically")
+                    self.logger. warning("Audio device producing invalid data - cleaning automatically")
                     self._nan_warning_logged = True
                 audio_data = np.nan_to_num(audio_data, nan=0.0, posinf=0.0, neginf=0.0)
             
             if audio_data.dtype != np.float64:
-                audio_data = audio_data.astype(np.float64)
+                audio_data = audio_data.astype(np. float64)
             
             actual_buffer_size = len(audio_data)
             
@@ -110,7 +110,7 @@ class VLFAudioProcessor:
             power_spectrum = np.abs(fft_data) ** 2
             
             if not np.isfinite(power_spectrum).all():
-                self. logger.warning("Power spectrum contains invalid values")
+                self.logger.warning("Power spectrum contains invalid values")
                 power_spectrum = np.nan_to_num(power_spectrum, nan=0.0, posinf=0.0, neginf=0.0)
             
             vlf_signals = {}
@@ -119,7 +119,7 @@ class VLFAudioProcessor:
             for i, station in enumerate(self.stations):
                 try:
                     station_info = self.station_freqs. get(station, {})
-                    target_freq = station_info.get('freq', 20.0) * 1000
+                    target_freq = station_info.get('freq', 20. 0) * 1000
                     
                     if target_freq < self.vlf_min_freq or target_freq > self.vlf_max_freq:
                         continue
@@ -143,44 +143,43 @@ class VLFAudioProcessor:
                     
                     amplitude = max(0.0, min(amplitude, 1.0))
                     
-                    band_id = station
                     signal_obj = VLFSignal(
                         timestamp=current_time,
                         frequency=actual_freq,
                         amplitude=amplitude,
                         phase=0.0,
-                        station_id=band_id
+                        station_id=station
                     )
                     
-                    vlf_signals[band_id] = signal_obj
+                    vlf_signals[station] = signal_obj
                     
                     if np.isfinite(amplitude):
                         self.update_baseline(station, amplitude)
                     
                 except Exception as e:  
-                    self.logger. warning(f"Error processing station {station}:  {e}")
+                    self.logger.warning(f"Error processing station {station}: {e}")
                     continue
             
-            #self.check_anomalies(vlf_signals, current_time)
+            self.check_anomalies(vlf_signals, current_time)
             
             return vlf_signals
             
-        except Exception as e:
-            self.logger.error(f"Error in audio processing:  {e}")
+        except Exception as e: 
+            self.logger.error(f"Error in audio processing: {e}")
             return {}
     
-    def update_baseline(self, station: str, amplitude:  float):
+    def update_baseline(self, station: str, amplitude: float):
         """Update baseline amplitude for anomaly detection"""
-        if not np.isfinite(amplitude):
+        if not np. isfinite(amplitude):
             return
             
-        if station not in self. baseline_history:
+        if station not in self.baseline_history:
             self.baseline_history[station] = []
         
         self.baseline_history[station].append(amplitude)
         
         if len(self.baseline_history[station]) > self.baseline_samples:
-            self.baseline_history[station]. pop(0)
+            self. baseline_history[station]. pop(0)
         
         if len(self.baseline_history[station]) >= 10:
             values = self.baseline_history[station]
@@ -198,16 +197,12 @@ class VLFAudioProcessor:
                 }
     
     def check_anomalies(self, vlf_signals: Dict[str, VLFSignal], timestamp: float):
-        """Check for signal anomalies"""
+        """Check for signal anomalies - FIXED"""
         anomalies = []
         
-        for band_id, signal in vlf_signals.items():
+        for station_id, signal in vlf_signals.items():
             try:
-                band_num = int(band_id.split('_')[1]) - 1
-                if band_num >= len(self. stations):
-                    continue
-                
-                station = self.stations[band_num]
+                station = station_id
                 
                 if station in self.baselines:
                     baseline = self.baselines[station]
@@ -219,27 +214,35 @@ class VLFAudioProcessor:
                     if baseline['std'] > 0: 
                         z_score = abs(amplitude - baseline['mean']) / baseline['std']
                         if np.isfinite(z_score) and z_score > 3.0:
-                            if amplitude > baseline['mean']: 
-                                anomalies.append(f"{band_id} ({station}): Signal spike detected (amplitude: {amplitude:.4f}, baseline: {baseline['mean']:.4f})")
+                            if amplitude > baseline['mean']:  
+                                anomalies. append(f"{station}:  Signal spike detected (amplitude: {amplitude:.4f}, baseline: {baseline['mean']:.4f})")
                             else:
-                                anomalies.append(f"{band_id} ({station}): Signal drop detected (amplitude: {amplitude:.4f}, baseline: {baseline['mean']:.4f})")
+                                anomalies.append(f"{station}: Signal drop detected (amplitude:  {amplitude:.4f}, baseline: {baseline['mean']:.4f})")
                     
                     if amplitude < baseline['mean'] * 0.1 and baseline['mean'] > 0.001:
-                        anomalies.append(f"{band_id} ({station}): Possible signal loss")
+                        anomalies.append(f"{station}: Possible signal loss")
             
             except Exception as e: 
-                self.logger.warning(f"Error checking anomalies for {band_id}:  {e}")
+                self. logger.warning(f"Error checking anomalies for {station_id}:  {e}")
         
         if anomalies and self.anomaly_callback:
             try: 
-                self.anomaly_callback(anomalies, datetime.fromtimestamp(timestamp, tz=timezone.utc))
+                import threading
+                def safe_anomaly_call():
+                    try:
+                        self.anomaly_callback(anomalies, datetime.fromtimestamp(timestamp, tz=timezone.utc))
+                    except Exception as e:
+                        self.logger. warning(f"Anomaly callback failed: {e}")
+        
+                threading.Thread(target=safe_anomaly_call, daemon=True).start()
+                
             except Exception as e:
-                self. logger.error(f"Error sending anomaly callback: {e}")
+                self.logger.warning(f"Error scheduling anomaly callback: {e}")
     
     def start_processing(self):
         """Start VLF processing"""
         self.is_processing = True
-        self.logger.info("VLF Audio Processor started")
+        self. logger.info("VLF Audio Processor started")
     
     def stop_processing(self):
         """Stop VLF processing"""

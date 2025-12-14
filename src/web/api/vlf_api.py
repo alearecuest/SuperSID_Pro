@@ -330,51 +330,53 @@ class VLFWebAPI:
         async def start_monitoring():
             """Start VLF monitoring"""
             try:
-                self.logger.info("USING SIMULATION MODE - hardware audio has issues")
-
                 if not self.vlf_system:
                     self.vlf_system = VLFMonitoringSystem(self.config_manager)
                     self.vlf_system.register_data_callback(self._on_vlf_data)
                     self.vlf_system.register_anomaly_callback(self._on_anomaly)
                 
-                #audio_config = self.config_manager.config.get('vlf_system', {})
-                #audio_device = audio_config.get('audio_device')
-
-                #if audio_device is not None:
-                    #sample_rate = audio_config.get('audio_sample_rate', 44100)
-                    #buffer_size = audio_config.get('audio_buffer_size', 4096)
-
-                if not self._monitoring_task:
-                    self._monitoring_task = asyncio.create_task(self._simulation_loop())
-
-                    #success = self.start_real_audio_capture(audio_device, sample_rate, buffer_size)
-
-                    #if success:
-                        #self.logger.info("Started with real radio telescope hardware")
-                    #else:
-                        #self.logger. warning("Failed to start real hardware, falling back to simulation")
-                        #if not self._monitoring_task:
-                            #self._monitoring_task = asyncio.create_task(self._simulation_loop())
-                #else:
-                    #if not self._monitoring_task:
-                        #self._monitoring_task = asyncio.create_task(self._simulation_loop())
-                    #self.logger.info("Started with simulated data")
+                audio_config = self.config_manager.config.get('vlf_system', {})
+                audio_device = audio_config.get('audio_device')
                 
+                hardware_available = False
+                if audio_device is not None:
+                    try:
+                        sample_rate = audio_config.get('audio_sample_rate', 44100)
+                        buffer_size = audio_config.get('audio_buffer_size', 4096)
+                        
+                        hardware_available = self.start_real_audio_capture(audio_device, sample_rate, buffer_size)
+                        
+                        if hardware_available:
+                            self.logger.info("Started with real radio telescope hardware")
+                        else:
+                            self.logger.warning("Hardware audio test failed")
+                            
+                    except Exception as e:
+                        self.logger.warning(f"Hardware initialization failed: {e}")
+                        hardware_available = False
+                        
+                if not hardware_available:
+                    self.logger.info("Using simulation mode (no functional hardware detected)")
+                    if not self._monitoring_task:
+                        self._monitoring_task = asyncio.create_task(self._simulation_loop())
+
                 self.vlf_system.start_monitoring()
+                
+                return {
+                    "status": "success",
+                    "message": "VLF monitoring started",
+                    "mode": "hardware" if hardware_available else "simulation",
+                    "timestamp": datetime.now(timezone.utc).isoformat()
+                }
 
-                try:
-                    await self.space_weather.start_monitoring()
-                    self.logger.info("Space weather monitoring started successfully")
-                except Exception as e: 
-                    self.logger.warning(f"Failed to start space weather monitoring: {e}")
-                
-                mode = "real hardware" if self.use_real_hardware else "simulation"
-                return {"status": "started", "message": "VLF monitoring started ({mode})"}
-                
-            except Exception as e: 
+            except Exception as e:
                 self.logger.error(f"Failed to start monitoring: {e}")
-                raise HTTPException(status_code=500, detail=str(e))
-        
+                return {
+                    "status":  "error",
+                    "message": f"Failed to start monitoring: {str(e)}",
+                    "timestamp": datetime.now(timezone.utc).isoformat()
+                }
+
         @self.app.post("/api/stop")
         async def stop_monitoring():
             """Stop VLF monitoring"""

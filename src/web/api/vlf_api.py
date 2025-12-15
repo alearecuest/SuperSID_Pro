@@ -337,60 +337,61 @@ class VLFWebAPI:
         
         @self.app.post("/api/start")
         async def start_monitoring():
-            """Start VLF monitoring"""
-            print("DEBUG: START API CALLED")
+            """Start VLF monitoring (real audio if configured, simulation otherwise)"""
+            self.logger.info("API: Starting VLF monitoring")
+            if self._monitoring_task and not self._monitoring_task.done():
+                self.logger.info("Stopping existing monitoring task")
+                self._monitoring_task.cancel()
+                
+                try:
+                    await self._monitoring_task
+                except asyncio.CancelledError:
+                    pass
+                self._monitoring_task = None
 
-            try:
-                print("DEBUG: Inside try block")
-                self.logger.info("API: Starting VLF monitoring")
-                print("DEBUG: Logger called")
-
-                if self._monitoring_task and not self._monitoring_task.done():
-                    self.logger.info("Stopping existing monitoring task")
-                    self._monitoring_task.cancel()
-                    try:
-                        await self._monitoring_task
-                    except asyncio.CancelledError:
-                        pass
+            if not self.vlf_system:
+                self.vlf_system = VLFMonitoringSystem(self.config_manager)
+                self.vlf_system.register_data_callback(self._on_vlf_data)
+                self.vlf_system.register_anomaly_callback(self._on_anomaly)
+            
+            vlf_config = self.config_manager.config.get('vlf_system', {})
+            device_index = vlf_config.get('audio_device', None)
+            sample_rate = vlf_config.get('audio_sample_rate', 44100)
+            buffer_size = vlf_config.get('audio_buffer_size', 4096)
+            self.use_real_hardware = False
+            
+            if device_index is not None:
+                self.logger.info(f"Trying to start real audio capture on device {device_index} ...")
+                started = self.start_real_audio_capture(device_index, sample_rate, buffer_size)
+                
+                if started:
+                    self.logger.info("Real audio capture started!")
+                    self.use_real_hardware = True
                     self._monitoring_task = None
-
-                if not self.vlf_system:  
-                    from core.vlf_system import VLFMonitoringSystem
-                    self.vlf_system = VLFMonitoringSystem(self.config_manager)
-                    self.vlf_system.register_data_callback(self._on_vlf_data)
-                    self.vlf_system.register_anomaly_callback(self._on_anomaly)
-                
-                self.logger.info("Starting simulation loop for 27 stations")
-                self._monitoring_task = asyncio.create_task(self._simulation_loop())
-                
-                self.logger.info(f"Monitoring task created: {self._monitoring_task}")
-                
-                await asyncio.sleep(0.2)
-                
-                if self._monitoring_task. done():
-                    exception = self._monitoring_task.exception()
-                    self.logger.error(f"Task failed immediately: {exception}")
-                    return {
-                        "status": "error",
-                        "message": f"Failed to start simulation: {exception}",
-                        "timestamp": datetime.now(timezone.utc).isoformat()
-                    }
                 else:
-                    self.logger.info("Task is running successfully")
-
+                    self.logger.warning("Failed to start real audio, switching to simulation.")
+                    self._monitoring_task = asyncio.create_task(self._simulation_loop())
+            else:
+                self.logger.info("No audio device configured, using simulation.")
+                self._monitoring_task = asyncio.create_task(self._simulation_loop())
+            
+            await asyncio.sleep(0.2)
+            
+            if self._monitoring_task and self._monitoring_task.done():
+                exception = self._monitoring_task.exception()
+                self.logger.error(f"Task failed immediately: {exception}")
+                
                 return {
-                    "status": "success",
-                    "message": "VLF monitoring started with simulation (27 stations)",
+                    "status": "error",
+                    "message": f"Failed to start monitoring: {exception}",
                     "timestamp": datetime.now(timezone.utc).isoformat()
                 }
-                
-            except Exception as e:   
-                self.logger.error(f"Failed to start monitoring: {e}")
-                import traceback
-                self.logger.error(f"Traceback: {traceback.format_exc()}")
+            else:
                 return {
-                    "status":  "error", 
-                    "message": f"Failed to start monitoring: {str(e)}",
+                    "status": "success",
+                    "message": ("VLF monitoring started"
+                                if not self.use_real_hardware
+                                else "VLF monitoring started with real audio"),
                     "timestamp": datetime.now(timezone.utc).isoformat()
                 }
 

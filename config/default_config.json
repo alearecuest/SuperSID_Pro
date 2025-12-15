@@ -5,7 +5,7 @@
         "debug": false,
         "first_run": false,
         "log_level": "INFO",
-        "last_updated": "2025-12-15T17:47:39.869893"
+        "last_updated": "2025-12-15T18:04:03.393898"
     },
     "observatory": {
         "name": " Alejandro SolarUY",
@@ -44,13 +44,7 @@
             "NLK",
             "UNID25",
             "NML",
-            "TBB",
-            "NRK",
-            "JJY40",
-            "MSF",
-            "WWVB",
-            "JJY60",
-            "DCF77"
+            "TBB"
         ],
         "station_frequencies": {
             "VTX1": {
@@ -220,54 +214,6 @@
                 "lon": 27.323342,
                 "region": "europe",
                 "type": "vlf"
-            },
-            "NRK": {
-                "freq": 37.5,
-                "location": "Grindavik, Iceland",
-                "lat": 63.850365,
-                "lon": -22.466773,
-                "region": "europe",
-                "type": "lf"
-            },
-            "JJY40": {
-                "freq": 40,
-                "location": "Mount Ootakadoya, Japan",
-                "lat": 37.372598,
-                "lon": 140.848906,
-                "region": "asia",
-                "type": "lf"
-            },
-            "MSF": {
-                "freq": 60,
-                "location": "Anthorn, UK",
-                "lat": 54.911195,
-                "lon": -3.279302,
-                "region": "europe",
-                "type": "lf"
-            },
-            "WWVB": {
-                "freq": 60,
-                "location": "Fort Collins, Colorado, USA",
-                "lat": 40.677722,
-                "lon": -105.047153,
-                "region": "americas",
-                "type": "lf"
-            },
-            "JJY60": {
-                "freq": 60,
-                "location": "Mount Hagane, Japan",
-                "lat": 33.465433,
-                "lon": 130.175415,
-                "region": "asia",
-                "type": "lf"
-            },
-            "DCF77": {
-                "freq": 77.5,
-                "location": "Mainflingen, Germany",
-                "lat": 50.015411,
-                "lon": 9.008307,
-                "region": "europe",
-                "type": "lf"
             }
         }
     },

@@ -5,7 +5,7 @@
         "debug": false,
         "first_run": false,
         "log_level": "INFO",
-        "last_updated": "2025-12-15T17:47:18.341931"
+        "last_updated": "2025-12-15T18:03:51.071149"
     },
     "observatory": {
         "name": " Alejandro SolarUY",
@@ -33,12 +33,21 @@
             "VTX4",
             "GBZ",
             "NWC",
+            "ICV",
+            "FTA",
             "NPM",
+            "HWU",
             "GQD",
+            "NDT",
             "DHO38",
             "NAA",
             "NLK",
+            "UNID25",
             "NML",
+            "TBB",
+            "NRK",
+            "JJY40",
+            "MSF",
             "WWVB",
             "JJY60",
             "DCF77"
@@ -116,6 +125,22 @@
                 "region": "asia",
                 "type": "vlf"
             },
+            "ICV": {
+                "freq": 20.27,
+                "location": "Isola di Tavolara, Italy",
+                "lat": 40.923127,
+                "lon": 9.731011,
+                "region": "europe",
+                "type": "vlf"
+            },
+            "FTA": {
+                "freq": 20.9,
+                "location": "Sainte-Assise, France",
+                "lat": 48.544632,
+                "lon": 2.579429,
+                "region": "europe",
+                "type": "vlf"
+            },
             "NPM": {
                 "freq": 21.4,
                 "location": "Lualualei, Hawaii, USA",
@@ -124,12 +149,28 @@
                 "region": "americas",
                 "type": "vlf"
             },
+            "HWU": {
+                "freq": 21.75,
+                "location": "Rosnay, France",
+                "lat": 46.713129,
+                "lon": 1.245248,
+                "region": "europe",
+                "type": "vlf"
+            },
             "GQD": {
                 "freq": 22.1,
                 "location": "Skelton, UK",
                 "lat": 54.731799,
                 "lon": -2.883033,
                 "region": "europe",
+                "type": "vlf"
+            },
+            "NDT": {
+                "freq": 22.2,
+                "location": "Ebino, Japan",
+                "lat": 32.082084,
+                "lon": 130.82796,
+                "region": "asia",
                 "type": "vlf"
             },
             "DHO38": {
@@ -156,6 +197,14 @@
                 "region": "americas",
                 "type": "vlf"
             },
+            "UNID25": {
+                "freq": 25,
+                "location": "Mokpo, South Korea",
+                "lat": 34.679068,
+                "lon": 126.445383,
+                "region": "asia",
+                "type": "vlf"
+            },
             "NML": {
                 "freq": 25.2,
                 "location": "La Moure, North Dakota, USA",
@@ -163,6 +212,38 @@
                 "lon": -98.335638,
                 "region": "americas",
                 "type": "vlf"
+            },
+            "TBB": {
+                "freq": 26.7,
+                "location": "Bafa, Turkey",
+                "lat": 37.412725,
+                "lon": 27.323342,
+                "region": "europe",
+                "type": "vlf"
+            },
+            "NRK": {
+                "freq": 37.5,
+                "location": "Grindavik, Iceland",
+                "lat": 63.850365,
+                "lon": -22.466773,
+                "region": "europe",
+                "type": "lf"
+            },
+            "JJY40": {
+                "freq": 40,
+                "location": "Mount Ootakadoya, Japan",
+                "lat": 37.372598,
+                "lon": 140.848906,
+                "region": "asia",
+                "type": "lf"
+            },
+            "MSF": {
+                "freq": 60,
+                "location": "Anthorn, UK",
+                "lat": 54.911195,
+                "lon": -3.279302,
+                "region": "europe",
+                "type": "lf"
             },
             "WWVB": {
                 "freq": 60,

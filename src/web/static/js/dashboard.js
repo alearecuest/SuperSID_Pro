@@ -468,12 +468,13 @@ class VLFDashboard {
 			const stationFreqs = this.observatoryConfig.vlf_stations?.station_frequencies || {};
 			const timeString = timestamp.toLocaleTimeString();
 			
-			if (overview.data. datasets.length === 0) {
+			if (overview.data.datasets.length === 0) {
 					stations.forEach((station, index) => {
 							const freq = stationFreqs[station]?.freq || 0;
 							const colorIndex = index % this.chartColors.length;
 							overview.data.datasets.push({
 									label: `${station} (${freq} kHz)`,
+									stationId: station,
 									data: [],
 									borderColor: this.chartColors[colorIndex],
 									backgroundColor: this.chartColors[colorIndex] + '20',
@@ -489,9 +490,9 @@ class VLFDashboard {
 			overview.data.labels.push(timeString);
 			
 			overview.data.datasets.forEach((dataset, index) => {
-					const stationKey = `BAND_${index + 1}`;
-					const amplitude = stationsData[stationKey]?.amplitude || 0;
-					dataset.data.push(amplitude);
+				const stationKey = dataset.stationId;
+				const amplitude = stationsData[stationKey]?.amplitude || 0;
+				dataset.data.push(amplitude);
 			});
 			
 			const maxPoints = Math.floor(this.timeRange / 1000 / this.samplingInterval);

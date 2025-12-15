@@ -338,8 +338,12 @@ class VLFWebAPI:
         @self.app.post("/api/start")
         async def start_monitoring():
             """Start VLF monitoring"""
-            try:  
-                self.logger.info("API:  Starting VLF monitoring")
+            print("DEBUG: START API CALLED")
+
+            try:
+                print("DEBUG: Inside try block")
+                self.logger.info("API: Starting VLF monitoring")
+                print("DEBUG: Logger called")
 
                 if self._monitoring_task and not self._monitoring_task.done():
                     self.logger.info("Stopping existing monitoring task")
@@ -512,7 +516,7 @@ class VLFWebAPI:
                 vlf_signals = {}
                 
                 for i, station in enumerate(stations):
-                    band = f'BAND_{i + 1}'
+                    band = station
                     station_info = station_freqs.get(station, {})
                     base_freq = station_info.get('freq', 20.0 + i * 2)
                     
@@ -530,7 +534,7 @@ class VLFWebAPI:
                     frequency = base_freq + freq_variation
                     
                     signal = VLFSignal(
-                        timestamp=current_time. timestamp(),
+                        timestamp=current_time.timestamp(),
                         frequency=frequency,
                         amplitude=abs(amplitude),
                         phase=0.0,
@@ -538,15 +542,15 @@ class VLFWebAPI:
                     )
                     
                     vlf_signals[band] = signal
-
-                self.logger.info(f"Generated signals for {len(vlf_signals)} bands:  {list(vlf_signals.keys())[: 5]}...")
                 
+                self.logger.info(f"Generated signals for {len(vlf_signals)} bands: {list(vlf_signals.keys())[: 5]}...")
+
                 self._on_vlf_data(vlf_signals)
                 
                 if np.random.random() < 0.005:
                     random_station_idx = np.random.randint(0, min(10, len(stations)))
                     station_name = stations[random_station_idx]
-                    anomalies = [f"BAND_{random_station_idx + 1}:  {station_name} signal amplitude spike detected"]
+                    anomalies = [f"{station_name}: signal amplitude spike detected"]
                     self._on_anomaly(anomalies, current_time)
                 
                 await asyncio. sleep(1.0)

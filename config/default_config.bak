@@ -5,7 +5,7 @@
         "debug": false,
         "first_run": false,
         "log_level": "INFO",
-        "last_updated": "2025-12-15T15:11:33.110168"
+        "last_updated": "2025-12-15T17:47:18.341931"
     },
     "observatory": {
         "name": " Alejandro SolarUY",
@@ -33,18 +33,15 @@
             "VTX4",
             "GBZ",
             "NWC",
-            "ICV",
-            "FTA",
             "NPM",
-            "HWU",
             "GQD",
-            "NDT",
             "DHO38",
             "NAA",
             "NLK",
-            "UNID25",
             "NML",
-            "TBB"
+            "WWVB",
+            "JJY60",
+            "DCF77"
         ],
         "station_frequencies": {
             "VTX1": {
@@ -119,22 +116,6 @@
                 "region": "asia",
                 "type": "vlf"
             },
-            "ICV": {
-                "freq": 20.27,
-                "location": "Isola di Tavolara, Italy",
-                "lat": 40.923127,
-                "lon": 9.731011,
-                "region": "europe",
-                "type": "vlf"
-            },
-            "FTA": {
-                "freq": 20.9,
-                "location": "Sainte-Assise, France",
-                "lat": 48.544632,
-                "lon": 2.579429,
-                "region": "europe",
-                "type": "vlf"
-            },
             "NPM": {
                 "freq": 21.4,
                 "location": "Lualualei, Hawaii, USA",
@@ -143,28 +124,12 @@
                 "region": "americas",
                 "type": "vlf"
             },
-            "HWU": {
-                "freq": 21.75,
-                "location": "Rosnay, France",
-                "lat": 46.713129,
-                "lon": 1.245248,
-                "region": "europe",
-                "type": "vlf"
-            },
             "GQD": {
                 "freq": 22.1,
                 "location": "Skelton, UK",
                 "lat": 54.731799,
                 "lon": -2.883033,
                 "region": "europe",
-                "type": "vlf"
-            },
-            "NDT": {
-                "freq": 22.2,
-                "location": "Ebino, Japan",
-                "lat": 32.082084,
-                "lon": 130.82796,
-                "region": "asia",
                 "type": "vlf"
             },
             "DHO38": {
@@ -191,14 +156,6 @@
                 "region": "americas",
                 "type": "vlf"
             },
-            "UNID25": {
-                "freq": 25,
-                "location": "Mokpo, South Korea",
-                "lat": 34.679068,
-                "lon": 126.445383,
-                "region": "asia",
-                "type": "vlf"
-            },
             "NML": {
                 "freq": 25.2,
                 "location": "La Moure, North Dakota, USA",
@@ -207,13 +164,29 @@
                 "region": "americas",
                 "type": "vlf"
             },
-            "TBB": {
-                "freq": 26.7,
-                "location": "Bafa, Turkey",
-                "lat": 37.412725,
-                "lon": 27.323342,
+            "WWVB": {
+                "freq": 60,
+                "location": "Fort Collins, Colorado, USA",
+                "lat": 40.677722,
+                "lon": -105.047153,
+                "region": "americas",
+                "type": "lf"
+            },
+            "JJY60": {
+                "freq": 60,
+                "location": "Mount Hagane, Japan",
+                "lat": 33.465433,
+                "lon": 130.175415,
+                "region": "asia",
+                "type": "lf"
+            },
+            "DCF77": {
+                "freq": 77.5,
+                "location": "Mainflingen, Germany",
+                "lat": 50.015411,
+                "lon": 9.008307,
                 "region": "europe",
-                "type": "vlf"
+                "type": "lf"
             }
         }
     },
@@ -237,8 +210,8 @@
     },
     "vlf_system": {
         "audio_sample_rate": 44100,
-        "audio_buffer_size": 1024,
-        "audio_device": 1,
+        "audio_buffer_size": 4096,
+        "audio_device": 0,
         "storage_batch_size": 10,
         "anomaly_detection": true,
         "baseline_update_interval": 300

@@ -48,28 +48,20 @@ class SystemCheck:
         """Run all system checks"""
         self.results. clear()
         
-        # Python version check
         self.check_python_version()
         
-        # Required Python packages
         self.check_python_packages()
         
-        # Audio system check
         self.check_audio_system()
         
-        # GUI system check
         self.check_gui_system()
         
-        # Network connectivity
         self.check_network()
         
-        # File system permissions
         self.check_file_permissions()
         
-        # Log results
         self._log_results()
         
-        # Return True if all required checks passed
         failed_required = [r for r in self.results if not r.passed and 'required' in r.name. lower()]
         return len(failed_required) == 0
     
@@ -113,11 +105,9 @@ class SystemCheck:
             ("dash", "dash"),
         ]
         
-        # Check required packages
         for package_name, import_name in required_packages:
             self._check_package(package_name, import_name, required=True)
         
-        # Check optional packages
         for package_name, import_name in optional_packages:
             self._check_package(package_name, import_name, required=False)
     
@@ -126,7 +116,6 @@ class SystemCheck:
         try:
             spec = importlib.util.find_spec(import_name)
             if spec is not None:
-                # Try to get version
                 version = "unknown"
                 try:
                     module = importlib.import_module(import_name)
@@ -164,11 +153,9 @@ class SystemCheck:
     
     def check_audio_system(self) -> None:
         """Check audio system availability"""
-        # Check for audio backends
         audio_available = False
         audio_details = []
         
-        # Check PyAudio
         try:
             import pyaudio
             pa = pyaudio.PyAudio()
@@ -179,7 +166,6 @@ class SystemCheck:
         except Exception as e:
             audio_details.append(f"PyAudio: Not available ({e})")
         
-        # Check sounddevice
         try:
             import sounddevice as sd
             devices = sd.query_devices()
@@ -201,7 +187,6 @@ class SystemCheck:
             from PyQt6.QtWidgets import QApplication
             from PyQt6.QtCore import QCoreApplication
             
-            # Test if we can create a QApplication
             app = QCoreApplication. instance()
             if app is None:
                 test_app = QApplication([])
@@ -231,7 +216,6 @@ class SystemCheck:
         try:
             import requests
             
-            # Test connectivity to key services
             test_urls = [
                 ("Google DNS", "https://8.8.8.8"),
                 ("NOAA SWPC", "https://services.swpc.noaa.gov"),
@@ -282,10 +266,8 @@ class SystemCheck:
         
         for directory in test_directories:
             try:
-                # Create directory if it doesn't exist
                 directory.mkdir(parents=True, exist_ok=True)
                 
-                # Test write permissions
                 test_file = directory / ". permission_test"
                 test_file.write_text("test")
                 test_file.unlink()
@@ -339,7 +321,6 @@ class SystemCheck:
             "python_implementation": platform.python_implementation(),
         }
         
-        # Add memory info if available
         try:
             import psutil
             memory = psutil.virtual_memory()
@@ -357,13 +338,11 @@ class SystemCheck:
         
         report = ["SuperSID Pro System Requirements Report", "=" * 50, ""]
         
-        # System information
         report.append("System Information:")
         for key, value in self.get_system_info().items():
             report.append(f"  {key}: {value}")
         report.append("")
         
-        # Check results
         report.append("Requirements Check Results:")
         for result in self.results:
             status = "PASS" if result.passed else "FAIL"
@@ -375,7 +354,6 @@ class SystemCheck:
                 report.append(f"         Version: {result.version}")
             report.append("")
         
-        # Summary
         passed = len([r for r in self.results if r.passed])
         total = len(self.results)
         report.append(f"Summary: {passed}/{total} checks passed")

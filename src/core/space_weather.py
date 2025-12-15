@@ -44,12 +44,23 @@ class SpaceWeatherAPI:
     
     async def start_monitoring(self):
         """Start space weather monitoring"""
+
+        self.logger.info("START_MONITORING called!")
+
         if not self.session:
             self.session = aiohttp.ClientSession()
+            self.logger.info("HTTP session created")
         
         self.logger.info("Starting space weather monitoring")
         
+        try:
+            await self.fetch_all_data()
+            self.logger.info("Initial space weather fetch completed")
+        except Exception as e:
+            self.logger.error(f"Initial fetch failed: {e}")
+
         asyncio.create_task(self._update_loop())
+        self.logger.info("Update loop task created")
     
     async def stop_monitoring(self):
         """Stop space weather monitoring"""
@@ -145,45 +156,70 @@ class SpaceWeatherAPI:
             self.logger.info(f"Fetching from: {solar_wind_url}")
             
             async with self.session.get(solar_wind_url) as response:
-                self.logger.info(f"Response status: {response.status}")
+                self.logger.info(f"Response status: {response. status}")
                 
                 if response.status == 200:
-                    data = await response.json()
-                    self.logger.info(f"Received {len(data)} records from SWPC")
-                    
-                    self.latest_data['solar_wind'].update({
-                        'swpc_source': 'noaa',
-                        'swpc_data': data,
-                        'swpc_timestamp': datetime.now(timezone.utc).isoformat()
-                    })
-                    
-                    self.logger.info("SWPC solar wind data updated successfully")
+                    try:
+                        text = await response.text()
+                        self.logger.info(f"Response length: {len(text)} characters")
+                        
+                        text = text.strip()
+                        if text. endswith(','):
+                            text = text[:-1]
+                        
+                        data = json.loads(text)
+                        self.logger.info(f"Received {len(data)} records from SWPC")
+                        
+                        self.latest_data['solar_wind']. update({
+                            'swpc_source': 'noaa',
+                            'swpc_data': data,
+                            'swpc_timestamp': datetime.now(timezone.utc).isoformat()
+                        })
+                        
+                        self.logger.info("SWPC solar wind data updated successfully")
+                    except json.JSONDecodeError as e:
+                        self.logger.error(f"Invalid JSON from SWPC: {e}")
+                        self.logger.info("Using cached or default data")
+                    except Exception as e:
+                        self.logger.error(f"Error processing SWPC data: {e}")
                 else:
-                    self.logger. error(f"SWPC request failed with status: {response.status}")
+                    self.logger.error(f"SWPC request failed with status:  {response.status}")
             
             # Fetch X-ray flares
-            xray_url = f"{base_url}/products/goes-xray-flare-events.json"
-            async with self.session.get(xray_url) as response:
-                if response.status == 200:
-                    data = await response.json()
-                    self. latest_data['solar_activity'].update({
-                        'swpc_xray_flares': data,
-                        'swpc_timestamp': datetime.now(timezone.utc).isoformat()
-                    })
-                    self.logger.info("SWPC X-ray data updated")
+            try:
+                xray_url = f"{base_url}/products/goes-xray-flare-events.json"
+                async with self.session.get(xray_url) as response:
+                    if response.status == 200:
+                        try:
+                            data = await response.json()
+                            self.latest_data['solar_activity'].update({
+                                'swpc_xray_flares': data,
+                                'swpc_timestamp':  datetime.now(timezone.utc).isoformat()
+                            })
+                            self.logger.info("SWPC X-ray data updated")
+                        except json.JSONDecodeError as e:
+                            self.logger.error(f"Invalid JSON from X-ray API: {e}")
+            except Exception as e:
+                self.logger.error(f"Error fetching X-ray data: {e}")
             
             # Fetch geomagnetic storm probability
-            geomag_url = f"{base_url}/products/geomag-storm-probability.json"
-            async with self.session.get(geomag_url) as response:
-                if response.status == 200:
-                    data = await response.json()
-                    self.latest_data['geomagnetic'].update({
-                        'swpc_storm_probability': data,
-                        'swpc_timestamp': datetime. now(timezone.utc).isoformat()
-                    })
-                    self.logger.info("SWPC geomagnetic data updated")
+            try:
+                geomag_url = f"{base_url}/products/geomag-storm-probability.json"
+                async with self.session.get(geomag_url) as response:
+                    if response.status == 200:
+                        try:
+                            data = await response.json()
+                            self.latest_data['geomagnetic'].update({
+                                'swpc_storm_probability': data,
+                                'swpc_timestamp': datetime.now(timezone.utc).isoformat()
+                            })
+                            self.logger.info("SWPC geomagnetic data updated")
+                        except json. JSONDecodeError as e: 
+                            self.logger.error(f"Invalid JSON from geomag API: {e}")
+            except Exception as e:
+                self.logger.error(f"Error fetching geomagnetic data: {e}")
             
-            self. logger.info("Successfully fetched SWPC NOAA data")
+            self.logger.info("Successfully fetched SWPC NOAA data")
             
         except Exception as e:
             self.logger.error(f"Error fetching SWPC data: {e}")
@@ -211,7 +247,7 @@ class SpaceWeatherAPI:
 
             # Process NOAA solar wind data
             solar_wind = self.latest_data.get('solar_wind', {})
-            swpc_data = solar_wind. get('swpc_data', [])
+            swpc_data = solar_wind.get('swpc_data', [])
             self.logger.info(f"Processing {len(swpc_data)} SWPC data points")
             
             if len(swpc_data) > 1:

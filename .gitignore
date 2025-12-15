@@ -73,3 +73,4 @@ coverage.xml
 .env.development.local
 .env.test.local
 .env.production. local
+data/vlf_realtime.db

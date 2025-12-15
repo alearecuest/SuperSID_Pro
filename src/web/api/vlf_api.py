@@ -28,8 +28,9 @@ class VLFWebAPI:
     
     def __init__(self, config_manager: ConfigManager):
         self.config_manager = config_manager
-        self. audio_manager = AudioManager()
+        self.audio_manager = AudioManager()
         self.logger = get_logger(__name__)
+        self._monitoring_task = None
         
         self.app = FastAPI(
             title="SuperSID Pro Web API",
@@ -47,13 +48,21 @@ class VLFWebAPI:
         self.app.mount("/static", StaticFiles(directory=web_path / "static"), name="static")
         self.templates = Jinja2Templates(directory=web_path / "templates")
         
-        self.websocket_connections:  List[WebSocket] = []
+        self.websocket_connections: List[WebSocket] = []
         
         self.vlf_system = None
         self.storage = RealtimeStorage()
         self._monitoring_task = None
         
         self.space_weather = SpaceWeatherAPI(self.config_manager)
+        
+        self.logger.info("Space Weather API created, starting monitoring...")
+        try:
+            asyncio.create_task(self.space_weather.start_monitoring())
+            self.logger.info("Space Weather monitoring task created")
+        except Exception as e: 
+            self.logger.error(f"Failed to start space weather:  {e}")
+
         
         self._setup_routes()
         
@@ -75,7 +84,7 @@ class VLFWebAPI:
                     
                     vlf_signals = self.vlf_audio_processor.process_audio_buffer(audio_array)
                     
-                    if vlf_signals:
+                    if vlf_signals: 
                         self._on_vlf_data(vlf_signals)
                         
                 return (None, pyaudio.paContinue)
@@ -95,7 +104,7 @@ class VLFWebAPI:
             
             return False
         
-        except Exception as e: 
+        except Exception as e:  
             self.logger.error(f"Failed to start real audio capture: {e}")
             return False
 
@@ -106,7 +115,7 @@ class VLFWebAPI:
                 self.audio_manager.stop_recording()
                 self.audio_stream = None
             
-            self.vlf_audio_processor. stop_processing()
+            self.vlf_audio_processor.stop_processing()
             self.use_real_hardware = False
             self.logger.info("Real audio capture stopped")
             
@@ -124,7 +133,7 @@ class VLFWebAPI:
             
             return self.templates.TemplateResponse("dashboard.html", {"request": request})
         
-        @self.app.get("/api/config")
+        @self.app. get("/api/config")
         async def get_config():
             """Get observatory configuration"""
             try:
@@ -135,7 +144,7 @@ class VLFWebAPI:
                     "vlf_stations": config.get("vlf_stations", {}),
                     "application": config.get("application", {})
                     }
-            except Exception as e: 
+            except Exception as e:  
                 raise HTTPException(status_code=500, detail=str(e))
 
         @self.app.get("/api/audio-devices")
@@ -148,10 +157,10 @@ class VLFWebAPI:
                     "devices": devices,
                     "count": len(devices)
                 }
-            except Exception as e: 
+            except Exception as e:  
                 raise HTTPException(status_code=500, detail=str(e))
         
-        @self.app.post("/api/test-audio-device")
+        @self.app. post("/api/test-audio-device")
         async def test_audio_device(device_data: dict):
             """Test audio device with specified parameters"""
             try:
@@ -166,23 +175,23 @@ class VLFWebAPI:
                     "working": success,
                     "sample_rate": sample_rate
                 }
-            except Exception as e:
+            except Exception as e: 
                 raise HTTPException(status_code=500, detail=str(e))
 
         @self.app.get("/setup", response_class=HTMLResponse)
         async def setup_page(request: Request):
             """Observatory setup page"""
-            return self. templates.TemplateResponse("setup.html", {"request": request})
+            return self.templates.TemplateResponse("setup.html", {"request": request})
         
-        @self.app.post("/api/setup")
+        @self.app. post("/api/setup")
         async def save_setup(setup_data: dict):
             """Save observatory setup configuration"""
             try:
                 current_config = self.config_manager.config.copy()
                 
-                if 'observatory' in setup_data:
+                if 'observatory' in setup_data: 
                     current_config['observatory'] = {
-                        **current_config. get('observatory', {}),
+                        **current_config.get('observatory', {}),
                         **setup_data['observatory']
                     }
                 
@@ -205,10 +214,10 @@ class VLFWebAPI:
                         "update_interval": 600
                     }
                 
-                if 'data_sources' not in current_config: 
+                if 'data_sources' not in current_config:  
                     current_config['data_sources'] = {
-                        "audio":  {
-                            "enabled": True,
+                        "audio": {
+                            "enabled":  True,
                             "sample_rate": 11025,
                             "buffer_size": 1024
                         },
@@ -219,7 +228,7 @@ class VLFWebAPI:
                         }
                     }
                 
-                if 'vlf_system' not in current_config:
+                if 'vlf_system' not in current_config: 
                     current_config['vlf_system'] = {
                         "audio_sample_rate": 11025,
                         "audio_buffer_size": 1024,
@@ -237,7 +246,7 @@ class VLFWebAPI:
                         "screenshot_interval": 300
                     }
                 
-                if 'reporting' not in current_config: 
+                if 'reporting' not in current_config:  
                     current_config['reporting'] = {
                         "ftp_upload":  False,
                         "ftp_server": "sid-ftp.stanford.edu",
@@ -251,14 +260,14 @@ class VLFWebAPI:
                 
                 return {"status": "success", "message":  "Observatory configuration saved successfully"}
                 
-            except Exception as e: 
+            except Exception as e:  
                 self.logger.error(f"Error saving setup: {e}")
                 raise HTTPException(status_code=500, detail=str(e))
         
         @self.app.get("/api/status")
         async def get_status():
             """Get system status"""
-            if self.vlf_system: 
+            if self.vlf_system:  
                 status = self.vlf_system.get_system_status()
             else:
                 status = {"is_monitoring": False, "message": "VLF system not initialized"}
@@ -267,7 +276,7 @@ class VLFWebAPI:
                 "status": "ok",
                 "timestamp": datetime.now(timezone.utc).isoformat(),
                 "vlf_system": status,
-                "websocket_connections": len(self.websocket_connections)
+                "websocket_connections": len(self. websocket_connections)
             }
         
         @self.app.get("/api/space-weather")
@@ -279,11 +288,11 @@ class VLFWebAPI:
                 
                 return {
                     "status": "ok",
-                    "data":  data,
-                    "summary":  summary,
-                    "timestamp":  datetime.now(timezone.utc).isoformat()
+                    "data": data,
+                    "summary": summary,
+                    "timestamp": datetime.now(timezone.utc).isoformat()
                 }
-            except Exception as e: 
+            except Exception as e:  
                 raise HTTPException(status_code=500, detail=str(e))
 
         @self.app.get("/api/space-weather/summary")
@@ -292,10 +301,10 @@ class VLFWebAPI:
             try:
                 summary = self.space_weather.get_summary()
                 return summary
-            except Exception as e: 
+            except Exception as e:  
                 raise HTTPException(status_code=500, detail=str(e))
 
-        @self.app.post("/api/space-weather-update")
+        @self.app.get("/api/space-weather-update")
         async def force_space_weather_update():
             """Force space weather data update (for debugging)"""
             try:
@@ -329,50 +338,54 @@ class VLFWebAPI:
         @self.app.post("/api/start")
         async def start_monitoring():
             """Start VLF monitoring"""
-            try:
-                if not self.vlf_system:
+            try:  
+                self.logger.info("API:  Starting VLF monitoring")
+
+                if self._monitoring_task and not self._monitoring_task.done():
+                    self.logger.info("Stopping existing monitoring task")
+                    self._monitoring_task.cancel()
+                    try:
+                        await self._monitoring_task
+                    except asyncio.CancelledError:
+                        pass
+                    self._monitoring_task = None
+
+                if not self.vlf_system:  
+                    from core.vlf_system import VLFMonitoringSystem
                     self.vlf_system = VLFMonitoringSystem(self.config_manager)
                     self.vlf_system.register_data_callback(self._on_vlf_data)
                     self.vlf_system.register_anomaly_callback(self._on_anomaly)
                 
-                audio_config = self.config_manager.config.get('vlf_system', {})
-                audio_device = audio_config.get('audio_device')
+                self.logger.info("Starting simulation loop for 27 stations")
+                self._monitoring_task = asyncio.create_task(self._simulation_loop())
                 
-                hardware_available = False
-                if audio_device is not None:
-                    try:
-                        sample_rate = audio_config.get('audio_sample_rate', 44100)
-                        buffer_size = audio_config.get('audio_buffer_size', 4096)
-                        
-                        hardware_available = self.start_real_audio_capture(audio_device, sample_rate, buffer_size)
-                        
-                        if hardware_available:
-                            self.logger.info("Started with real radio telescope hardware")
-                        else:
-                            self.logger.warning("Hardware audio test failed")
-                            
-                    except Exception as e:
-                        self.logger.warning(f"Hardware initialization failed: {e}")
-                        hardware_available = False
-                        
-                if not hardware_available:
-                    self.logger.info("Using simulation mode (no functional hardware detected)")
-                    if not self._monitoring_task:
-                        self._monitoring_task = asyncio.create_task(self._simulation_loop())
+                self.logger.info(f"Monitoring task created: {self._monitoring_task}")
+                
+                await asyncio.sleep(0.2)
+                
+                if self._monitoring_task. done():
+                    exception = self._monitoring_task.exception()
+                    self.logger.error(f"Task failed immediately: {exception}")
+                    return {
+                        "status": "error",
+                        "message": f"Failed to start simulation: {exception}",
+                        "timestamp": datetime.now(timezone.utc).isoformat()
+                    }
+                else:
+                    self.logger.info("Task is running successfully")
 
-                self.vlf_system.start_monitoring()
-                
                 return {
                     "status": "success",
-                    "message": "VLF monitoring started",
-                    "mode": "hardware" if hardware_available else "simulation",
+                    "message": "VLF monitoring started with simulation (27 stations)",
                     "timestamp": datetime.now(timezone.utc).isoformat()
                 }
-
-            except Exception as e:
+                
+            except Exception as e:   
                 self.logger.error(f"Failed to start monitoring: {e}")
+                import traceback
+                self.logger.error(f"Traceback: {traceback.format_exc()}")
                 return {
-                    "status":  "error",
+                    "status":  "error", 
                     "message": f"Failed to start monitoring: {str(e)}",
                     "timestamp": datetime.now(timezone.utc).isoformat()
                 }
@@ -380,29 +393,34 @@ class VLFWebAPI:
         @self.app.post("/api/stop")
         async def stop_monitoring():
             """Stop VLF monitoring"""
-            try:
-                if self. vlf_system:
-                    self.vlf_system.stop_monitoring()
-                
+            try:  
                 if self._monitoring_task:
                     self._monitoring_task.cancel()
+                    try:
+                        await self._monitoring_task
+                    except asyncio.CancelledError:
+                        pass
                     self._monitoring_task = None
                 
-                try:
-                    await self.space_weather.stop_monitoring()
-                except Exception as e:
-                    self.logger.warning(f"Failed to stop space weather monitoring: {e}")
-
-                return {"status": "stopped", "message": "VLF monitoring stopped"}
+                if self.vlf_system:
+                    self.vlf_system.stop_monitoring()
+                    self. vlf_system = None
                 
-            except Exception as e:
+                if self.use_real_hardware:
+                    self.stop_real_audio_capture()
+                
+                return {"status": "success", "message":  "VLF monitoring stopped"}
+                        
+            except Exception as e:  
                 self.logger.error(f"Failed to stop monitoring: {e}")
-                raise HTTPException(status_code=500, detail=str(e))
+                self._monitoring_task = None
+                self.vlf_system = None
+                return {"status": "success", "message": "VLF monitoring force stopped"}
         
-        @self.app.post("/api/select-audio-device")
+        @self.app. post("/api/select-audio-device")
         async def select_audio_device(device_data: dict):
             """Select and configure audio device for VLF monitoring"""
-            try:
+            try: 
                 device_index = device_data.get('device_index')
                 sample_rate = device_data.get('sample_rate', 44100)
                 buffer_size = device_data.get('buffer_size', 4096)
@@ -413,7 +431,7 @@ class VLFWebAPI:
         
                 current_config['vlf_system']. update({
                     'audio_device': device_index,
-                    'audio_sample_rate': sample_rate,
+                    'audio_sample_rate':  sample_rate,
                     'audio_buffer_size': buffer_size
                 })
         
@@ -423,12 +441,12 @@ class VLFWebAPI:
                 return {
                     "status": "success",
                     "message": "Audio device configuration saved",
-                    "device_index":  device_index,
+                    "device_index": device_index,
                     "sample_rate": sample_rate,
                     "buffer_size": buffer_size
                 }
         
-            except Exception as e:
+            except Exception as e: 
                 raise HTTPException(status_code=500, detail=str(e))
 
         @self.app.get("/api/data/recent/{station}")
@@ -438,9 +456,9 @@ class VLFWebAPI:
                 measurements = self.storage.get_recent_data(station, minutes)
                 
                 data = []
-                for measurement in measurements:
+                for measurement in measurements: 
                     data.append({
-                        "timestamp": measurement. timestamp. isoformat(),
+                        "timestamp": measurement.timestamp.isoformat(),
                         "frequency": measurement.frequency,
                         "amplitude": measurement.amplitude,
                         "phase": measurement.phase
@@ -452,7 +470,7 @@ class VLFWebAPI:
                     "data": data
                 }
                 
-            except Exception as e: 
+            except Exception as e:  
                 raise HTTPException(status_code=500, detail=str(e))
         
         @self.app.websocket("/ws")
@@ -468,24 +486,28 @@ class VLFWebAPI:
             }
             await websocket.send_text(json.dumps(welcome_msg))
             
-            try: 
+            try:  
                 while True:
                     message = await websocket.receive_text()
                     if message == "ping":
-                        await websocket. send_text("pong")
+                        await websocket.send_text("pong")
                     
-            except WebSocketDisconnect: 
+            except WebSocketDisconnect:  
                 self.websocket_connections.remove(websocket)
     
     async def _simulation_loop(self):
-        """Simulation loop for demo data (remove when using real hardware)"""
+        """Simulation loop for 27 stations"""
+        self.logger.info("SIMULATION LOOP STARTED!")
         while True:
-            try: 
+            try:  
                 current_time = datetime.now(timezone.utc)
                 t = current_time.timestamp()
                 
-                stations = self.config_manager.config.get('vlf_stations', {}).get('monitored_stations', ['NPM', 'GQD', 'DHO38', 'NAA'])
-                station_freqs = self.config_manager.config.get('vlf_stations', {}).get('station_frequencies', {})
+                stations_config = self.config_manager.config.get('vlf_stations', {})
+                stations = stations_config.get('monitored_stations', ['NPM', 'GQD'])
+                station_freqs = stations_config.get('station_frequencies', {})
+                
+                self.logger.debug(f"Generating data for {len(stations)} stations")
                 
                 vlf_signals = {}
                 
@@ -494,11 +516,17 @@ class VLFWebAPI:
                     station_info = station_freqs.get(station, {})
                     base_freq = station_info.get('freq', 20.0 + i * 2)
                     
-                    base_amplitude = 0.001 * (i + 1)
-                    variation = 0.0005 * np.sin(t * 0.1 * (i + 1)) + 0.0001 * np.random.randn()
-                    amplitude = base_amplitude + variation
+                    if i < 10:
+                        base_amplitude = 0.002 + 0.001 * np.sin(t * 0.1 * (i + 1))
+                    elif i < 20:  
+                        base_amplitude = 0.0015 + 0.0008 * np.sin(t * 0.08 * (i + 1))
+                    else:
+                        base_amplitude = 0.001 + 0.0005 * np.sin(t * 0.06 * (i + 1))
                     
-                    freq_variation = 0.05 * np.sin(t * 0.05 * (i + 1))
+                    variation = 0.0003 * (np.random.randn() + np.sin(t * 0.02 * (i + 1)))
+                    amplitude = max(0.0002, base_amplitude + variation)
+                    
+                    freq_variation = 0.01 * np.sin(t * 0.03 * (i + 1))
                     frequency = base_freq + freq_variation
                     
                     signal = VLFSignal(
@@ -510,19 +538,22 @@ class VLFWebAPI:
                     )
                     
                     vlf_signals[band] = signal
+
+                self.logger.info(f"Generated signals for {len(vlf_signals)} bands:  {list(vlf_signals.keys())[: 5]}...")
                 
                 self._on_vlf_data(vlf_signals)
                 
-                if np.random. random() < 0.01:
-                    random_station_idx = np.random.randint(0, len(stations))
-                    anomalies = [f"BAND_{random_station_idx + 1}: Signal amplitude spike detected"]
+                if np.random.random() < 0.005:
+                    random_station_idx = np.random.randint(0, min(10, len(stations)))
+                    station_name = stations[random_station_idx]
+                    anomalies = [f"BAND_{random_station_idx + 1}:  {station_name} signal amplitude spike detected"]
                     self._on_anomaly(anomalies, current_time)
                 
-                await asyncio.sleep(1.0)
-                
+                await asyncio. sleep(1.0)
+
             except asyncio.CancelledError:
                 break
-            except Exception as e:
+            except Exception as e:  
                 self.logger.error(f"Simulation error: {e}")
                 await asyncio.sleep(5.0)
 
@@ -532,10 +563,10 @@ class VLFWebAPI:
             data = {
                 "type": "vlf_data", 
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-                "signals": {}
+                "signals":  {}
             }
             
-            for station, signal in vlf_signals.items():
+            for station, signal in vlf_signals. items():
                 data["signals"][station] = {
                     "frequency": float(signal.frequency) if np.isfinite(signal.frequency) else 0.0,
                     "amplitude": float(signal.amplitude) if np.isfinite(signal.amplitude) else 0.0,
@@ -548,7 +579,7 @@ class VLFWebAPI:
                 import threading
                 threading.Thread(target=self._safe_broadcast, args=(data,), daemon=True).start()
                 
-        except Exception as e: 
+        except Exception as e:  
             self.logger.error(f"Error handling VLF data: {e}")
 
     def _safe_broadcast(self, data):
@@ -558,7 +589,7 @@ class VLFWebAPI:
             asyncio.set_event_loop(loop)
             loop.run_until_complete(self._broadcast_to_websockets(data))
         except Exception as e:
-            self.logger.error(f"Broadcast error: {e}")
+            self.logger. error(f"Broadcast error: {e}")
         finally:
             loop.close()
 
@@ -566,11 +597,12 @@ class VLFWebAPI:
         """Handle anomaly callback"""
         data = {
             "type": "anomaly",
-            "timestamp": timestamp.isoformat() if hasattr(timestamp, 'isoformat') else str(timestamp),
+            "timestamp":  timestamp.isoformat() if hasattr(timestamp, 'isoformat') else str(timestamp),
             "anomalies": anomalies
         }
         
-        asyncio.create_task(self._broadcast_to_websockets(data))
+        import threading
+        threading.Thread(target=self._safe_broadcast, args=(data,), daemon=True).start()
     
     async def _broadcast_to_websockets(self, data: Dict):
         """Broadcast data to all WebSocket connections"""

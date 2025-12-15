@@ -119,7 +119,7 @@ class VLFAudioProcessor:
             for i, station in enumerate(self.stations):
                 try:
                     station_info = self.station_freqs. get(station, {})
-                    target_freq = station_info.get('freq', 20. 0) * 1000
+                    target_freq = station_info.get('freq', 20.0) * 1000
                     
                     if target_freq < self.vlf_min_freq or target_freq > self.vlf_max_freq:
                         continue
@@ -160,7 +160,7 @@ class VLFAudioProcessor:
                     self.logger.warning(f"Error processing station {station}: {e}")
                     continue
             
-            self.check_anomalies(vlf_signals, current_time)
+            #self.check_anomalies(vlf_signals, current_time)
             
             return vlf_signals
             

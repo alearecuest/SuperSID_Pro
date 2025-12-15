@@ -78,12 +78,10 @@ class StationTableWidget(QTableWidget):
         self.setColumnCount(len(headers))
         self.setHorizontalHeaderLabels(headers)
         
-        # Configure table properties
         self.setAlternatingRowColors(True)
         self.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.setSortingEnabled(True)
         
-        # Configure column widths
         header = self.horizontalHeader()
         header.setSectionResizeMode(0, QHeaderView.ResizeMode.Fixed)  # Code
         header.resizeSection(0, 80)
@@ -95,11 +93,9 @@ class StationTableWidget(QTableWidget):
         header.setSectionResizeMode(4, QHeaderView.ResizeMode.Fixed)  # Distance
         header.resizeSection(4, 100)
         
-        # Connect signals
         self.cellClicked.connect(self.on_cell_clicked)
         self.cellDoubleClicked.connect(self. on_cell_double_clicked)
         
-        # Style
         self.setStyleSheet("""
             QTableWidget {
                 gridline-color: #404040;
@@ -120,21 +116,16 @@ class StationTableWidget(QTableWidget):
         self.setRowCount(len(stations))
         
         for row, station in enumerate(stations):
-            # Code
             self.setItem(row, 0, QTableWidgetItem(station.code))
             
-            # Name
             self.setItem(row, 1, QTableWidgetItem(station.name))
             
-            # Frequency
             freq_item = QTableWidgetItem(f"{station.frequency:.1f}")
             freq_item.setData(Qt.ItemDataRole.UserRole, station.frequency)
             self.setItem(row, 2, freq_item)
             
-            # Country
             self. setItem(row, 3, QTableWidgetItem(station. country))
             
-            # Distance
             if station.distance_km:
                 distance_text = f"{station.distance_km:.0f}"
                 distance_item = QTableWidgetItem(distance_text)
@@ -144,10 +135,8 @@ class StationTableWidget(QTableWidget):
                 distance_item.setData(Qt.ItemDataRole.UserRole, float('inf'))
             self.setItem(row, 4, distance_item)
             
-            # Power
             self.setItem(row, 5, QTableWidgetItem(station.power))
             
-            # Azimuth
             if station.azimuth:
                 azimuth_text = f"{station.azimuth:. 0f}"
                 azimuth_item = QTableWidgetItem(azimuth_text)
@@ -157,18 +146,15 @@ class StationTableWidget(QTableWidget):
                 azimuth_item. setData(Qt.ItemDataRole.UserRole, 0)
             self.setItem(row, 6, azimuth_item)
             
-            # Priority
             priority_item = QTableWidgetItem(str(station.priority))
             priority_item.setData(Qt.ItemDataRole.UserRole, station.priority)
             self.setItem(row, 7, priority_item)
             
-            # Enabled checkbox
             enabled_item = QTableWidgetItem()
             enabled_item.setFlags(Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsUserCheckable)
             enabled_item.setCheckState(Qt.CheckState.Checked if station.enabled else Qt.CheckState.Unchecked)
             self.setItem(row, 8, enabled_item)
             
-            # Status
             status_item = QTableWidgetItem(station.operational_status. title())
             if station.operational_status == "active":
                 status_item.setBackground(QColor("#2d5a27"))
@@ -178,7 +164,6 @@ class StationTableWidget(QTableWidget):
                 status_item.setBackground(QColor("#5a5527"))
             self.setItem(row, 9, status_item)
             
-            # Notes (truncated)
             notes_text = station.notes[:50] + "..." if len(station.notes) > 50 else station.notes
             self.setItem(row, 10, QTableWidgetItem(notes_text))
     
@@ -187,8 +172,7 @@ class StationTableWidget(QTableWidget):
         if 0 <= row < len(self.stations):
             station = self.stations[row]
             
-            # Handle enabled checkbox
-            if column == 8:  # Enabled column
+            if column == 8:
                 item = self.item(row, column)
                 if item:
                     enabled = item.checkState() == Qt.CheckState.Checked
@@ -200,7 +184,6 @@ class StationTableWidget(QTableWidget):
         """Handle cell double click"""
         if 0 <= row < len(self.stations):
             station = self.stations[row]
-            # Could open detailed station editor here
             print(f"Double clicked station: {station.code}")
 
 class VLFDatabaseWidget(QWidget):
@@ -212,10 +195,8 @@ class VLFDatabaseWidget(QWidget):
         self.config_manager = config_manager
         self.logger = get_logger(__name__)
         
-        # Initialize database
         self.database = VLFDatabase(config_manager)
         
-        # Current stations
         self.current_stations: List[VLFStationExtended] = []
         
         self.setup_ui()
@@ -225,22 +206,17 @@ class VLFDatabaseWidget(QWidget):
         """Setup the user interface"""
         layout = QVBoxLayout(self)
         
-        # Create tab widget
         tab_widget = QTabWidget()
         
-        # Main database tab
         main_tab = self.create_main_tab()
         tab_widget.addTab(main_tab, "Station Database")
         
-        # Import/Export tab
         import_tab = self.create_import_tab()
         tab_widget.addTab(import_tab, "Import/Export")
         
-        # Recommendations tab
         recommendations_tab = self.create_recommendations_tab()
         tab_widget.addTab(recommendations_tab, "Recommendations")
         
-        # Statistics tab
         stats_tab = self.create_statistics_tab()
         tab_widget.addTab(stats_tab, "Statistics")
         
@@ -251,11 +227,9 @@ class VLFDatabaseWidget(QWidget):
         widget = QWidget()
         layout = QVBoxLayout(widget)
         
-        # Filters section
         filters_group = QGroupBox("Filters")
         filters_layout = QGridLayout(filters_group)
         
-        # Frequency range
         filters_layout.addWidget(QLabel("Frequency Range (kHz):"), 0, 0)
         self.freq_min_spin = QDoubleSpinBox()
         self.freq_min_spin.setRange(0, 1000)
@@ -270,7 +244,6 @@ class VLFDatabaseWidget(QWidget):
         self.freq_max_spin.setSuffix(" kHz")
         filters_layout. addWidget(self.freq_max_spin, 0, 3)
         
-        # Distance filter
         filters_layout.addWidget(QLabel("Max Distance (km):"), 1, 0)
         self.distance_spin = QSpinBox()
         self.distance_spin.setRange(0, 20000)
@@ -279,13 +252,11 @@ class VLFDatabaseWidget(QWidget):
         self.distance_spin.setSuffix(" km")
         filters_layout.addWidget(self.distance_spin, 1, 1)
         
-        # Country filter
         filters_layout.addWidget(QLabel("Country:"), 1, 2)
         self. country_combo = QComboBox()
         self.country_combo.addItem("All Countries")
         filters_layout.addWidget(self. country_combo, 1, 3)
         
-        # Status filters
         self.active_only_check = QCheckBox("Active stations only")
         self.active_only_check.setChecked(True)
         filters_layout.addWidget(self. active_only_check, 2, 0, 1, 2)
@@ -293,7 +264,6 @@ class VLFDatabaseWidget(QWidget):
         self.enabled_only_check = QCheckBox("Enabled stations only")
         filters_layout.addWidget(self. enabled_only_check, 2, 2, 1, 2)
         
-        # Filter buttons
         filter_buttons_layout = QHBoxLayout()
         
         self.apply_filters_btn = QPushButton("Apply Filters")
@@ -309,13 +279,11 @@ class VLFDatabaseWidget(QWidget):
         
         layout.addWidget(filters_group)
         
-        # Station table
         self.station_table = StationTableWidget()
         self.station_table.station_selected.connect(self.on_station_selected)
         self.station_table.station_toggled.connect(self.on_station_toggled)
         layout.addWidget(self.station_table)
         
-        # Action buttons
         actions_layout = QHBoxLayout()
         
         self.enable_selected_btn = QPushButton("Enable Selected")
@@ -334,7 +302,6 @@ class VLFDatabaseWidget(QWidget):
         
         layout.addLayout(actions_layout)
         
-        # Status bar
         status_layout = QHBoxLayout()
         self.status_label = QLabel("Ready")
         status_layout.addWidget(self. status_label)
@@ -353,11 +320,9 @@ class VLFDatabaseWidget(QWidget):
         widget = QWidget()
         layout = QVBoxLayout(widget)
         
-        # Import section
         import_group = QGroupBox("Import KML Files")
         import_layout = QVBoxLayout(import_group)
         
-        # File selection
         file_selection_layout = QHBoxLayout()
         
         self.kml_files_edit = QTextEdit()
@@ -371,12 +336,10 @@ class VLFDatabaseWidget(QWidget):
         
         import_layout.addLayout(file_selection_layout)
         
-        # Import progress
         self.import_progress = QProgressBar()
         self.import_progress.setVisible(False)
         import_layout.addWidget(self.import_progress)
         
-        # Import buttons
         import_buttons_layout = QHBoxLayout()
         
         self.start_import_btn = QPushButton("Start Import")
@@ -388,7 +351,6 @@ class VLFDatabaseWidget(QWidget):
         
         layout.addWidget(import_group)
         
-        # Export section
         export_group = QGroupBox("Export Database")
         export_layout = QVBoxLayout(export_group)
         
@@ -420,7 +382,6 @@ class VLFDatabaseWidget(QWidget):
         widget = QWidget()
         layout = QVBoxLayout(widget)
         
-        # Recommendations header
         recommendations_group = QGroupBox("Station Recommendations")
         recommendations_layout = QVBoxLayout(recommendations_group)
         
@@ -432,17 +393,14 @@ class VLFDatabaseWidget(QWidget):
         info_text.setWordWrap(True)
         recommendations_layout. addWidget(info_text)
         
-        # Get recommendations button
         get_recommendations_btn = QPushButton("Get Recommendations")
         get_recommendations_btn. clicked.connect(self.get_recommendations)
         recommendations_layout. addWidget(get_recommendations_btn)
         
-        # Recommendations table (smaller version)
         self.recommendations_table = StationTableWidget()
         self. recommendations_table.setMaximumHeight(300)
         recommendations_layout.addWidget(self.recommendations_table)
         
-        # Quick enable buttons
         quick_actions_layout = QHBoxLayout()
         
         enable_top5_btn = QPushButton("Enable Top 5")
@@ -466,7 +424,6 @@ class VLFDatabaseWidget(QWidget):
         widget = QWidget()
         layout = QVBoxLayout(widget)
         
-        # Database info
         info_group = QGroupBox("Database Information")
         info_layout = QGridLayout(info_group)
         
@@ -492,7 +449,6 @@ class VLFDatabaseWidget(QWidget):
         
         layout.addWidget(info_group)
         
-        # Refresh button
         refresh_btn = QPushButton("Refresh Statistics")
         refresh_btn.clicked.connect(self.refresh_statistics)
         layout.addWidget(refresh_btn)
@@ -500,8 +456,6 @@ class VLFDatabaseWidget(QWidget):
         layout.addStretch()
         
         return widget
-    
-    # METHODS IMPLEMENTATION
     
     def load_stations(self):
         """Load all stations from database"""
@@ -520,7 +474,6 @@ class VLFDatabaseWidget(QWidget):
     def apply_filters(self):
         """Apply current filters to station list"""
         try:
-            # Get filter values
             freq_min = self.freq_min_spin.value() if self.freq_min_spin. value() > 0 else None
             freq_max = self. freq_max_spin.value() if self.freq_max_spin.value() < 1000 else None
             max_distance = self.distance_spin.value() if self.distance_spin. value() > 0 else None
@@ -532,7 +485,6 @@ class VLFDatabaseWidget(QWidget):
             operational_only = self.active_only_check.isChecked()
             enabled_only = self.enabled_only_check.isChecked()
             
-            # Apply filters
             filtered_stations = self.database.filter_stations(
                 frequency_min=freq_min,
                 frequency_max=freq_max,
@@ -596,13 +548,11 @@ class VLFDatabaseWidget(QWidget):
     def on_station_toggled(self, code: str, enabled: bool):
         """Handle station enabled/disabled toggle"""
         try:
-            # Update in database
             with sqlite3.connect(self.database. db_path) as conn:
                 cursor = conn.cursor()
                 cursor.execute("UPDATE vlf_stations SET enabled=? WHERE code=?", (enabled, code))
                 conn.commit()
             
-            # Update current data
             for station in self.current_stations:
                 if station.code == code:
                     station.enabled = enabled
@@ -628,7 +578,6 @@ class VLFDatabaseWidget(QWidget):
                 QMessageBox.information(self, "No Selection", "Please select stations to modify")
                 return
             
-            # Update database
             codes_to_update = []
             for row in selected_rows:
                 if row < len(self.current_stations):
@@ -644,7 +593,6 @@ class VLFDatabaseWidget(QWidget):
                                  [enabled] + codes_to_update)
                     conn.commit()
                 
-                # Refresh table
                 self.station_table.update_stations(self. current_stations)
                 self. update_status()
                 
@@ -683,20 +631,17 @@ class VLFDatabaseWidget(QWidget):
         
         kml_files = [f.strip() for f in kml_text.split('\n') if f. strip()]
         
-        # Verify files exist
         missing_files = [f for f in kml_files if not Path(f).exists()]
         if missing_files:
             QMessageBox.critical(self, "Files Not Found", 
                                f"The following files were not found:\n" + "\n".join(missing_files))
             return
         
-        # Start import worker
         self.import_worker = KMLImportWorker(self.database, kml_files)
         self.import_worker.progress.connect(self.on_import_progress)
         self.import_worker.finished.connect(self.on_import_finished)
         self.import_worker.error.connect(self.on_import_error)
         
-        # Show progress and disable buttons
         self.import_progress.setVisible(True)
         self.start_import_btn. setEnabled(False)
         
@@ -714,7 +659,6 @@ class VLFDatabaseWidget(QWidget):
         
         QMessageBox.information(self, "Import Complete", message)
         
-        # Refresh stations
         self.load_stations()
         self.refresh_statistics()
     
@@ -750,7 +694,6 @@ class VLFDatabaseWidget(QWidget):
                 QMessageBox.information(self, "No Recommendations", "No recommendations available")
                 return
             
-            # Enable stations in database
             codes_to_enable = [station.code for station in recommended]
             
             with sqlite3.connect(self.database.db_path) as conn:
@@ -760,7 +703,6 @@ class VLFDatabaseWidget(QWidget):
                              codes_to_enable)
                 conn.commit()
             
-            # Refresh displays
             self.load_stations()
             self.get_recommendations()
             
@@ -809,13 +751,11 @@ class VLFDatabaseWidget(QWidget):
                 with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
                     writer = csv.writer(csvfile)
                     
-                    # Header
                     writer.writerow([
                         "Code", "Name", "Frequency", "Latitude", "Longitude", "Country",
                         "Power", "Distance_km", "Azimuth", "Status", "Enabled", "Notes"
                     ])
                     
-                    # Data
                     for station in self.current_stations:
                         writer. writerow([
                             station. code, station.name, station. frequency,
@@ -839,7 +779,6 @@ class VLFDatabaseWidget(QWidget):
             )
             
             if filename:
-                # Create KML content
                 kml_content = '''<?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://earth.google.com/kml/2.2">
 <Document>

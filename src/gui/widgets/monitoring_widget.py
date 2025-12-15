@@ -3,7 +3,7 @@ Real-time monitoring widget for SuperSID Pro
 Combines charts, space weather, and station status
 """
 
-from typing import Optional  # FIXED: Add missing import
+from typing import Optional 
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QSplitter, QTabWidget,
     QGroupBox, QLabel, QFrame, QPushButton, QTextEdit, QScrollArea
@@ -46,7 +46,6 @@ class AlertPanel(QFrame):
         """)
         layout.addWidget(self.alerts_area)
         
-        # Clear button
         clear_button = QPushButton("Clear Alerts")
         clear_button. clicked.connect(self.clear_alerts)
         clear_button.setMaximumWidth(100)
@@ -58,7 +57,6 @@ class AlertPanel(QFrame):
         
         timestamp = datetime.now(). strftime("%H:%M:%S")
         
-        # Color code by alert type
         colors = {
             "solar_flare": "#ff4444",
             "geomagnetic_storm": "#ff8800", 
@@ -92,12 +90,10 @@ class StationStatusPanel(QFrame):
         
         layout = QVBoxLayout(self)
         
-        # Header
         header_label = QLabel("Station Status")
         header_label. setStyleSheet("font-weight: bold; font-size: 14px; color: #0078d4;")
         layout.addWidget(header_label)
         
-        # Stations list
         self.stations_area = QScrollArea()
         self.stations_widget = QWidget()
         self. stations_layout = QVBoxLayout(self.stations_widget)
@@ -119,7 +115,6 @@ class StationStatusPanel(QFrame):
             
             station_layout = QVBoxLayout(station_frame)
             
-            # Station name and code
             name_label = QLabel(f"{station.code}")
             name_label.setStyleSheet("font-weight: bold; color: #0078d4;")
             station_layout.addWidget(name_label)
@@ -128,7 +123,6 @@ class StationStatusPanel(QFrame):
             freq_label. setStyleSheet("color: #b3b3b3; font-size: 10px;")
             station_layout.addWidget(freq_label)
             
-            # Status indicator
             status_layout = QHBoxLayout()
             
             status_indicator = QLabel("●")
@@ -165,19 +159,15 @@ class MonitoringWidget(QWidget):
         """Setup the monitoring interface"""
         layout = QHBoxLayout(self)
         
-        # Main splitter
         main_splitter = QSplitter(Qt.Orientation.Horizontal)
         layout.addWidget(main_splitter)
         
-        # Left panel: Chart
         chart_panel = self.create_chart_panel()
         main_splitter.addWidget(chart_panel)
         
-        # Right panel: Status and alerts
         right_panel = self.create_right_panel()
         main_splitter.addWidget(right_panel)
         
-        # Set splitter proportions
         main_splitter. setSizes([800, 300])
     
     def create_chart_panel(self) -> QWidget:
@@ -185,7 +175,6 @@ class MonitoringWidget(QWidget):
         panel = QWidget()
         layout = QVBoxLayout(panel)
         
-        # Chart widget
         self.chart_widget = ChartWidget(self.config_manager)
         layout.addWidget(self.chart_widget)
         
@@ -196,16 +185,13 @@ class MonitoringWidget(QWidget):
         panel = QWidget()
         layout = QVBoxLayout(panel)
         
-        # Station status
         self.station_status = StationStatusPanel(self.config_manager)
         layout.addWidget(self.station_status)
         
-        # Space weather (compact view)
         self.space_weather = SpaceWeatherWidget(self. config_manager)
         self.space_weather.setMaximumHeight(300)
         layout.addWidget(self.space_weather)
         
-        # Alerts panel
         self.alerts_panel = AlertPanel()
         layout.addWidget(self.alerts_panel)
         
@@ -215,10 +201,8 @@ class MonitoringWidget(QWidget):
     
     def connect_signals(self):
         """Connect widget signals"""
-        # Chart events
         self.chart_widget. event_detected.connect(self.on_chart_event)
         
-        # Space weather alerts
         self.space_weather. alert_triggered.connect(self.on_space_weather_alert)
     
     def on_chart_event(self, event_type: str, event_data: dict):

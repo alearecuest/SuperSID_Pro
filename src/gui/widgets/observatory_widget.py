@@ -29,14 +29,12 @@ class ObservatoryWidget(QGroupBox):
         self.config_manager = config_manager
         self.logger = get_logger(__name__)
         
-        # Current configuration
         self.current_config = self.config_manager.get_observatory_config()
         
         self.setup_ui()
         self.load_configuration()
         self.connect_signals()
         
-        # Update status
         self.update_status_display()
     
     def setup_ui(self):
@@ -46,22 +44,16 @@ class ObservatoryWidget(QGroupBox):
         
         main_layout = QVBoxLayout(self)
         
-        # Status indicator at top
         self.create_status_section(main_layout)
         
-        # Basic information form
         self.create_basic_info_section(main_layout)
         
-        # Location information form  
         self.create_location_section(main_layout)
         
-        # Additional information
         self.create_additional_info_section(main_layout)
         
-        # Control buttons
         self.create_buttons_section(main_layout)
         
-        # Apply modern styling
         self.setStyleSheet("""
             QGroupBox {
                 font-weight: bold;
@@ -126,19 +118,16 @@ class ObservatoryWidget(QGroupBox):
         
         status_layout = QHBoxLayout(status_frame)
         
-        # Status indicator
         self.status_indicator = QLabel("●")
         self.status_indicator.setStyleSheet("color: #ff4444; font-size: 24px;")
         status_layout.addWidget(self. status_indicator)
         
-        # Status text
         self.status_label = QLabel("Not Configured")
         self.status_label.setStyleSheet("color: #ff4444; font-weight: bold; font-size: 14px;")
         status_layout.addWidget(self.status_label)
         
         status_layout.addStretch()
         
-        # Monitor ID display (prominent)
         self.monitor_id_display = QLabel("Monitor: --")
         self.monitor_id_display.setStyleSheet("""
             color: #00ff00; 
@@ -158,23 +147,19 @@ class ObservatoryWidget(QGroupBox):
         basic_group = QGroupBox("Basic Information")
         basic_layout = QFormLayout(basic_group)
         
-        # Monitor ID
         self.monitor_id_spinbox = QSpinBox()
         self.monitor_id_spinbox.setRange(1, 9999)
         self.monitor_id_spinbox.setSpecialValueText("Not Set")
         basic_layout.addRow("Monitor ID:", self.monitor_id_spinbox)
         
-        # Observatory name
         self.name_edit = QLineEdit()
         self.name_edit.setPlaceholderText("Enter observatory name")
         basic_layout.addRow("Observatory Name:", self.name_edit)
         
-        # Contact email
         self.email_edit = QLineEdit()
         self.email_edit.setPlaceholderText("contact@observatory.com")
         basic_layout.addRow("Contact Email:", self.email_edit)
         
-        # Website
         self.website_edit = QLineEdit()
         self. website_edit.setPlaceholderText("https://www.observatory.com")
         basic_layout.addRow("Website:", self.website_edit)
@@ -186,7 +171,6 @@ class ObservatoryWidget(QGroupBox):
         location_group = QGroupBox("Location")
         location_layout = QFormLayout(location_group)
         
-        # Latitude
         self.latitude_spinbox = QDoubleSpinBox()
         self.latitude_spinbox.setRange(-90.0, 90.0)
         self.latitude_spinbox.setDecimals(6)
@@ -194,7 +178,6 @@ class ObservatoryWidget(QGroupBox):
         self.latitude_spinbox.setSpecialValueText("Not Set")
         location_layout.addRow("Latitude:", self.latitude_spinbox)
         
-        # Longitude  
         self.longitude_spinbox = QDoubleSpinBox()
         self.longitude_spinbox.setRange(-180.0, 180.0)
         self.longitude_spinbox.setDecimals(6)
@@ -202,14 +185,12 @@ class ObservatoryWidget(QGroupBox):
         self. longitude_spinbox.setSpecialValueText("Not Set")
         location_layout.addRow("Longitude:", self.longitude_spinbox)
         
-        # Elevation
         self.elevation_spinbox = QDoubleSpinBox()
         self.elevation_spinbox.setRange(-500.0, 9000.0)
         self.elevation_spinbox.setDecimals(1)
         self.elevation_spinbox.setSuffix(" m")
         location_layout.addRow("Elevation:", self.elevation_spinbox)
         
-        # Timezone
         self.timezone_combo = QComboBox()
         self.populate_timezones()
         location_layout.addRow("Timezone:", self.timezone_combo)
@@ -221,13 +202,11 @@ class ObservatoryWidget(QGroupBox):
         additional_group = QGroupBox("Additional Information")
         additional_layout = QFormLayout(additional_group)
         
-        # Description
         self.description_edit = QTextEdit()
         self. description_edit.setMaximumHeight(80)
         self.description_edit.setPlaceholderText("Brief description of the observatory...")
         additional_layout.addRow("Description:", self.description_edit)
         
-        # Established date
         self.established_edit = QLineEdit()
         self.established_edit.setPlaceholderText("YYYY or YYYY-MM-DD")
         additional_layout.addRow("Established:", self.established_edit)
@@ -239,18 +218,17 @@ class ObservatoryWidget(QGroupBox):
         buttons_layout = QHBoxLayout()
         
         self.save_button = QPushButton("Save Configuration")
-        self.save_button.setIcon(QIcon("assets/icons/save.png"))  # You'll need to add this icon
+        self.save_button.setIcon(QIcon("assets/icons/save.png"))
         buttons_layout.addWidget(self. save_button)
         
         self.reset_button = QPushButton("Reset")
-        self.reset_button. setIcon(QIcon("assets/icons/reset.png"))  # You'll need to add this icon
+        self.reset_button. setIcon(QIcon("assets/icons/reset.png"))
         buttons_layout.addWidget(self.reset_button)
         
         layout.addLayout(buttons_layout)
     
     def populate_timezones(self):
         """Populate timezone combobox with common timezones"""
-        # Common timezones for observatories
         common_timezones = [
             "UTC",
             "UTC-1", "UTC-2", "UTC-3", "UTC-4", "UTC-5", "UTC-6",
@@ -276,7 +254,6 @@ class ObservatoryWidget(QGroupBox):
     
     def connect_signals(self):
         """Connect widget signals"""
-        # Connect value change signals
         self.monitor_id_spinbox.valueChanged.connect(self.on_configuration_changed)
         self.name_edit.textChanged.connect(self.on_configuration_changed)
         self.email_edit. textChanged.connect(self.on_configuration_changed)
@@ -288,7 +265,6 @@ class ObservatoryWidget(QGroupBox):
         self.description_edit.textChanged.connect(self.on_configuration_changed)
         self.established_edit. textChanged.connect(self.on_configuration_changed)
         
-        # Connect buttons
         self.save_button. clicked.connect(self.save_configuration)
         self.reset_button.clicked.connect(self. reset_configuration)
     
@@ -296,7 +272,6 @@ class ObservatoryWidget(QGroupBox):
         """Load configuration into widgets"""
         config = self.current_config
         
-        # Block signals during loading
         self.blockSignals(True)
         
         self.monitor_id_spinbox. setValue(config.monitor_id)
@@ -307,7 +282,6 @@ class ObservatoryWidget(QGroupBox):
         self.longitude_spinbox.setValue(config.longitude)
         self.elevation_spinbox. setValue(config.elevation)
         
-        # Set timezone
         timezone_index = self.timezone_combo.findText(config.timezone)
         if timezone_index >= 0:
             self.timezone_combo.setCurrentIndex(timezone_index)
@@ -315,7 +289,6 @@ class ObservatoryWidget(QGroupBox):
         self.description_edit.setPlainText(config.description)
         self.established_edit. setText(config.established or "")
         
-        # Restore signals
         self.blockSignals(False)
     
     def get_current_configuration(self) -> ObservatoryConfig:
@@ -341,7 +314,6 @@ class ObservatoryWidget(QGroupBox):
         """Update status indicators"""
         config = self.get_current_configuration()
         
-        # Check if configuration is complete
         is_complete = (
             config.monitor_id > 0 and
             config. name. strip() != "" and
@@ -365,7 +337,6 @@ class ObservatoryWidget(QGroupBox):
         try:
             config = self.get_current_configuration()
             
-            # Validate configuration
             validation_errors = self.validate_configuration(config)
             if validation_errors:
                 QMessageBox.warning(
@@ -375,14 +346,12 @@ class ObservatoryWidget(QGroupBox):
                 )
                 return
             
-            # Save to config manager
             self.config_manager. set_observatory_config(config)
             self.config_manager.save_config()
             
             self.current_config = config
             self. update_status_display()
             
-            # Emit signal
             self.configuration_changed.emit(config)
             
             QMessageBox.information(
@@ -435,11 +404,9 @@ class ObservatoryWidget(QGroupBox):
         if config.elevation < -500 or config.elevation > 9000:
             errors.append("Elevation must be between -500 and 9000 meters")
         
-        # Email validation (basic)
         if config.contact_email and "@" not in config.contact_email:
             errors.append("Invalid email format")
         
-        # Website validation (basic)
         if config.website and not (config.website.startswith("http://") or config.website.startswith("https://")):
             errors.append("Website must start with http:// or https://")
         

@@ -22,7 +22,7 @@ from PyQt6.QtCharts import (
 from PyQt6.QtCore import QDateTime, QPointF
 
 from core.config_manager import ConfigManager
-from core. logger import get_logger, log_execution_time  # FIXED: Import correct decorator
+from core. logger import get_logger, log_execution_time
 from api.space_weather_mock import MockSpaceWeatherAPI
 
 @dataclass
@@ -31,7 +31,7 @@ class ChartConfig:
     title: str = "VLF Signal Monitor"
     time_range_hours: int = 24
     update_interval_ms: int = 1000
-    max_data_points: int = 86400  # 24 hours at 1 second resolution
+    max_data_points: int = 86400
     auto_scale: bool = True
     show_grid: bool = True
     line_width: float = 1.5
@@ -61,7 +61,7 @@ class EventMarker:
 class DataGenerator(QObject):
     """Simulates real-time VLF signal data for development"""
     
-    data_updated = pyqtSignal(object)  # SignalData
+    data_updated = pyqtSignal(object)
     
     def __init__(self, config_manager: ConfigManager):
         super().__init__()
@@ -70,16 +70,14 @@ class DataGenerator(QObject):
         self.running = False
         
         # Simulation parameters
-        self.base_amplitude = -80.0  # dB
+        self.base_amplitude = -80.0
         self.noise_level = 5.0
         self.trend_factor = 0.0
         
-        # Get enabled VLF stations
         self.stations = self.config_manager.get_vlf_stations()
         self.enabled_stations = [s for s in self.stations if s. enabled]
         
         if not self.enabled_stations:
-            # Add default stations if none configured
             from core.config_manager import VLFStation
             self.enabled_stations = [
                 VLFStation(code="NAA", name="Cutler, ME", frequency=24.0, enabled=True),
@@ -93,7 +91,7 @@ class DataGenerator(QObject):
         self.running = True
         self.timer = QTimer()
         self. timer.timeout.connect(self. generate_data_point)
-        self.timer.start(1000)  # Generate data every second
+        self.timer.start(1000)
         
     def stop_generation(self):
         """Stop generating data"""
@@ -109,25 +107,18 @@ class DataGenerator(QObject):
         current_time = datetime.now()
         
         for station in self.enabled_stations:
-            # Simulate realistic VLF signal behavior
             
-            # Base signal with slow trend
             base_signal = self. base_amplitude + self.trend_factor * np.sin(current_time.timestamp() / 3600)
             
-            # Add noise
             noise = np.random.normal(0, self.noise_level)
             
-            # Add solar activity influence (simulated)
             solar_influence = self._simulate_solar_influence(current_time, station. frequency)
             
-            # Calculate final amplitude
             amplitude = base_signal + noise + solar_influence
             
-            # Simulate phase and SNR
             phase = np.random.uniform(0, 360)
             snr = max(10, 40 + np.random.normal(0, 5))
             
-            # Create data point
             data_point = SignalData(
                 timestamp=current_time,
                 station_code=station.code,
@@ -145,7 +136,6 @@ class DataGenerator(QObject):
         hour = timestamp.hour
         day_factor = 1.0 if 6 <= hour <= 18 else 0.5
         
-        # Simulate solar flare effect (random events)
         flare_probability = 0.001  # 0.1% chance per second
         if np.random.random() < flare_probability:
             # Simulate sudden ionospheric disturbance
@@ -158,7 +148,7 @@ class RealtimeChartView(QChartView):
     """Real-time chart view with advanced features"""
     
     # Signals
-    event_detected = pyqtSignal(str, dict)  # event_type, event_data
+    event_detected = pyqtSignal(str, dict)
     
     def __init__(self, config: ChartConfig, parent: Optional[QWidget] = None):
         super().__init__(parent)
@@ -166,16 +156,13 @@ class RealtimeChartView(QChartView):
         self.config = config
         self.logger = get_logger(__name__)
         
-        # Data storage
         self.signal_data: Dict[str, List[SignalData]] = {}
         self.event_markers: List[EventMarker] = []
         
-        # Chart components
         self.chart = QChart()
         self.series: Dict[str, QLineSeries] = {}
         self.event_series: Dict[str, QScatterSeries] = {}
         
-        # Axes
         self.time_axis = QDateTimeAxis()
         self.amplitude_axis = QValueAxis()
         
@@ -183,7 +170,6 @@ class RealtimeChartView(QChartView):
         self.setup_axes()
         self.apply_theme()
         
-        # Performance tracking
         self.last_update_time = datetime.now()
         self.update_count = 0
     
@@ -198,20 +184,17 @@ class RealtimeChartView(QChartView):
     
     def setup_axes(self):
         """Setup chart axes"""
-        # Time axis (X)
         self.time_axis. setTitleText("Time (UTC)")
         self.time_axis.setFormat("hh:mm:ss")
         
-        # Set time range
         now = QDateTime.currentDateTime()
         self.time_axis.setRange(
             now.addSecs(-self.config.time_range_hours * 3600),
             now
         )
         
-        # Amplitude axis (Y)
         self.amplitude_axis.setTitleText("Signal Strength (dB)")
-        self. amplitude_axis.setRange(-120, -40)  # Typical VLF range
+        self. amplitude_axis.setRange(-120, -40)
         
         if self.config.show_grid:
             self.amplitude_axis.setGridLineVisible(True)
@@ -225,7 +208,6 @@ class RealtimeChartView(QChartView):
         self. chart.setBackgroundBrush(QColor(self.config.background_color))
         self.chart.setTitleBrush(QColor(self.config.text_color))
         
-        # Axes colors
         self.time_axis.setTitleBrush(QColor(self. config.text_color))
         self.time_axis.setLabelsBrush(QColor(self. config.text_color))
         self.time_axis.setGridLinePen(QColor(self.config.grid_color))
@@ -241,7 +223,6 @@ class RealtimeChartView(QChartView):
     
     def add_station(self, station_code: str, station_name: str, color: str):
         """Add a VLF station to the chart"""
-        # Create main signal series
         series = QLineSeries()
         series.setName(f"{station_code} ({station_name})")
         series.setPen(QColor(color), self.config.line_width)
@@ -252,7 +233,6 @@ class RealtimeChartView(QChartView):
         
         self.series[station_code] = series
         
-        # Create event markers series
         event_series = QScatterSeries()
         event_series.setName(f"{station_code} Events")
         event_series.setMarkerSize(8)
@@ -470,7 +450,6 @@ class ChartWidget(QWidget):
         self.config_manager = config_manager
         self.logger = get_logger(__name__)
         
-        # Chart configuration
         display_config = config_manager.get('display', {})
         self.chart_config = ChartConfig(
             time_range_hours=display_config.get('history_hours', 24),
@@ -495,16 +474,13 @@ class ChartWidget(QWidget):
         """Setup the user interface"""
         layout = QVBoxLayout(self)
         
-        # Controls panel
         controls_panel = self.create_controls_panel()
         layout.addWidget(controls_panel)
         
-        # Main chart view
         self.chart_view = RealtimeChartView(self.chart_config)
         self.chart_view.event_detected.connect(self.event_detected.emit)
         layout.addWidget(self.chart_view)
         
-        # Status panel
         status_panel = self. create_status_panel()
         layout.addWidget(status_panel)
         
@@ -516,7 +492,6 @@ class ChartWidget(QWidget):
         
         layout = QHBoxLayout(panel)
         
-        # Time range control
         layout.addWidget(QLabel("Time Range:"))
         self.time_range_combo = QComboBox()
         self. time_range_combo.addItems(["1 hour", "6 hours", "12 hours", "24 hours", "48 hours"])
@@ -526,7 +501,6 @@ class ChartWidget(QWidget):
         
         layout.addWidget(QLabel("  |  "))
         
-        # Start/Stop monitoring
         self.monitor_button = QPushButton("Stop Monitoring")
         self.monitor_button.setCheckable(True)
         self. monitor_button.setChecked(True)
@@ -535,7 +509,6 @@ class ChartWidget(QWidget):
         
         layout.addWidget(QLabel("  |  "))
         
-        # Auto-scale toggle
         self.autoscale_checkbox = QCheckBox("Auto Scale")
         self.autoscale_checkbox.setChecked(self.chart_config.auto_scale)
         self.autoscale_checkbox.toggled.connect(self.toggle_autoscale)
@@ -543,7 +516,6 @@ class ChartWidget(QWidget):
         
         layout.addStretch()
         
-        # Export button
         self.export_button = QPushButton("Export Data")
         self.export_button.clicked.connect(self.export_data)
         layout.addWidget(self.export_button)
@@ -558,32 +530,27 @@ class ChartWidget(QWidget):
         
         layout = QHBoxLayout(panel)
         
-        # Data rate
         layout.addWidget(QLabel("Data Rate:"))
         self.data_rate_label = QLabel("0 Hz")
         layout.addWidget(self.data_rate_label)
         
         layout.addWidget(QLabel("  |  "))
         
-        # Active stations
         layout.addWidget(QLabel("Active Stations:"))
         self. stations_label = QLabel("0")
         layout.addWidget(self.stations_label)
         
         layout.addWidget(QLabel("  |  "))
         
-        # Events detected
         layout.addWidget(QLabel("Events:"))
         self.events_label = QLabel("0")
         layout.addWidget(self.events_label)
         
         layout.addStretch()
         
-        # Current time
         self.time_label = QLabel()
         layout.addWidget(self.time_label)
         
-        # Update timer
         self.status_timer = QTimer()
         self.status_timer.timeout. connect(self.update_status)
         self.status_timer. start(1000)
@@ -595,10 +562,9 @@ class ChartWidget(QWidget):
         stations = self.config_manager.get_vlf_stations()
         enabled_stations = [s for s in stations if s.enabled]
         
-        # Station colors
         colors = ["#00ff00", "#0080ff", "#ff8000", "#ff0080", "#80ff00", "#8000ff"]
         
-        for i, station in enumerate(enabled_stations[:6]):  # Limit to 6 stations
+        for i, station in enumerate(enabled_stations[:6]):
             color = colors[i % len(colors)]
             self.chart_view.add_station(station.code, station.name, color)
         
@@ -656,16 +622,12 @@ class ChartWidget(QWidget):
     
     def update_status(self):
         """Update status panel"""
-        # Current time
         self.time_label.setText(datetime.now().strftime("%H:%M:%S UTC"))
         
-        # Update event count
         event_count = len(self.chart_view.event_markers)
         self.events_label.setText(str(event_count))
         
-        # Calculate data rate
         if hasattr(self. chart_view, 'update_count'):
-            # Simple rate calculation
             self.data_rate_label.setText(f"~{self.chart_view.update_count} Hz")
     
     def export_data(self):

@@ -5,7 +5,7 @@
         "debug": false,
         "first_run": false,
         "log_level": "INFO",
-        "last_updated": "2025-12-14T19:43:16.051837"
+        "last_updated": "2025-12-15T15:11:33.110168"
     },
     "observatory": {
         "name": " Alejandro SolarUY",
@@ -24,14 +24,117 @@
     },
     "vlf_stations": {
         "monitored_stations": [
+            "VTX1",
+            "JXN",
+            "VTX2",
+            "SAQ",
+            "RDL",
+            "VTX3",
+            "VTX4",
+            "GBZ",
+            "NWC",
+            "ICV",
+            "FTA",
             "NPM",
+            "HWU",
             "GQD",
+            "NDT",
             "DHO38",
             "NAA",
             "NLK",
-            "NML"
+            "UNID25",
+            "NML",
+            "TBB"
         ],
         "station_frequencies": {
+            "VTX1": {
+                "freq": 16.3,
+                "location": "South Vijayanarayanam, India",
+                "lat": 8.387015,
+                "lon": 77.752762,
+                "region": "asia",
+                "type": "vlf"
+            },
+            "JXN": {
+                "freq": 16.4,
+                "location": "Novik, Norway",
+                "lat": 66.974353,
+                "lon": 13.873617,
+                "region": "europe",
+                "type": "vlf"
+            },
+            "VTX2": {
+                "freq": 17,
+                "location": "South Vijayanarayanam, India",
+                "lat": 8.387015,
+                "lon": 77.752762,
+                "region": "asia",
+                "type": "vlf"
+            },
+            "SAQ": {
+                "freq": 17.2,
+                "location": "Grimeton, Sweden",
+                "lat": 57.113171,
+                "lon": 12.397277,
+                "region": "europe",
+                "type": "vlf"
+            },
+            "RDL": {
+                "freq": 18.1,
+                "location": "Unknown Location",
+                "lat": 0,
+                "lon": 0,
+                "region": "unknown",
+                "type": "vlf"
+            },
+            "VTX3": {
+                "freq": 18.2,
+                "location": "South Vijayanarayanam, India",
+                "lat": 8.387015,
+                "lon": 77.752762,
+                "region": "asia",
+                "type": "vlf"
+            },
+            "VTX4": {
+                "freq": 19.2,
+                "location": "South Vijayanarayanam, India",
+                "lat": 8.387015,
+                "lon": 77.752762,
+                "region": "asia",
+                "type": "vlf"
+            },
+            "GBZ": {
+                "freq": 19.58,
+                "location": "Anthorn, UK",
+                "lat": 54.911643,
+                "lon": -3.278456,
+                "region": "europe",
+                "type": "vlf"
+            },
+            "NWC": {
+                "freq": 19.8,
+                "location": "North West Cape, Australia",
+                "lat": -21.816328,
+                "lon": 114.165586,
+                "region": "asia",
+                "type": "vlf"
+            },
+            "ICV": {
+                "freq": 20.27,
+                "location": "Isola di Tavolara, Italy",
+                "lat": 40.923127,
+                "lon": 9.731011,
+                "region": "europe",
+                "type": "vlf"
+            },
+            "FTA": {
+                "freq": 20.9,
+                "location": "Sainte-Assise, France",
+                "lat": 48.544632,
+                "lon": 2.579429,
+                "region": "europe",
+                "type": "vlf"
+            },
             "NPM": {
                 "freq": 21.4,
                 "location": "Lualualei, Hawaii, USA",
@@ -40,12 +143,28 @@
                 "region": "americas",
                 "type": "vlf"
             },
+            "HWU": {
+                "freq": 21.75,
+                "location": "Rosnay, France",
+                "lat": 46.713129,
+                "lon": 1.245248,
+                "region": "europe",
+                "type": "vlf"
+            },
             "GQD": {
                 "freq": 22.1,
                 "location": "Skelton, UK",
                 "lat": 54.731799,
                 "lon": -2.883033,
                 "region": "europe",
+                "type": "vlf"
+            },
+            "NDT": {
+                "freq": 22.2,
+                "location": "Ebino, Japan",
+                "lat": 32.082084,
+                "lon": 130.82796,
+                "region": "asia",
                 "type": "vlf"
             },
             "DHO38": {
@@ -72,12 +191,28 @@
                 "region": "americas",
                 "type": "vlf"
             },
+            "UNID25": {
+                "freq": 25,
+                "location": "Mokpo, South Korea",
+                "lat": 34.679068,
+                "lon": 126.445383,
+                "region": "asia",
+                "type": "vlf"
+            },
             "NML": {
                 "freq": 25.2,
                 "location": "La Moure, North Dakota, USA",
                 "lat": 46.36599,
                 "lon": -98.335638,
                 "region": "americas",
+                "type": "vlf"
+            },
+            "TBB": {
+                "freq": 26.7,
+                "location": "Bafa, Turkey",
+                "lat": 37.412725,
+                "lon": 27.323342,
+                "region": "europe",
                 "type": "vlf"
             }
         }
@@ -102,8 +237,8 @@
     },
     "vlf_system": {
         "audio_sample_rate": 44100,
-        "audio_buffer_size": 4096,
-        "audio_device": 0,
+        "audio_buffer_size": 1024,
+        "audio_device": 1,
         "storage_batch_size": 10,
         "anomaly_detection": true,
         "baseline_update_interval": 300

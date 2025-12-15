@@ -159,15 +159,12 @@ class MainWindow(QMainWindow):
         
         layout = QVBoxLayout(panel)
         
-        # Observatory info widget
         self.observatory_widget = ObservatoryWidget(self.config_manager)
         layout.addWidget(self.observatory_widget)
         
-        # Stations widget
         self.stations_widget = StationsWidget(self. config_manager)
         layout. addWidget(self.stations_widget)
         
-        # Space weather widget
         self.space_weather_widget = SpaceWeatherWidget(self.config_manager)
         layout.addWidget(self.space_weather_widget)
         
@@ -183,15 +180,12 @@ class MainWindow(QMainWindow):
         
         tab_widget = QTabWidget()
         
-        # Real-time monitoring tab (MAIN CHARTS TAB)
         self.monitoring_tab = MonitoringWidget(self.config_manager)
         tab_widget. addTab(self.monitoring_tab, "Real-time Monitoring")
         
-        # Historical data analysis tab
         self.charts_tab = ChartWidget(self.config_manager)
         tab_widget.addTab(self. charts_tab, "Historical Analysis")
         
-        # Space weather details tab
         space_weather_detail = SpaceWeatherWidget(self.config_manager)
         tab_widget.addTab(space_weather_detail, "Space Weather")
         
@@ -329,7 +323,6 @@ class MainWindow(QMainWindow):
         self.time_label = QLabel()
         self.status_bar. addPermanentWidget(self. time_label)
         
-        # Update timer
         self.status_timer = QTimer()
         self.status_timer.timeout. connect(self.update_statusbar)
         self.status_timer.start(1000)

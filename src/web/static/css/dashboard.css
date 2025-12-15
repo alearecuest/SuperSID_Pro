@@ -818,6 +818,53 @@ input, select, button {
     z-index: -1;
 }
 
+.chart-expanded {
+	position: fixed ! important;
+	top: 5% !important;
+	left: 10% !important;
+	width:  80% !important;
+	height: 80% !important;
+	z-index: 10000 !important;
+	background: var(--bg-card) !important;
+	border:  3px solid var(--info) !important;
+	box-shadow: 0 0 50px rgba(0,0,0,0.9) !important;
+	border-radius: 10px !important;
+	display: flex !important;
+	flex-direction: column !important;
+	padding: 20px !important;
+}
+
+.chart-expanded canvas {
+	flex:  1 !important;
+	height: auto !important;
+	max-height: calc(100% - 80px) !important;
+	width: 100% !important;
+}
+
+.chart-close-btn {
+	position: absolute;
+	bottom: 20px;
+	left: 50%;
+	transform: translateX(-50%);
+	padding: 12px 24px;
+	background: var(--danger);
+	color: white;
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+	font-size: 16px;
+	font-weight: 600;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+	z-index: 10001;
+}
+
+.chart-close-btn:hover {
+	background: #d32f2f;
+}
+
 ::-webkit-scrollbar {
     width: 8px;
 }
